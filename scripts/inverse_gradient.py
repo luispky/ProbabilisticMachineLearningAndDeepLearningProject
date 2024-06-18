@@ -75,7 +75,7 @@ def backward_gradient_method(n=8, k=4):
     x, y = generate_data(n, k)
     x = torch.tensor(x, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)
-    model = torch.load('model_8_4.pt')
+    model = torch.load(f'model_{n}_{k}.pt')
 
     # take an example
     zeros = np.array(y == 1).reshape(-1)
