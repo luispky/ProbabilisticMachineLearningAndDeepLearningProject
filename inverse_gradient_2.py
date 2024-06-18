@@ -55,7 +55,7 @@ class InverseGradient:
             print(f'\rlr={lr}, Epoch {epoch+1}, Loss {loss.item():.3f}', end=' ')
         print()
 
-    def training(self, n_epochs=2000, lr=0.1):
+    def training(self, n_epochs=1000, lr=0.1):
         """ train a model on the problem"""
         assert self.model is not None
 
@@ -86,7 +86,7 @@ class InverseGradient:
         # save the model
         torch.save(self.model, self.get_model_name())
 
-    def run(self, x, eta=0.005, n_iter=200, threshold=0.1):
+    def run(self, x, eta=0.01, n_iter=300, threshold=0.1):
         """
         Given a classifier and a set of data points, modify the data points
         so that the classification changes from 1 to 0
@@ -110,7 +110,7 @@ class InverseGradient:
 
             # Create a copy of x and update the copy
             x_copy = x.detach().clone()
-            dx = - eta * x.grad
+            dx = - eta * x.grad.sign()
             if i == 0:
                 if np.linalg.norm(dx.numpy().flatten()) == 0:
                     cprint('Warning: Gradient is zero', bcolors.WARNING)
@@ -134,7 +134,7 @@ class InverseGradient:
         return x, loss_value
 
 
-def main(size=200, n_dim=2, hidden=3, n_examples=40):
+def main(size=200, n_dim=2, hidden=3, n_examples=20):
     np.random.seed(0)
 
     # generate numpy data
@@ -151,15 +151,15 @@ def main(size=200, n_dim=2, hidden=3, n_examples=40):
         cprint('Training model', bcolors.WARNING)
         inverse_grad.model = torch.nn.Sequential(
             torch.nn.Linear(n_dim, hidden),
-            torch.nn.ReLU(),
+            torch.nn.Softplus(),
             torch.nn.Linear(hidden, hidden),
-            torch.nn.ReLU(),
+            torch.nn.Softplus(),
             torch.nn.Linear(hidden, 1),
             torch.nn.Sigmoid()
         )
 
         # train the model
-        inverse_grad.training()
+        inverse_grad.training(n_epochs=4000)
         cprint('Model trained', bcolors.OKGREEN)
 
         # save the model
