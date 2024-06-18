@@ -1,5 +1,7 @@
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
+from copy import deepcopy
 
 
 def generate_data(n, k):
@@ -65,37 +67,85 @@ def training(n=8, k=4, n_epochs=3000):
     torch.save(model, name)
 
 
-def backward_gradient_method(n=8, k=4):
+def reverse_classification(x, classifier, eta=0.1, n_iter=300, threshold=0.1, noise=0.01):
+    """
+    Given a classifier and a set of data points, modify the data points
+    so that the classification changes from 1 to 0
+    """
+    x = deepcopy(x)
+
+    # add gaussian noise to the input
+    x += torch.randn_like(x) * noise
+
+    x.requires_grad = True
+
+    for i in range(n_iter):
+        # Make the prediction
+        y = classifier(x)
+
+        # Compute the loss
+        loss = torch.nn.BCELoss()(y, torch.zeros_like(y))
+
+        # Compute the gradient of the loss with respect to x
+        loss.backward()
+
+        # Create a copy of x and update the copy
+        x_copy = x.detach().clone()
+        x_copy -= eta * x.grad
+
+        # Update the original x with the modified copy
+        x.data = x_copy
+
+        # Clear the gradient for the next iteration
+        x.grad.zero_()
+
+        # print loss
+        if loss.item() < threshold:
+            print(f'Loss is {loss.item():.3f} < {threshold} at iteration {i}')
+            break
+        print(f'\rIteration {i+1}, Loss {loss.item():.3f}', end=' ')
+
+    print()
+    return x
+
+
+def backward_gradient_method_test(n=8, k=4, n_example=1):
     """
     Apply gradient descent on the classification of the model
     in respect to the input x[i] so that the classification
     changes from 1 to 0
     """
+
     # generate data
     x, y = generate_data(n, k)
     x = torch.tensor(x, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)
-    model = torch.load('model_8_4.pt')
+    model = torch.load(f'model_{n}_{k}.pt')
 
     # take an example
-    zeros = np.array(y == 1).reshape(-1)
-    indices = np.arange(len(y))[zeros]
-    i = np.random.choice(indices)
-    example = {"x": x[i], "y": y[i]}
-    print(example)
+    y_positives = np.arange(len(x))[y.flatten() == 1]
+    np.random.shuffle(y_positives)
+    x_positives = x[y_positives]
+    x_examples = x_positives[:n_example]
 
     # follow the gradient
-    for i in range(1000):
-        # modify the example slightly so that it changes the classification
-        x_var = torch.autograd.Variable(example["x"], requires_grad=True)
-        y_var = model(x_var)
-        loss = (1 - y_var) ** 2
-        loss.backward()
-        example["x"] = x_var.data
-        print(f'\rIteration {i}, Loss {loss.item():.3f}', end=' ')
+    new_x = reverse_classification(x_examples, model)
+    fig, ax = plt.subplots(2, 1)
 
-        # ok but how tho...?
+    plt.sca(ax[0])
+    plt.imshow(x_examples.detach().numpy(), cmap='gray')
+    plt.clim(0, +1)
+
+    plt.sca(ax[1])
+    plt.imshow(new_x.detach().numpy(), cmap='gray')
+    plt.clim(0, +1)
+
+    print(x_examples.detach().numpy())
+    print(np.round(new_x.detach().numpy(), 2))
+
+    plt.show()
 
 
 if __name__ == '__main__':
-    backward_gradient_method()
+    np.random.seed(0)
+    backward_gradient_method_test()
