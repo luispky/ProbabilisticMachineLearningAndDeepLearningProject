@@ -5,15 +5,19 @@ from copy import deepcopy
 from misc import cprint, bcolors
 
 
-def generate_data(size, n, r=1.):
+def generate_data(size, n, r=0.8):
     """anomaly if distance from origin > r"""
     x = np.random.normal(0, 1, (size, n))
-    y = np.sum(x**2, axis=1) > r**2
-    y = y.astype(np.float32).reshape(-1, 1)
+    y1 = np.sum(x**2, axis=1) > r**2
+    y2 = np.sum(x, axis=1) < 2*r
+
+    y = y1 * y2
+
+    y = y.astype(np.float64).reshape(-1, 1)
 
     # convert to torch tensors
-    x = torch.tensor(x, dtype=torch.float32)
-    y = torch.tensor(y, dtype=torch.float32)
+    x = torch.tensor(x, dtype=torch.float64)
+    y = torch.tensor(y, dtype=torch.float64)
 
     return x, y
 
@@ -40,10 +44,12 @@ class InverseGradient:
     def get_model_name(self):
         return self.model_name
 
-    def _training_loop(self, loss_fn, n_epochs, lr):
+    def _training_loop(self, loss_fn, n_epochs, lr=0.1, weight_decay=1e-3, momentum=0.9, nesterov=True):
 
         # optimizer
-        optimizer = torch.optim.SGD(self.model.parameters(), lr=lr)
+        optimizer = torch.optim.SGD(self.model.parameters(), lr=lr,
+                                    weight_decay=weight_decay, momentum=momentum,
+                                    nesterov=nesterov)
 
         # training loop
         for epoch in range(n_epochs):
@@ -55,7 +61,7 @@ class InverseGradient:
             print(f'\rlr={lr}, Epoch {epoch+1}, Loss {loss.item():.3f}', end=' ')
         print()
 
-    def training(self, n_epochs=1000, lr=0.1):
+    def training(self, n_epochs=1000, lr=0.1, weight_decay=1e-3, momentum=0.9, nesterov=True):
         """ train a model on the problem"""
         assert self.model is not None
 
@@ -68,8 +74,8 @@ class InverseGradient:
         print(f'Initial Loss {loss.item():.3f}')
 
         # training
-        self._training_loop(loss_fn, n_epochs, lr)
-        self._training_loop(loss_fn, n_epochs, lr/10)
+        self._training_loop(loss_fn, n_epochs, lr=lr, weight_decay=weight_decay, momentum=momentum, nesterov=nesterov)
+        self._training_loop(loss_fn, n_epochs, lr=lr, weight_decay=weight_decay, momentum=momentum, nesterov=nesterov)
 
         # test the model
         y_pred = self.model(self.x)
@@ -110,11 +116,13 @@ class InverseGradient:
 
             # Create a copy of x and update the copy
             x_copy = x.detach().clone()
-            dx = - eta * x.grad.sign()
-            if i == 0:
-                if np.linalg.norm(dx.numpy().flatten()) == 0:
-                    cprint('Warning: Gradient is zero', bcolors.WARNING)
-                    return x, loss_value
+            dx = - x.grad
+            module = np.linalg.norm(dx.numpy().flatten())
+            if module == 0:
+                cprint('Warning: Gradient is zero', bcolors.WARNING)
+                return x, loss_value
+            else:
+                dx = dx / module * eta
             x_copy += dx
 
             # Update the original x with the modified copy
@@ -134,8 +142,9 @@ class InverseGradient:
         return x, loss_value
 
 
-def main(size=200, n_dim=2, hidden=3, n_examples=20):
+def main(size=200, n_dim=2, hidden=5, n_epochs=10_000, n_examples=20):
     np.random.seed(0)
+    torch.set_default_dtype(torch.float64)
 
     # generate numpy data
     x, y = generate_data(size, n_dim)
@@ -159,7 +168,7 @@ def main(size=200, n_dim=2, hidden=3, n_examples=20):
         )
 
         # train the model
-        inverse_grad.training(n_epochs=4000)
+        inverse_grad.training(n_epochs=n_epochs)
         cprint('Model trained', bcolors.OKGREEN)
 
         # save the model
@@ -185,8 +194,8 @@ def main(size=200, n_dim=2, hidden=3, n_examples=20):
     y_pred = inverse_grad.model(x).detach().numpy()
 
     plt.title('Trained model + Corrected anomalies')
-    plt.scatter(x[:, 0], x[:, 1], label='Normal', s=10)
-    plt.scatter(x[:, 0], x[:, 1], alpha=y_pred, label='Anomalies', s=10)
+    plt.scatter(x[:, 0], x[:, 1], label='Normal', s=20, linewidth=0)
+    plt.scatter(x[:, 0], x[:, 1], alpha=y_pred, label='Anomalies', s=20, linewidth=0)
     plt.legend()
 
     # run the inverse gradient algorithm
@@ -202,7 +211,7 @@ def main(size=200, n_dim=2, hidden=3, n_examples=20):
         # plot the corrected anomaly
         x0 = anomaly.numpy().flatten()
         x1 = corrected_anomaly.flatten()
-        plt.plot(*zip(x0, x1), c='k', alpha=0.5)
+        plt.plot(*zip(x0, x1), c='k', alpha=0.2, linewidth=2, zorder=0)
         plt.scatter(*x0, c='red', label='Anomaly')
         plt.scatter(*x1, c='red', label='Corrected')
         plt.scatter(*x1, c='green', label='Corrected', alpha=1-new_probability)
