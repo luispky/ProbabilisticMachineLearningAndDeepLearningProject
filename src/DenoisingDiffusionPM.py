@@ -400,7 +400,8 @@ def main():
     diffusion_model.train(dataloader)
     
     samples = 100
-    diffusion_model.sample(ema, samples, )
+    labels = torch.randint(0, 2, (samples,)).to(args.device)
+    diffusion_model.sample(ema, samples, labels)
 
 def test():
     dataset = Dataset()
