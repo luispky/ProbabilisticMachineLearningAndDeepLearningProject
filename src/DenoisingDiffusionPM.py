@@ -46,28 +46,26 @@ class EMA:
         # update the model average
         self.update_model_average(ema_model, model)
         self.step += 1
-
+    
     def reset_parameters(self, ema_model, model):
         ema_model.load_state_dict(model.state_dict())
 
 class LinearNoiseScheduler:
     r""""
     Class for the linear noise scheduler that is used in DDPM.
+    The dimensions of the noise scheduler parameters are expanded to match the
+    dimensions of the samples of the dataset. 
+    This is required to make broadcasting operations between the noise and the samples.
+    This change is only added to the betas attribute and is propagated to the other attributes.
     """
     
     def __init__(self, num_timesteps, beta_start=1e-4, beta_end=2e-2, dataset_shape=None):
         self.num_timesteps = num_timesteps
         self.beta_start = beta_start
         self.beta_end = beta_end
-        
-        # self.betas = torch.linspace(beta_start, beta_end, num_timesteps)
-        # self.alphas = 1. - self.betas
-        # self.alpha_cum_prod = torch.cumprod(self.alphas, dim=0)
-        # self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
-        # self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
-        
+
         num_dims_to_add = len(dataset_shape) - 1
-        self.betas = torch.linspace(beta_start, beta_end, num_timesteps).view(*([1]*num_dims_to_add + [-1]))
+        self.betas = torch.linspace(beta_start, beta_end, num_timesteps).view(*( [-1] + [1]*num_dims_to_add ))
         self.alphas = 1. - self.betas
         self.alpha_cum_prod = torch.cumprod(self.alphas, dim=0)
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
@@ -79,56 +77,27 @@ class LinearNoiseScheduler:
         x_{t} = \sqrt{\alpha_bar_{t}}x_{0} + \sqrt{1-\alpha_bar_{t}}\epsilon
         x_{0} has shape (batch_size, ...)
         noise has shape (batch_size, ...)
-        \alpha_bar_{t} and \sqrt{1-\alpha_bar_{t}} are scalars or arrays of shape (batch_size,)
-        We reshape them to match x_{0} and noise
-        First we repeat the scalars to match the batch size
-        Then we reshape them to match the original shape and perform broadcasting
+        t has shape (batch_size,)
+        The scheduler parameters already have the correct shape to match x_{0} and noise.
         """
-        # batch_size = x0.shape[0]
-        # num_dims_to_add = len(x0.shape) - 1
-
-        # sqrt_alpha_cum_prod = self.sqrt_alpha_cum_prod.to(x0.device)[t].reshape(batch_size).view(*([-1]+[1]*num_dims_to_add))        
-        # sqrt_alpha_cum_prod = self.sqrt_alpha_cum_prod.to(x0.device)[t].view(*([-1]+[1]*num_dims_to_add))
-        # sqrt_one_minus_alpha_cum_prod = self.sqrt_one_minus_alpha_cum_prod.to(x0.device)[t].view(*([-1]+[1]*num_dims_to_add))
-        
-        return self.sqrt_alpha_cum_prod * x0 + self.sqrt_one_minus_alpha_cum_prod * noise
-    
-    # def sample_x_t_minus_one(self, x_t, noise_pred, t):
-    #     r"""
-    #     Use the noise prediction by model to get
-    #     x_{t-1} using x_{t} and the noise predicted
-    #     """
-
-    #     mean = x_t - (self.betas.to(x_t.device)[t] * noise_pred) / self.sqrt_one_minus_alpha_cum_prod.to(x_t.device)[t]
-    #     mean = mean / torch.sqrt(self.alphas[t])
-
-    #     if t[0] > 0: # works for scalar or array
-    #         noise = torch.randn_like(x_t)
-    #     else:
-    #         noise = torch.zeros_like(x_t)
-        
-    #     std = (1.0 - self.alpha_cum_prod.to(x_t.device)[t - 1])/(1.0 - self.alpha_cum_prod.to(x_t.device)[t])      
-    #     std = std *  self.betas.to(x_t.device)[t]
-        
-    #     x_t_minus_one = mean + std * noise
-        
-    #     return x_t_minus_one
+        return self.sqrt_alpha_cum_prod[t] * x0 + self.sqrt_one_minus_alpha_cum_prod[t] * noise
 
 class Architecture(nn.Module):
+    r"""
+    Neural network architecture for the noise predictor in DDPM.
+    """
     def __init__(self, time_dim=256, dataset_shape=None):
         super().__init__()
         self.dataset_shape = dataset_shape
         
+        # Time embedding layer
+        # It ensures the time encoding is compatible with the noised samples
         self.emb_layer = nn.Sequential(
             nn.SiLU(),
             nn.Linear(time_dim, dataset_shape[1]),
         )
         
-        # self.linear1 = nn.Linear(dataset_shape[1], dataset_shape[1])
-        # self.linear2 = nn.Linear(dataset_shape[1], dataset_shape[1])
-        # self.linear3 = nn.Linear(dataset_shape[1], dataset_shape[1])
-        # self.relu = nn.ReLU()
-        
+        # Sequence of linear layers
         self.block = nn.Sequential(
             nn.Linear(dataset_shape[1], dataset_shape[1]),
             nn.ReLU(),
@@ -137,66 +106,99 @@ class Architecture(nn.Module):
             nn.Linear(dataset_shape[1], dataset_shape[1]),  
         )
 
-    def forward(self, x_t, t, y):
+    def forward(self, x_t, t):
+        # The goal is to predict the noise for the diffusion model
+        # The architecture input is: x_{t} and t, which could be summed
+        # Thus, they must have the same shape
         # x_t has shape (batch_size, ...)
         # for instance, (batch_size, columns) where columns is x.shape[1]
         #           or  (batch_size, rows, columns) where rows and columns are x.shape[1] and x.shape[2]
-
-        # I have to sum x_t and t
-        # t has shape (batch_size, time_dim)
         
-        emb = self.emb_layer(t)
-        # emb has shape (batch_size, dataset_shape[1])
+        # Time embedding
+        emb = self.emb_layer(t) # emb has shape (batch_size, dataset_shape[1])
+        
         
         # Cases for broadcasting emb to match x_t
         if x_t.shape == emb.shape:
             pass
         elif len(self.dataset_shape) == 3:
-            emb = emb.unsqueeze(-1).expand_as(x_t)
+            emb = emb.unsqueeze(-1).expand_as(x_t) # emb has shape (batch_size, dataset_shape[1], dataset_shape[2])
             # emb = emb.unsqueezep[:, :, None].repeat(1, 1, x_t.shape[-1])
-            # emb has shape (batch_size, dataset_shape[1], dataset_shape[2])
-            # where dataset_shape[2] = x_t.shape[2]
+            
         else:
             raise NotImplementedError('The shape of x_t is not supported')
             # add more cases for different shapes of x_t
         
+        # Application of transformation layers
         x = self.block(x_t + emb)
         return x
 
+
 class NoisePredictor(nn.Module):
+    r"""
+    Neural network for the noise predictor in DDPM.
+    """
     
     def __init__(self, time_dim=256, dataset_shape=None, num_classes=None):
         super().__init__()
+        self.time_dim = time_dim
         self.architecture = Architecture(time_dim, dataset_shape)
         
+        # Label embedding layer
+        # It encode the labels into the time dimension
+        # It is used to condition the model
         if num_classes is not None:
-            self.label_emb = nn.Embedding(num_classes, time_dim)
-            # label_emb(labels) has shape (batch_size, time_dim)
+            self.label_emb = nn.Embedding(num_classes, time_dim) # label_emb(labels) has shape (batch_size, time_dim)
         
     def positional_encoding(self, time_steps, embedding_dim):
+        r"""
+        Sinusoidal positional encoding for the time steps.
+        The sinusoidal positional encoding is a way of encoding the position of elements in a sequence using sinusoidal functions.
+        It is defined as:
+        PE(pos, 2i) = sin(pos / 10000^(2i/d_model))
+        PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+        where 
+            - pos is the position of the element in the sequence, 
+            - i is the dimension of the positional encoding, and 
+            - d_model is the dimension of the input
+        The sinusoidal positional encoding is used in the Transformer model to encode the position of elements in the input sequence.
+        """
         inv_freq = 1.0 / (
             10000
-            ** (torch.arange(0, embedding_dim, 2, device=self.device).float() / embedding_dim)
+            ** (torch.arange(0, embedding_dim, 2).float() / embedding_dim)
         )
         pos_enc_a = torch.sin(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
         pos_enc_b = torch.cos(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
         pos_enc = torch.cat([pos_enc_a, pos_enc_b], dim=-1)
         return pos_enc
         
-    def forward(self, x_t, t, y):
-        t = t.unsqueeze(-1).type(torch.float)
-        t = self.positional_encoding(t, self.time_dim)
+    def forward(self, x_t, t, y=None):
+        
+        # Positional encoding for the time steps
+        t = t.unsqueeze(-1).type(torch.float) # t has shape (batch_size,1)
+        # Now, t has shape (batch_size)
+        t = self.positional_encoding(t, self.time_dim) 
         # t has shape (batch_size, time_dim)
         
+        # Label embedding
         if y is not None:
+            # y has shape (batch_size, 1)
+            y = y.squeeze(-1)
+            # y now has shape (batch_size)
+            if y.dtype!= torch.long:
+                y = y.long()
             t += self.label_emb(y)
             # label_emb(y) has shape (batch_size, time_dim)
             # the sum is element-wise
-
-        output = self.architecture(x_t, t, y)
+        
+        # Apply the architecture 
+        output = self.architecture(x_t, t)
         return output
-
+    
 class Dataset:
+    r""""
+    Class to generate the dataset for the DDPM model.
+    """
     
     def __init__(self):
         self.dataset = None
@@ -204,9 +206,11 @@ class Dataset:
         
 
     def generate_data(self):
+        # 
         if self.dataset is not None:
             print('Data already generated')
             return self.dataloader
+        
         # Define the number of samples to generate
         num_samples = 300
 
@@ -271,6 +275,12 @@ class Dataset:
         plt.show()
 
 class DDPM:
+    r"""
+    Class for the Denoising Diffusion Probabilistic Model.
+    It implements the training and sampling methods for the model according to the DDPM paper.
+    It also includes additional components to allow conditional sampling according to the labels.
+    From the CFDG papers the changes are minimal. 
+    """
     def __init__(self, scheduler, model, args, ema):
         self.scheduler = scheduler
         self.model = model
@@ -280,6 +290,7 @@ class DDPM:
     def save_model(self):
         pass
     
+    # Training method according to the DDPM paper
     def train(self, dataloader=None):
         # load the data
         assert dataloader is not None, 'Dataloader not provided'
@@ -293,6 +304,8 @@ class DDPM:
         criterion = nn.MSELoss()
         
         self.model.train()
+        
+        print('Training...')
         
         # run the training loop
         for epoch in range(self.args.epochs):
@@ -309,9 +322,11 @@ class DDPM:
                 t = torch.randint(0, self.scheduler.num_timesteps, (batch_samples.shape[0],)).to(self.args.device)
                 # batch_samples.shape[0] is the batch size
                 
-                # x_{t-1} ~ q(x_{t-1}|x_{t}, x_{0})
                 # noise = N(0, 1)
-                x_t, noise = self.scheduler.noise_images(batch_samples, t) 
+                noise = torch.randn_like(batch_samples)
+                
+                # x_{t-1} ~ q(x_{t-1}|x_{t}, x_{0})
+                x_t = self.scheduler.add_noise(batch_samples, noise, t) 
                 
                 if np.random.rand() < 0.1:
                     labels = None
@@ -328,7 +343,7 @@ class DDPM:
                 loss.backward()
                 optimizer.step()
                 
-                # 
+                # update the EMA model
                 self.ema.step_ema(ema_model, self.model)
 
                 losses.append(loss.item())
@@ -338,9 +353,13 @@ class DDPM:
             
         print('Training Finished')
 
+    # Sampling method according to the DDPM paper
     def sample(self, model, samples, labels, cfg_scale=3):
         model.eval()
         samples_shape = self.model.architecture.dataset_shape
+        
+        print('Sampling...')
+        
         with torch.no_grad():
             # x_{T} ~ N(0, I)
             x = torch.randn((samples, *samples_shape[1:])).to(self.args.device)
@@ -353,30 +372,36 @@ class DDPM:
                 t = (torch.ones(samples) * i).long().to(self.args.device)
                 predicted_noise = model(x, t, labels)
                 
+                # Classifier Free Guidance Scale
                 if cfg_scale > 0:
                     uncond_predicted_noise = model(x, t, None)
                     # interpolate between conditional and unconditional noise
                     predicted_noise = torch.lerp(uncond_predicted_noise, predicted_noise, cfg_scale)
                 
+                # noise = z ~ N(0, I) if t > 1 else 0
+                if t[0] > 0:
+                    noise = torch.randn_like(x)
+                else:
+                    noise = torch.zeros_like(x)
+
+                # x_{t-1} ~ p_{\theta}(x_{t-1}|x_{t})
                 betas = self.scheduler.betas.to(x.device)
                 sqrt_one_minus_alpha_cum_prod = self.scheduler.sqrt_one_minus_alpha_cum_prod.to(x.device)
                 alphas = self.scheduler.alphas.to(x.device)
                 alpha_cum_prod = self.scheduler.alpha_cum_prod.to(x.device)
                 
+                # mean = x_{t} - const * predicted_noise 
                 mean = x - (betas[t] * predicted_noise) / sqrt_one_minus_alpha_cum_prod[t]
                 mean = mean / torch.sqrt(alphas[t])
-                
-                if t[0] > 0:
-                    noise = torch.randn_like(x)
-                else:
-                    noise = torch.zeros_like(x)
-                
                 std = (1.0 - alpha_cum_prod[t - 1]) / (1.0 - alpha_cum_prod[t]) * betas[t]
                 
+                # x_{t-1} = predicted_mean_reconstruction + fixed_std * noise
                 x = mean + std * noise  
         
         model.train()
-                
+        
+        print('Sampling Finished')
+        
         return x
 
 def main():
@@ -388,11 +413,12 @@ def main():
     args.lr = 3e-4
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
+    # define the components of the DDPM model
     dataset = Dataset()
     dataloader = dataset.generate_data()
     dataset_shape = dataset.get_dataset_shape()
-    model = NoisePredictor(dataset_shape = dataset_shape , num_classes=2)
     scheduler = LinearNoiseScheduler(num_timesteps=100, dataset_shape=dataset_shape)
+    model = NoisePredictor(dataset_shape = dataset_shape , num_classes=2)
     ema = EMA(beta=0.995)
     
     diffusion_model = DDPM(scheduler, model, args, ema)
