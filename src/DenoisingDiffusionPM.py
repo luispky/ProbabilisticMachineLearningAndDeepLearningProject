@@ -7,13 +7,16 @@ from torch import optim
 import copy
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as plt
+from safetensors.torch import save_model as safe_save_model
+from safetensors.torch import load_model as safe_load_model
+from safetensors.torch import save_file as safe_save_file
+from safetensors.torch import load_file
 
 """
 ! Observations:
-* The dataset function only generates data for one sample of values
-  Maybe, something that includes more samples would be better
-* I need to figure out which feed forward model to use
-* I need to understand were to include the time embedding in the forward pass
+* I need to modify the Architecture class to solve the specific problem at hand
+* I still need to implement inpainting and other methods
+* I could modify the Noise Scheduler like in the OpenAI implementation
 """
 
 class EMA:
@@ -59,17 +62,24 @@ class LinearNoiseScheduler:
     This change is only added to the betas attribute and is propagated to the other attributes.
     """
     
-    def __init__(self, num_timesteps, beta_start=1e-4, beta_end=2e-2, dataset_shape=None):
-        self.num_timesteps = num_timesteps
+    def __init__(self, noise_timesteps, beta_start=1e-4, beta_end=2e-2, dataset_shape=None):
+        self.noise_timesteps = noise_timesteps
         self.beta_start = beta_start
         self.beta_end = beta_end
 
         num_dims_to_add = len(dataset_shape) - 1
-        self.betas = torch.linspace(beta_start, beta_end, num_timesteps).view(*( [-1] + [1]*num_dims_to_add ))
+        self.betas = torch.linspace(beta_start, beta_end, noise_timesteps).view(*( [-1] + [1]*num_dims_to_add ))
         self.alphas = 1. - self.betas
         self.alpha_cum_prod = torch.cumprod(self.alphas, dim=0)
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
         self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
+        
+    def _send_to_device(self, device):
+        self.betas = self.betas.to(device)
+        self.alphas = self.alphas.to(device)
+        self.alpha_cum_prod = self.alpha_cum_prod.to(device)
+        self.sqrt_alpha_cum_prod = self.sqrt_alpha_cum_prod.to(device)
+        self.sqrt_one_minus_alpha_cum_prod = self.sqrt_one_minus_alpha_cum_prod.to(device)
     
     def add_noise(self, x0, noise, t):
         r"""
@@ -139,7 +149,7 @@ class NoisePredictor(nn.Module):
     Neural network for the noise predictor in DDPM.
     """
     
-    def __init__(self, time_dim=256, dataset_shape=None, num_classes=None):
+    def __init__(self, dataset_shape=None, time_dim=256, num_classes=None):
         super().__init__()
         self.time_dim = time_dim
         self.architecture = Architecture(time_dim, dataset_shape)
@@ -203,10 +213,9 @@ class Dataset:
     def __init__(self):
         self.dataset = None
         self.labels = None
-        
 
     def generate_data(self):
-        # 
+        # Check if the dataset is already generated
         if self.dataset is not None:
             print('Data already generated')
             return self.dataloader
@@ -244,6 +253,7 @@ class Dataset:
 
         # Concatenate the labels
         self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
+        # labels.shape = (4*num_samples, 1)
         
         # Transform the dataset and labels to torch tensors
         dataset = torch.tensor(self.dataset, dtype=torch.float32)
@@ -266,6 +276,7 @@ class Dataset:
         self.generate_data()
         # Plot the dataset with different colors for different labels
         mask = self.labels.flatten() == 0
+        # labels.flatten() has shape (4*num_samples,)
         plt.scatter(self.dataset[:, 0][mask], self.dataset[:, 1][mask], alpha=0.5, label='Normal')
         plt.scatter(self.dataset[:, 0][~mask], self.dataset[:, 1][~mask], alpha=0.5, label='Anomaly')
         plt.title('2D Mixture of Gaussians')
@@ -277,18 +288,45 @@ class Dataset:
 class DDPM:
     r"""
     Class for the Denoising Diffusion Probabilistic Model.
+    It just implements methods but not the model itself.
     It implements the training and sampling methods for the model according to the DDPM paper.
     It also includes additional components to allow conditional sampling according to the labels.
     From the CFDG papers the changes are minimal. 
     """
-    def __init__(self, scheduler, model, args, ema):
+    def __init__(self, scheduler, model, args):
         self.scheduler = scheduler
         self.model = model
         self.args = args
-        self.ema = ema
+        self.ema_model = None
+
+        # send the scheduler attributes to the device
+        self.scheduler._send_to_device(self.args.device)
+        
+    def save_model(self, model, filename, path = "../models/"):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        
+        filename = path + filename + '.safetensors'
+        
+        safe_save_model(model, filename + '.safetensors')
+        
+        print(f'Model saved in {filename}')
     
-    def save_model(self):
-        pass
+    def load_model(self, model_params, filename, path = "../models/"):
+        r"""
+        Load model parameters from a file using safetensors.
+        """
+        dataset_shape = model_params['dataset_shape']
+        time_dim = model_params['time_dim']
+        num_classes = model_params['num_classes']
+        model = NoisePredictor(dataset_shape=dataset_shape, 
+                               time_dim=time_dim, 
+                               num_classes=num_classes).to(self.args.device)
+        
+        print(f'Loading model...')
+        
+        filename = path + filename + '.safetensors'
+        return safe_load_model(model, filename)
     
     # Training method according to the DDPM paper
     def train(self, dataloader=None):
@@ -296,13 +334,17 @@ class DDPM:
         assert dataloader is not None, 'Dataloader not provided'
         
         # copy the model and set it to evaluation mode
-        ema_model = copy.deepcopy(self.model).eval().requires_grad_(False) 
+        self.ema_model = copy.deepcopy(self.model).eval().requires_grad_(False).to(self.args.device)         
         
         # use the AdamW optimizer
         optimizer = optim.AdamW(self.model.parameters(), lr=self.args.lr)
         # use the Mean Squared Error loss
         criterion = nn.MSELoss()
         
+        # send the model to the device
+        self.model.to(self.args.device)
+        
+        # set the model to training mode
         self.model.train()
         
         print('Training...')
@@ -311,23 +353,36 @@ class DDPM:
         for epoch in range(self.args.epochs):
             losses = [] # change for tensorboard and include loggings
             
+            # verify if the dataloader has labels 
+            has_labels = True if len(dataloader.dataset[0]) == 2 else False
+            
             pbar = tqdm(dataloader)
-            for i, (batch_samples, labels) in enumerate(pbar): # x_{0} ~ q(x_{0})
+            for i, batch_data in enumerate(pbar): # x_{0} ~ q(x_{0})
                 optimizer.zero_grad()
                 
+                # extract data from the batch verifying if it has labels
+                
+                if has_labels:
+                    batch_samples, labels = batch_data
+                    labels = labels.to(self.args.device)
+                else:
+                    batch_samples = batch_data
+                    labels = None
                 batch_samples = batch_samples.to(self.args.device)
-                labels = labels.to(self.args.device)
                 
                 # t ~ U(1, T)
-                t = torch.randint(0, self.scheduler.num_timesteps, (batch_samples.shape[0],)).to(self.args.device)
+                t = torch.randint(0, self.scheduler.noise_timesteps, (batch_samples.shape[0],)).to(self.args.device)
                 # batch_samples.shape[0] is the batch size
                 
                 # noise = N(0, 1)
-                noise = torch.randn_like(batch_samples)
+                noise = torch.randn_like(batch_samples).to(self.args.device)
                 
                 # x_{t-1} ~ q(x_{t-1}|x_{t}, x_{0})
                 x_t = self.scheduler.add_noise(batch_samples, noise, t) 
                 
+                # If the labels are not provided, use them with a probability of 0.1
+                # This allows the conditional model to be trained with and without labels
+                # This is a form of data augmentation and allows the model to be more robust
                 if np.random.rand() < 0.1:
                     labels = None
                 
@@ -344,7 +399,7 @@ class DDPM:
                 optimizer.step()
                 
                 # update the EMA model
-                self.ema.step_ema(ema_model, self.model)
+                self.ema.step_ema(self.ema_model, self.model)
 
                 losses.append(loss.item())
                 # pbar.set_postfix(MSE=loss.item())
@@ -354,28 +409,30 @@ class DDPM:
         print('Training Finished')
 
     # Sampling method according to the DDPM paper
-    def sample(self, model, samples, labels, cfg_scale=3):
+    def sample(self, model, labels, cfg_scale=3):
         model.eval()
+        model.to(self.args.device)
         samples_shape = self.model.architecture.dataset_shape
         
         print('Sampling...')
         
         with torch.no_grad():
             # x_{T} ~ N(0, I)
-            x = torch.randn((samples, *samples_shape[1:])).to(self.args.device)
+            x = torch.randn((self.args.samples, *samples_shape[1:])).to(self.args.device)
             
             # for t = T, T-1, ..., 1
-            for i in tqdm(reversed(range(1, self.scheduler.num_timesteps)), position=0):
+            for i in tqdm(reversed(range(1, self.scheduler.noise_timesteps)), position=0):
                 
                 # This might give problems because here this is an array of shape (samples,)
                 # instead of a simple scalar 
-                t = (torch.ones(samples) * i).long().to(self.args.device)
+                t = (torch.ones(self.args.samples) * i).long().to(self.args.device)
                 predicted_noise = model(x, t, labels)
                 
                 # Classifier Free Guidance Scale
                 if cfg_scale > 0:
                     uncond_predicted_noise = model(x, t, None)
                     # interpolate between conditional and unconditional noise
+                    # lerp(x, y, alpha) = x * (1 - alpha) + y * alpha
                     predicted_noise = torch.lerp(uncond_predicted_noise, predicted_noise, cfg_scale)
                 
                 # noise = z ~ N(0, I) if t > 1 else 0
@@ -385,10 +442,10 @@ class DDPM:
                     noise = torch.zeros_like(x)
 
                 # x_{t-1} ~ p_{\theta}(x_{t-1}|x_{t})
-                betas = self.scheduler.betas.to(x.device)
-                sqrt_one_minus_alpha_cum_prod = self.scheduler.sqrt_one_minus_alpha_cum_prod.to(x.device)
-                alphas = self.scheduler.alphas.to(x.device)
-                alpha_cum_prod = self.scheduler.alpha_cum_prod.to(x.device)
+                betas = self.scheduler.betas
+                sqrt_one_minus_alpha_cum_prod = self.scheduler.sqrt_one_minus_alpha_cum_prod
+                alphas = self.scheduler.alphas
+                alpha_cum_prod = self.scheduler.alpha_cum_prod
                 
                 # mean = x_{t} - const * predicted_noise 
                 mean = x - (betas[t] * predicted_noise) / sqrt_one_minus_alpha_cum_prod[t]
@@ -404,6 +461,24 @@ class DDPM:
         
         return x
 
+def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    filename = path + filename + '.png'
+    
+    if labels is not None:
+        mask = labels == 0
+        plt.scatter(samples[:, 0][mask], samples[:, 1][mask], alpha=0.5, label='Normal')
+        plt.scatter(samples[:, 0][~mask], samples[:, 1][~mask], alpha=0.5, label='Anomaly')
+    else:
+        plt.scatter(samples[:, 0], samples[:, 1], alpha=0.5)
+    plt.title('Generated Samples')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.legend()
+    plt.savefig(filename)
+
 def main():
     # define the arguments
     import argparse
@@ -412,26 +487,37 @@ def main():
     args.epochs = 300
     args.lr = 3e-4
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    args.samples = 500
     
-    # define the components of the DDPM model
+    # define the components of the DDPM model: dataset, scheduler, model, EMA class
     dataset = Dataset()
     dataloader = dataset.generate_data()
     dataset_shape = dataset.get_dataset_shape()
-    scheduler = LinearNoiseScheduler(num_timesteps=100, dataset_shape=dataset_shape)
-    model = NoisePredictor(dataset_shape = dataset_shape , num_classes=2)
+    noise_time_steps = 100
+    scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
+    time_dim_embedding = 256
+    model = NoisePredictor(dataset_shape = dataset_shape, time_dim=time_dim_embedding, num_classes=2)
     ema = EMA(beta=0.995)
     
-    diffusion_model = DDPM(scheduler, model, args, ema)
+    # Instantiate the DDPM model
+    diffusion = DDPM(scheduler, model, args)
     
-    diffusion_model.train(dataloader)
+    # train the model
+    diffusion.train(dataloader, ema)
     
-    samples = 100
-    labels = torch.randint(0, 2, (samples,)).to(args.device)
-    diffusion_model.sample(ema, samples, labels)
+    labels = torch.randint(0, 2, (args.samples,)).to(args.device)
+    samples = diffusion.sample(diffusion.ema_model, labels)
+    
+    # bring labels and samples to the cpu
+    labels = labels.cpu().numpy()
+    samples = samples.cpu().numpy()
+    
+    # save the generated samples
+    save_plot_generated_samples('ema_generated_samples', samples, labels) 
 
 def test():
     dataset = Dataset()
     dataset.plot_data()
     
 if __name__ == '__main__':
-    test()
+    main()
