@@ -176,7 +176,7 @@ class NoisePredictor(nn.Module):
         inv_freq = 1.0 / (
             10000
             ** (torch.arange(0, embedding_dim, 2).float() / embedding_dim)
-        )
+        ).to(time_steps.device)
         pos_enc_a = torch.sin(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
         pos_enc_b = torch.cos(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
         pos_enc = torch.cat([pos_enc_a, pos_enc_b], dim=-1)
@@ -329,12 +329,13 @@ class DDPM:
         return safe_load_model(model, filename)
     
     # Training method according to the DDPM paper
-    def train(self, dataloader=None):
+    def train(self, dataloader, ema=None):
         # load the data
         assert dataloader is not None, 'Dataloader not provided'
         
-        # copy the model and set it to evaluation mode
-        self.ema_model = copy.deepcopy(self.model).eval().requires_grad_(False).to(self.args.device)         
+        if ema is not None:
+            # copy the model and set it to evaluation mode
+            self.ema_model = copy.deepcopy(self.model).eval().requires_grad_(False).to(self.args.device)         
         
         # use the AdamW optimizer
         optimizer = optim.AdamW(self.model.parameters(), lr=self.args.lr)
@@ -398,8 +399,9 @@ class DDPM:
                 loss.backward()
                 optimizer.step()
                 
-                # update the EMA model
-                self.ema.step_ema(self.ema_model, self.model)
+                if ema is not None:
+                    # update the EMA model
+                    ema.step_ema(self.ema_model, self.model)
 
                 losses.append(loss.item())
                 # pbar.set_postfix(MSE=loss.item())
