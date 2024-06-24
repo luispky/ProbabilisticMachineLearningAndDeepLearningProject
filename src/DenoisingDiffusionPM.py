@@ -373,7 +373,7 @@ class DDPM:
                     batch_samples, labels = batch_data
                     labels = labels.to(self.args.device)
                 else:
-                    batch_samples = batch_data
+                    batch_samples = batch_data[0]
                     labels = None
                     
                 batch_samples = batch_samples.to(self.args.device)
