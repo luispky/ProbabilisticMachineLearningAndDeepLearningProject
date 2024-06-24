@@ -214,7 +214,7 @@ class Dataset:
         self.dataset = None
         self.labels = None
 
-    def generate_data(self):
+    def generate_data(self, with_labels=True):
         # Check if the dataset is already generated
         if self.dataset is not None:
             print('Data already generated')
@@ -242,25 +242,31 @@ class Dataset:
         samples3 = np.random.multivariate_normal(mean3, cov3, num_samples)
         samples4 = np.random.multivariate_normal(mean4, cov4, num_samples)
 
-        # Create labels for the samples
-        labels1 = np.zeros((num_samples, 1)) # label 0 for samples1
-        labels2 = np.zeros((num_samples, 1)) # label 0 for samples2
-        labels3 = np.zeros((num_samples, 1)) # label 0 for samples3
-        labels4 = np.ones((num_samples, 1))  # label 1 for samples4
-
         # Concatenate the samples to create the dataset
         self.dataset = np.concatenate((samples1, samples2, samples3, samples4), axis=0)
 
-        # Concatenate the labels
-        self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
-        # labels.shape = (4*num_samples, 1)
+        if with_labels:
+            # Create labels for the samples
+            labels1 = np.zeros((num_samples, 1)) # label 0 for samples1
+            labels2 = np.zeros((num_samples, 1)) # label 0 for samples2
+            labels3 = np.zeros((num_samples, 1)) # label 0 for samples3
+            labels4 = np.ones((num_samples, 1))  # label 1 for samples4
+
+            # Concatenate the labels
+            self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
+            # labels.shape = (4*num_samples, 1)
         
         # Transform the dataset and labels to torch tensors
         dataset = torch.tensor(self.dataset, dtype=torch.float32)
-        labels = torch.tensor(self.labels, dtype=torch.float32)
         
-        # Create a tensor dataset
-        tensor_dataset = TensorDataset(dataset, labels)
+        if with_labels:
+            labels = torch.tensor(self.labels, dtype=torch.float32)
+            
+            # Create a tensor dataset
+            tensor_dataset = TensorDataset(dataset, labels)
+            
+        else: 
+            tensor_dataset = TensorDataset(dataset)
         
         # Create a dataloader
         self.dataloader = DataLoader(tensor_dataset, batch_size=14, shuffle=True)
@@ -273,7 +279,7 @@ class Dataset:
 
     def plot_data(self):
         # Generate the dataset
-        self.generate_data()
+        self.generate_data(with_labels=True)
         # Plot the dataset with different colors for different labels
         mask = self.labels.flatten() == 0
         # labels.flatten() has shape (4*num_samples,)
@@ -369,6 +375,7 @@ class DDPM:
                 else:
                     batch_samples = batch_data
                     labels = None
+                    
                 batch_samples = batch_samples.to(self.args.device)
                 
                 # t ~ U(1, T)
@@ -489,13 +496,13 @@ def main():
     args.epochs = 300
     args.lr = 3e-4
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    args.samples = 500
+    args.samples = 1000
     
     # define the components of the DDPM model: dataset, scheduler, model, EMA class
     dataset = Dataset()
-    dataloader = dataset.generate_data()
+    dataloader = dataset.generate_data(with_labels=False)
     dataset_shape = dataset.get_dataset_shape()
-    noise_time_steps = 100
+    noise_time_steps = 1000
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     time_dim_embedding = 256
     model = NoisePredictor(dataset_shape = dataset_shape, time_dim=time_dim_embedding, num_classes=2)
@@ -507,6 +514,9 @@ def main():
     # train the model
     diffusion.train(dataloader, ema)
     
+    # save model
+    # diffusion.save_model(diffusion.model, 'ddpm_model_03')
+    
     labels = torch.randint(0, 2, (args.samples,)).to(args.device)
     samples = diffusion.sample(diffusion.ema_model, labels)
     
@@ -515,7 +525,7 @@ def main():
     samples = samples.cpu().numpy()
     
     # save the generated samples
-    save_plot_generated_samples('ema_generated_samples', samples, labels) 
+    save_plot_generated_samples('generated_samples_05', samples, labels) 
 
 def test():
     dataset = Dataset()
