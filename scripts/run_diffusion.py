@@ -5,11 +5,12 @@ import os
 
 # * Run from the scripts directory with:
 # Add the parent directory of 'src' to sys.path
-# sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('..'))
 # python run_diffusion.py
 
 # * Run from the parent directory with:
 # python -m scripts.run_diffusion 
+# not recommended because it will create another directory for the plots
 
 from src import DDPM, NoisePredictor, Dataset, LinearNoiseScheduler, EMA, save_plot_generated_samples
 
@@ -29,7 +30,7 @@ def main():
     dataset_shape = dataset.get_dataset_shape()
     noise_time_steps = 100
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
-    time_dim_embedding = 256
+    time_dim_embedding = 100
     model = NoisePredictor(dataset_shape = dataset_shape, time_dim=time_dim_embedding, num_classes=2)
     ema = EMA(beta=0.995)
     
@@ -52,7 +53,7 @@ def main():
     
     # save the generated samples
     # save_plot_generated_samples('generated_samples_19', samples, labels=None)
-    save_plot_generated_samples('generated_samples_21', samples, labels=None) 
+    save_plot_generated_samples('generated_samples_23', samples, labels=None) 
 
 def test():
     dataset = Dataset()
