@@ -82,7 +82,6 @@ class DDPM:
         
         # run the training loop
         for epoch in tqdm(range(self.args.epochs)):
-            losses = [] # change for tensorboard and include loggings
             
             # verify if the dataloader has labels 
             has_labels = True if len(dataloader.dataset[0]) == 2 else False
@@ -135,8 +134,6 @@ class DDPM:
                     # update the EMA model
                     ema.step_ema(self.ema_model, self.model)
 
-                losses.append(loss.item())
-                # pbar.set_postfix(MSE=loss.item())
                 # pbar.set_description(f'Epoch: {epoch+1} | Loss: {loss.item()}')
             # print(f'Finished epoch: {epoch+1} | Loss : {np.mean(losses)}')
             

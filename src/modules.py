@@ -18,18 +18,10 @@ class Architecture(nn.Module):
         # Time embedding layer
         # It ensures the time encoding is compatible with the noised samples
         self.emb_layer = nn.Sequential(
+            nn.Linear(time_dim, time_dim),
             nn.SiLU(),
             nn.Linear(time_dim, dataset_shape[1]),
         )
-        
-        # Sequence of linear layers
-        # self.block = nn.Sequential(
-        #     nn.Linear(dataset_shape[1], dataset_shape[1]),
-        #     nn.ReLU(),
-        #     nn.Linear(dataset_shape[1], dataset_shape[1]),
-        #     nn.ReLU(),
-        #     nn.Linear(dataset_shape[1], dataset_shape[1]),  
-        # )
         
         # Feedforward layers
         self.fc1 = nn.Linear(dataset_shape[1], dataset_shape[1])
@@ -61,7 +53,6 @@ class Architecture(nn.Module):
             # add more cases for different shapes of x_t
         
         # Application of transformation layers
-        # x = self.block(x_t + emb)
         x = self.fc1(x_t + emb)
         x = nn.ReLU()(x)
         x = self.fc2(x + emb)
