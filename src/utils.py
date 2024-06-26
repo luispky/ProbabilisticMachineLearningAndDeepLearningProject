@@ -180,3 +180,12 @@ class LinearNoiseScheduler:
         The scheduler parameters already have the correct shape to match x_{0} and noise.
         """
         return self.sqrt_alpha_cum_prod[t] * x0 + self.sqrt_one_minus_alpha_cum_prod[t] * noise
+
+def plot_loss(losses, filename, path="../plots/"):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    plt.plot(losses)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.savefig(path + filename + '.png')

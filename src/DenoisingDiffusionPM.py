@@ -7,6 +7,7 @@ from torch import optim
 import copy
 from safetensors.torch import save_model as safe_save_model
 from safetensors.torch import load_model as safe_load_model
+import wandb
 
 from .modules import NoisePredictor
 
@@ -80,15 +81,20 @@ class DDPM:
         
         print('Training...')
         
+        # Initialize lists to store losses and accuracies per epoch
+        train_losses = []
+        train_accuracies = []
+        
         # run the training loop
-        for epoch in tqdm(range(self.args.epochs)):
-            
+        pbar = tqdm(total=self.args.epochs)
+        for epoch in pbar:
             # verify if the dataloader has labels 
             has_labels = True if len(dataloader.dataset[0]) == 2 else False
             
-            # pbar = tqdm(dataloader)
-            pbar = dataloader
-            for i, batch_data in enumerate(pbar): # x_{0} ~ q(x_{0})
+            running_loss = 0.0
+            num_elements = 0
+            
+            for i, batch_data in enumerate(dataloader): # x_{0} ~ q(x_{0})
                 optimizer.zero_grad()
                 
                 # extract data from the batch verifying if it has labels
@@ -130,12 +136,16 @@ class DDPM:
                 loss.backward()
                 optimizer.step()
                 
+                running_loss += loss.item()
+                num_elements += batch_samples.shape[0]
+                
                 if ema is not None:
                     # update the EMA model
                     ema.step_ema(self.ema_model, self.model)
-
-                # pbar.set_description(f'Epoch: {epoch+1} | Loss: {loss.item()}')
-            # print(f'Finished epoch: {epoch+1} | Loss : {np.mean(losses)}')
+            epoch_loss = running_loss / num_elements
+            pbar.set_description(f'Epoch: {epoch+1} | Loss: {epoch_loss:.4f}')
+            
+            wandb.log({'loss': epoch_loss})
             
         print('Training Finished')
 

@@ -2,6 +2,7 @@ import torch
 import argparse
 import sys
 import os
+import wandb
 
 # * Run from the scripts directory with:
 # Add the parent directory of 'src' to sys.path
@@ -12,7 +13,7 @@ sys.path.append(os.path.abspath('..'))
 # python -m scripts.run_diffusion 
 # not recommended because it will create another directory for the plots
 
-from src import DDPM, NoisePredictor, Dataset, LinearNoiseScheduler, EMA, save_plot_generated_samples
+from src import DDPM, NoisePredictor, Dataset, LinearNoiseScheduler, EMA, save_plot_generated_samples, plot_loss
 
 def main():
     # define the arguments

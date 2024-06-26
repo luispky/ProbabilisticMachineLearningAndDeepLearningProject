@@ -4,6 +4,7 @@ import torch.nn as nn
 """
 ! Observations:
 * I need to modify the Architecture class to solve the specific problem at hand
+* Encode the time steps better depending the layers of the model
 * I still need to implement inpainting and other methods
 """
 
@@ -23,12 +24,25 @@ class Architecture(nn.Module):
             nn.Linear(time_dim, dataset_shape[1]),
         )
         
+        # Sequential layers
+        self.blocks = nn.Sequential(
+            nn.Linear(dataset_shape[1], 10),
+            nn.ReLU(),
+            nn.Linear(10, 20),
+            nn.ReLU(),
+            nn.Linear(20, 25),
+            nn.ReLU(),
+            nn.Linear(25, 10),
+            nn.ReLU(),
+            nn.Linear(10, dataset_shape[1]),
+        )
+        
         # Feedforward layers
-        self.fc1 = nn.Linear(dataset_shape[1], dataset_shape[1])
-        self.fc2 = nn.Linear(dataset_shape[1], dataset_shape[1])
-        self.fc3 = nn.Linear(dataset_shape[1], dataset_shape[1])
-        self.fc4 = nn.Linear(dataset_shape[1], dataset_shape[1])
-        self.fc5 = nn.Linear(dataset_shape[1], dataset_shape[1])
+        # self.fc1 = nn.Linear(dataset_shape[1], 10)
+        # self.fc2 = nn.Linear(10, 20)
+        # self.fc3 = nn.Linear(20, 25)
+        # self.fc4 = nn.Linear(25, 10)
+        # self.fc5 = nn.Linear(10, dataset_shape[1])
 
     def forward(self, x_t, t):
         # The goal is to predict the noise for the diffusion model
@@ -53,15 +67,17 @@ class Architecture(nn.Module):
             # add more cases for different shapes of x_t
         
         # Application of transformation layers
-        x = self.fc1(x_t + emb)
-        x = nn.ReLU()(x)
-        x = self.fc2(x + emb)
-        x = nn.ReLU()(x)
-        x = self.fc3(x + emb)
-        x = nn.ReLU()(x)
-        x = self.fc4(x + emb)
-        x = nn.ReLU()(x)
-        x = self.fc5(x + emb)
+        x = self.blocks(x_t + emb)
+        
+        # x = self.fc1(x_t + emb)
+        # x = nn.ReLU()(x)
+        # x = self.fc2(x)# + emb)
+        # x = nn.ReLU()(x)
+        # x = self.fc3(x)# + emb)
+        # x = nn.ReLU()(x)
+        # x = self.fc4(x)# + emb)
+        # x = nn.ReLU()(x)
+        # x = self.fc5(x)# + emb)
         
         return x
 
