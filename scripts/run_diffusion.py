@@ -21,25 +21,45 @@ def main():
     args = parser.parse_args()
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     num_classes = 2
-    beta_ema = 0.995
-    args.samples = 1000
-    args.cfg_strength = 2.0
-    time_dim_embedding = 100
+    beta_ema = 0.999
+    args.samples = 1500
+    args.cfg_strength = 3.0
     
-    noise_time_steps = 100
-    args.epochs = 50
+    noise_time_steps = 256
+    time_dim_embedding = 256
+    args.epochs = 100
     args.lr = 1e-3
-    
-    with_labels = False
-    image_name = 'generated_samples_'+'24'
-    
+    with_labels = True
     save_model = False
-    model_name = 'ddpm_model_' + '03'
+    experiment_number = '07'
+    architecture_comment = '5 layers, ins: 2, 16, 32, 64, 32'
+    sampler_comment = 'ema_model'
+    
+    
+    sample_image_name = 'gen_samples_'+ experiment_number
+    model_name = 'ddpm_model_' + experiment_number
+    loss_name = 'loss_' + experiment_number
+    
+    # Initialize a new wandb run
+    wandb.init(project="Diffusion_Model", name=experiment_number)
+
+    
+    # Add all the hyperparameters to wandb
+    wandb.config.update({"architecture": architecture_comment,
+                         "sampler": sampler_comment, 
+                        'noise_time_steps': noise_time_steps,
+                        'time_dim_embedding': time_dim_embedding,
+                        'epochs': args.epochs,
+                        'learning_rate': args.lr,
+                        'cfg_strength': args.cfg_strength,
+                        'beta_ema': beta_ema,
+                        'samples': args.samples,
+                        'num_classes': num_classes,
+    })
     
     # define the components of the DDPM model: dataset, scheduler, model, EMA class
     ema = EMA(beta=beta_ema)
     dataset = Dataset()
-    
     
     if with_labels:
         dataloader = dataset.generate_data(with_labels=True)
@@ -54,7 +74,10 @@ def main():
     diffusion = DDPM(scheduler, model, args)
     
     # train the model
-    diffusion.train(dataloader, ema)
+    train_losses = diffusion.train(dataloader, ema)
+    
+    # Plot the loss
+    plot_loss(train_losses, loss_name)
     
     # save model
     if save_model:
@@ -64,18 +87,22 @@ def main():
     # bring labels and samples to the cpu
     if with_labels:
         labels = torch.randint(0, num_classes, (args.samples,)).to(args.device)
-        labels = labels.cpu().numpy()
     else:
         labels = None
         
-    samples = diffusion.sample(diffusion.model, labels, args.cfg_strength)
+    samples = diffusion.sample(diffusion.ema_model, labels, args.cfg_strength)
     samples = samples.cpu().numpy()
+    
+    if with_labels:
+        labels = labels.cpu().numpy()
     
     # save the generated samples
     if with_labels:
-        save_plot_generated_samples(image_name, samples, labels=labels)
+        save_plot_generated_samples(sample_image_name, samples, labels=labels)
     else:   
-        save_plot_generated_samples(image_name, samples, labels=None) 
+        save_plot_generated_samples(sample_image_name, samples, labels=None) 
+
+    wandb.finish()
 
 def test():
     dataset = Dataset()

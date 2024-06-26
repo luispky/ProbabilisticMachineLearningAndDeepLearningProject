@@ -81,12 +81,11 @@ class DDPM:
         
         print('Training...')
         
-        # Initialize lists to store losses and accuracies per epoch
-        train_losses = []
-        train_accuracies = []
+        # Initialize list to store losses during training
+        train_losses = []        
         
         # run the training loop
-        pbar = tqdm(total=self.args.epochs)
+        pbar = tqdm(range(self.args.epochs))
         for epoch in pbar:
             # verify if the dataloader has labels 
             has_labels = True if len(dataloader.dataset[0]) == 2 else False
@@ -144,12 +143,17 @@ class DDPM:
                 if ema is not None:
                     # update the EMA model
                     ema.step_ema(self.ema_model, self.model)
+            
             epoch_loss = running_loss / num_elements
+            train_losses.append(epoch_loss)
+            
             pbar.set_description(f'Epoch: {epoch+1} | Loss: {epoch_loss:.4f}')
             
             wandb.log({'loss': epoch_loss})
             
         print('Training Finished')
+    
+        return train_losses
 
     # Sampling method according to the DDPM paper
     def sample(self, model, labels, cfg_strength=3):

@@ -24,17 +24,23 @@ class Architecture(nn.Module):
             nn.Linear(time_dim, dataset_shape[1]),
         )
         
+        # Maybe add a embedding layer for each linear layer
+        
+        out1 = 16
+        out2 = 32
+        out3 = 64
+        
         # Sequential layers
         self.blocks = nn.Sequential(
-            nn.Linear(dataset_shape[1], 10),
+            nn.Linear(dataset_shape[1], out1),
             nn.ReLU(),
-            nn.Linear(10, 20),
+            nn.Linear(out1, out2),
             nn.ReLU(),
-            nn.Linear(20, 25),
+            nn.Linear(out2, out3),
             nn.ReLU(),
-            nn.Linear(25, 10),
+            nn.Linear(out3, out2),
             nn.ReLU(),
-            nn.Linear(10, dataset_shape[1]),
+            nn.Linear(out2, dataset_shape[1]),
         )
         
         # Feedforward layers

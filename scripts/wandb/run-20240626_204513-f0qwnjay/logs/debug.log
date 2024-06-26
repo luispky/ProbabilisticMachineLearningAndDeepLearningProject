@@ -1,0 +1,29 @@
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Current SDK version is 0.17.3
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Configure stats pid to 523886
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Loading settings from /home/l11/.config/wandb/settings
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Loading settings from /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/settings
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'scripts/run_diffusion.py', 'program_abspath': '/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py', 'program': '/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py'}
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_init.py:_log_setup():520] Logging user logs to /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240626_204513-f0qwnjay/logs/debug.log
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_init.py:_log_setup():521] Logging internal logs to /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240626_204513-f0qwnjay/logs/debug-internal.log
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_init.py:init():560] calling init triggers
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {}
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_init.py:init():610] starting backend
+2024-06-26 20:45:13,678 INFO    MainThread:523886 [wandb_init.py:init():614] setting up manager
+2024-06-26 20:45:13,679 INFO    MainThread:523886 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-06-26 20:45:13,679 INFO    MainThread:523886 [wandb_init.py:init():622] backend started and connected
+2024-06-26 20:45:13,681 INFO    MainThread:523886 [wandb_init.py:init():711] updated telemetry
+2024-06-26 20:45:13,685 INFO    MainThread:523886 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-06-26 20:45:14,227 INFO    MainThread:523886 [wandb_run.py:_on_init():2402] communicating current version
+2024-06-26 20:45:14,318 INFO    MainThread:523886 [wandb_run.py:_on_init():2411] got version response 
+2024-06-26 20:45:14,319 INFO    MainThread:523886 [wandb_init.py:init():795] starting run threads in backend
+2024-06-26 20:45:15,685 INFO    MainThread:523886 [wandb_run.py:_console_start():2380] atexit reg
+2024-06-26 20:45:15,685 INFO    MainThread:523886 [wandb_run.py:_redirect():2235] redirect: wrap_raw
+2024-06-26 20:45:15,685 INFO    MainThread:523886 [wandb_run.py:_redirect():2300] Wrapping output streams.
+2024-06-26 20:45:15,686 INFO    MainThread:523886 [wandb_run.py:_redirect():2325] Redirects installed.
+2024-06-26 20:45:15,687 INFO    MainThread:523886 [wandb_init.py:init():838] run started, returning control to user process
+2024-06-26 20:45:15,687 INFO    MainThread:523886 [wandb_run.py:_config_callback():1382] config_cb None None {'architecture': '5 layers, ins: 2, 16, 32, 64, 32', 'sampler': 'ema_model', 'noise_time_steps': 256, 'time_dim_embedding': 256, 'epochs': 100, 'learning_rate': 0.001, 'cfg_strength': 3.0, 'beta_ema': 0.999, 'samples': 1500, 'num_classes': 2}
+2024-06-26 20:48:14,477 WARNING MsgRouterThr:523886 [router.py:message_loop():77] message_loop has been closed
