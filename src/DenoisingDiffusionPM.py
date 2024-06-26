@@ -116,8 +116,10 @@ class DDPM:
                 noise = torch.randn_like(batch_samples).to(self.args.device)
                 
                 # x_{t-1} ~ q(x_{t-1}|x_{t}, x_{0})
+                # the scheduler is different from the C-FG paper
                 x_t = self.scheduler.add_noise(batch_samples, noise, t) 
                 
+                # Classifier Free Guidance Training
                 # If the labels are not provided, use them with a probability of 0.1
                 # This allows the conditional model to be trained with and without labels
                 # This is a form of data augmentation and allows the model to be more robust
@@ -150,7 +152,7 @@ class DDPM:
         print('Training Finished')
 
     # Sampling method according to the DDPM paper
-    def sample(self, model, labels, cfg_scale=3):
+    def sample(self, model, labels, cfg_strength=3):
         model.eval()
         model.to(self.args.device)
         samples_shape = self.model.architecture.dataset_shape
@@ -169,13 +171,13 @@ class DDPM:
                 t = (torch.ones(self.args.samples) * i).long().to(self.args.device)
                 predicted_noise = model(x, t, labels)
                 
-                # Classifier Free Guidance Scale
-                if cfg_scale > 0:
+                # Classifier Free Guidance Sampling
+                if cfg_strength > 0:
                     uncond_predicted_noise = model(x, t, None)
                     # interpolate between conditional and unconditional noise
-                    # lerp(x, y, alpha) = x * (1 - alpha) + y * alpha
-                    predicted_noise = torch.lerp(uncond_predicted_noise, predicted_noise, cfg_scale)
-                
+                    # C-FG paper formula:
+                    predicted_noise = (1 + cfg_strength) * predicted_noise - cfg_strength * uncond_predicted_noise
+                    
                 # noise = z ~ N(0, I) if t > 1 else 0
                 if t[0] > 0:
                     noise = torch.randn_like(x)
