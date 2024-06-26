@@ -59,7 +59,7 @@ class Probabilities:
             start += self.n_values[i]
         return x1
 
-    def from_onehot(self, x):
+    def onehot_to_values(self, x):
         """Return the original values from the one-hot encoding"""
         assert len(x.shape) == 2, f'{len(x.shape)} != 2'
         assert x.shape[1] == self.length, f'{x.shape[1]} != {self.length}'
@@ -98,19 +98,28 @@ def test_prob():
     np.random.seed(0)
     prob = Probabilities([2, 2, 3])
 
+    print('\n original input')
     x = np.array([[0, 1, 2], [1, 1, 2]])
+    print(f'{x.shape}')
     print(x)
 
+    print('\nprobabilities')
     v = prob.to_onehot(x)
+    print(f'{x.shape} -> {v.shape}')
     print(v)
 
-    x2 = prob.from_onehot(v)
+    print('\nget back the original')
+    x2 = prob.onehot_to_values(v)
+    print(f'{v.shape} -> {x2.shape}')
     print(x2)
 
+    print('\nprobabilities')
     p = np.random.random(size=(2, prob.length))
     p = prob.normalize(p)
+    v = prob.prob_to_onehot(p)
+    print(f'{p.shape} -> {v.shape}')
     print(np.round(p, 3))
-    print(prob.prob_to_onehot(p))
+    print(v)
 
 
 if __name__ == '__main__':
