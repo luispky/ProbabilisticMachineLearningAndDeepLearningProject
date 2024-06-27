@@ -22,14 +22,14 @@ def main():
     num_classes = 2
     beta_ema = 0.995
     args.samples = 1000
-    args.cfg_strength = 2.0
     time_dim_embedding = 100
     
+    with_labels = False
+    args.cfg_strength = 2.0
     noise_time_steps = 100
     args.epochs = 50
     args.lr = 1e-3
     
-    with_labels = False
     image_name = 'generated_samples_'+'24'
     
     save_model = False
