@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
+import wandb
 
 class Dataset:
     r""""
@@ -20,11 +21,11 @@ class Dataset:
             return self.dataloader
         
         # Define the number of samples to generate
-        num_samples = 1000
+        num_samples = 2000
 
         # Define the mean and covariance of the four gaussians
         mean1 = [-4, -4]
-        cov1 = [[1, 0], [0, 1]]
+        cov1 = [[2, 0], [0, 2]]
 
         mean2 = [8, 8]
         cov2 = [[2, 0], [0, 2]]
@@ -94,7 +95,7 @@ def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"
     if not os.path.exists(path):
         os.makedirs(path)
     
-    filename = path + filename + '.png'
+    fig = plt.figure()
     
     if labels is not None:
         mask = labels == 0
@@ -106,7 +107,9 @@ def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"
     plt.title('Generated Samples')
     plt.xlabel('X')
     plt.ylabel('Y')
-    plt.savefig(filename)
+    plt.savefig(path + filename + '.png')
+    
+    wandb.log({filename: wandb.Image(fig)})
 
 class EMA:
     # Exponential Moving Average
@@ -180,3 +183,17 @@ class LinearNoiseScheduler:
         The scheduler parameters already have the correct shape to match x_{0} and noise.
         """
         return self.sqrt_alpha_cum_prod[t] * x0 + self.sqrt_one_minus_alpha_cum_prod[t] * noise
+
+def plot_loss(losses, filename, path="../plots/"):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    fig = plt.figure()
+    plt.plot(losses)
+    plt.title('Training Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.savefig(path + filename + '.png')
+    
+    wandb.log({filename: wandb.Image(fig)})
+    
