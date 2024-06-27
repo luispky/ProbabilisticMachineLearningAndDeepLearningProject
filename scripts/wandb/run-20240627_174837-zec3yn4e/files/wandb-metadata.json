@@ -1,0 +1,108 @@
+{
+    "os": "Linux-6.5.0-41-generic-x86_64-with-glibc2.35",
+    "python": "3.12.4",
+    "heartbeatAt": "2024-06-27T15:48:37.831640",
+    "startedAt": "2024-06-27T15:48:37.163484",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py",
+    "codePathLocal": "run_diffusion.py",
+    "codePath": "scripts/run_diffusion.py",
+    "git": {
+        "remote": "git@github.com:luispky/ProbabilisticMachineLearningProject.git",
+        "commit": "cb3a4694e168488ee8b2676d1bd966139a082a8f"
+    },
+    "email": "luispalaciosky@gmail.com",
+    "root": "/home/l11/Documents/ProbabilisticMachineLearningProject",
+    "host": "l11",
+    "username": "l11",
+    "executable": "/home/l11/miniconda3/envs/DL/bin/python",
+    "cpu_count": 6,
+    "cpu_count_logical": 12,
+    "cpu_freq": {
+        "current": 3434.162083333334,
+        "min": 800.0,
+        "max": 4100.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3699.913,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3700.001,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3699.989,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3700.022,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3700.065,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3700.416,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3700.006,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3700.038,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 800.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3699.95,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3699.85,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 3700.71,
+            "min": 800.0,
+            "max": 4100.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 915.3232879638672,
+            "used": 44.6947021484375
+        }
+    },
+    "gpu": "NVIDIA GeForce GTX 1050 Ti",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce GTX 1050 Ti",
+            "memory_total": 4294967296
+        }
+    ],
+    "memory": {
+        "total": 15.301250457763672
+    }
+}

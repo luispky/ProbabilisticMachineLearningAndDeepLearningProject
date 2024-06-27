@@ -20,19 +20,24 @@ def main():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    num_classes = 2
-    beta_ema = 0.999
-    args.samples = 1500
-    
-    with_labels = True
+
+    # Not required for the inpainting task
+    with_labels = False
     args.cfg_strength = 3.0
-    experiment_number = '07'
-    architecture_comment = '5 layers, ins: 2, 16, 32, 64, 32'
-    noise_time_steps = 256
-    time_dim_embedding = 256
-    args.epochs = 100
+    num_classes = 2
+
+    # Hyperparameters that don't influence the model too much
+    beta_ema = 0.999
+    args.samples = 1000
     args.lr = 1e-3
     sampler_comment = 'ema_model'
+    args.epochs = 64
+    
+    experiment_number = '27'
+    architecture_comment = '4 layers, ins: 2, 32, 64, 32 | sum x and t'
+    #  Hyperparameters that influence the model
+    noise_time_steps = 128 # 128 good value, try 256
+    time_dim_embedding = 32 # >=32 work well
     
     save_model = False
     

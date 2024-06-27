@@ -1,0 +1,780 @@
+2024-06-27 18:05:53,984 INFO    StreamThr :102675 [internal.py:wandb_internal():85] W&B internal server running at pid: 102675, started at: 2024-06-27 18:05:53.982620
+2024-06-27 18:05:53,988 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status
+2024-06-27 18:05:53,991 INFO    WriterThread:102675 [datastore.py:open_for_write():87] open: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/run-enl6qek1.wandb
+2024-06-27 18:05:53,995 DEBUG   SenderThread:102675 [sender.py:send():379] send: header
+2024-06-27 18:05:54,001 DEBUG   SenderThread:102675 [sender.py:send():379] send: run
+2024-06-27 18:05:54,492 INFO    SenderThread:102675 [dir_watcher.py:__init__():211] watching files in: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files
+2024-06-27 18:05:54,493 INFO    SenderThread:102675 [sender.py:_start_run_threads():1188] run started: enl6qek1 with start time 1719504353.982649
+2024-06-27 18:05:54,513 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: check_version
+2024-06-27 18:05:54,513 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: check_version
+2024-06-27 18:05:54,621 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: run_start
+2024-06-27 18:05:54,635 DEBUG   HandlerThread:102675 [system_info.py:__init__():26] System info init
+2024-06-27 18:05:54,635 DEBUG   HandlerThread:102675 [system_info.py:__init__():41] System info init done
+2024-06-27 18:05:54,635 INFO    HandlerThread:102675 [system_monitor.py:start():194] Starting system monitor
+2024-06-27 18:05:54,635 INFO    SystemMonitor:102675 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-06-27 18:05:54,635 INFO    HandlerThread:102675 [system_monitor.py:probe():214] Collecting system info
+2024-06-27 18:05:54,635 INFO    SystemMonitor:102675 [interfaces.py:start():188] Started cpu monitoring
+2024-06-27 18:05:54,636 INFO    SystemMonitor:102675 [interfaces.py:start():188] Started disk monitoring
+2024-06-27 18:05:54,637 INFO    SystemMonitor:102675 [interfaces.py:start():188] Started gpu monitoring
+2024-06-27 18:05:54,638 INFO    SystemMonitor:102675 [interfaces.py:start():188] Started memory monitoring
+2024-06-27 18:05:54,638 INFO    SystemMonitor:102675 [interfaces.py:start():188] Started network monitoring
+2024-06-27 18:05:54,645 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:05:54,645 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:05:54,647 DEBUG   HandlerThread:102675 [system_info.py:probe():152] Probing system
+2024-06-27 18:05:54,649 DEBUG   HandlerThread:102675 [system_info.py:_probe_git():137] Probing git
+2024-06-27 18:05:54,654 DEBUG   HandlerThread:102675 [system_info.py:_probe_git():145] Probing git done
+2024-06-27 18:05:54,654 DEBUG   HandlerThread:102675 [system_info.py:probe():200] Probing system done
+2024-06-27 18:05:54,654 DEBUG   HandlerThread:102675 [system_monitor.py:probe():223] {'os': 'Linux-6.5.0-41-generic-x86_64-with-glibc2.35', 'python': '3.12.4', 'heartbeatAt': '2024-06-27T16:05:54.647282', 'startedAt': '2024-06-27T16:05:53.972093', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py', 'codePathLocal': 'run_diffusion.py', 'codePath': 'scripts/run_diffusion.py', 'git': {'remote': 'git@github.com:luispky/ProbabilisticMachineLearningProject.git', 'commit': 'cb3a4694e168488ee8b2676d1bd966139a082a8f'}, 'email': 'luispalaciosky@gmail.com', 'root': '/home/l11/Documents/ProbabilisticMachineLearningProject', 'host': 'l11', 'username': 'l11', 'executable': '/home/l11/miniconda3/envs/DL/bin/python', 'cpu_count': 6, 'cpu_count_logical': 12, 'cpu_freq': {'current': 3965.223249999999, 'min': 800.0, 'max': 4100.0}, 'cpu_freq_per_core': [{'current': 3939.12, 'min': 800.0, 'max': 4100.0}, {'current': 3936.467, 'min': 800.0, 'max': 4100.0}, {'current': 3932.762, 'min': 800.0, 'max': 4100.0}, {'current': 3944.75, 'min': 800.0, 'max': 4100.0}, {'current': 3900.0, 'min': 800.0, 'max': 4100.0}, {'current': 3924.359, 'min': 800.0, 'max': 4100.0}, {'current': 3900.099, 'min': 800.0, 'max': 4100.0}, {'current': 3983.08, 'min': 800.0, 'max': 4100.0}, {'current': 3904.233, 'min': 800.0, 'max': 4100.0}, {'current': 3976.747, 'min': 800.0, 'max': 4100.0}, {'current': 3896.314, 'min': 800.0, 'max': 4100.0}, {'current': 3986.873, 'min': 800.0, 'max': 4100.0}], 'disk': {'/': {'total': 915.3232879638672, 'used': 44.69820022583008}}, 'gpu': 'NVIDIA GeForce GTX 1050 Ti', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce GTX 1050 Ti', 'memory_total': 4294967296}], 'memory': {'total': 15.301250457763672}}
+2024-06-27 18:05:54,654 INFO    HandlerThread:102675 [system_monitor.py:probe():224] Finished collecting system info
+2024-06-27 18:05:54,654 INFO    HandlerThread:102675 [system_monitor.py:probe():227] Publishing system info
+2024-06-27 18:05:54,654 DEBUG   HandlerThread:102675 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-06-27 18:05:55,493 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/conda-environment.yaml
+2024-06-27 18:05:55,821 DEBUG   HandlerThread:102675 [system_info.py:_save_conda():224] Saving conda packages done
+2024-06-27 18:05:55,822 INFO    HandlerThread:102675 [system_monitor.py:probe():229] Finished publishing system info
+2024-06-27 18:05:55,826 DEBUG   SenderThread:102675 [sender.py:send():379] send: files
+2024-06-27 18:05:55,827 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-06-27 18:05:55,888 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: python_packages
+2024-06-27 18:05:55,888 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: python_packages
+2024-06-27 18:05:55,889 DEBUG   SenderThread:102675 [sender.py:send():379] send: telemetry
+2024-06-27 18:05:55,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:05:55,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-27 18:05:55,890 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: stop_status
+2024-06-27 18:05:56,219 DEBUG   SenderThread:102675 [sender.py:send():379] send: config
+2024-06-27 18:05:56,492 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/conda-environment.yaml
+2024-06-27 18:05:56,492 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/requirements.txt
+2024-06-27 18:05:56,493 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-metadata.json
+2024-06-27 18:05:56,629 INFO    wandb-upload_0:102675 [upload_job.py:push():130] Uploaded file /tmp/tmpa43lx4apwandb/lftmrh4g-wandb-metadata.json
+2024-06-27 18:05:56,652 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:05:56,652 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:05:56,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:05:57,493 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:05:57,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:05:58,157 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:05:58,158 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:05:58,158 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:05:58,159 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:05:58,493 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:05:58,660 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:05:58,661 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:05:58,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:05:59,160 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:05:59,466 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:05:59,466 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:05:59,466 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:05:59,466 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:05:59,493 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:05:59,494 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:05:59,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:00,668 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:00,669 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:00,778 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:00,778 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:00,778 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:00,778 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:00,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:01,494 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:01,494 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:01,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:02,158 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:02,158 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:02,159 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:02,159 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:02,494 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:02,676 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:02,676 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:02,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:03,494 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:03,582 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:03,582 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:03,582 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:03,582 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:03,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:04,495 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:04,583 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:04,684 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:04,684 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:04,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:05,065 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:05,066 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:05,066 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:05,066 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:05,495 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:05,495 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:05,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:06,494 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:06,494 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:06,494 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:06,494 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:06,495 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:06,688 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:06,688 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:06,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:07,495 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:07,878 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:07,878 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:07,878 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:07,878 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:07,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:08,496 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:08,688 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:08,689 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:08,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:09,496 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:09,581 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:09,582 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:09,582 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:09,582 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:09,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:10,496 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:10,583 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:10,689 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:10,689 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:10,888 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-27 18:06:10,889 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: stop_status
+2024-06-27 18:06:10,930 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:11,170 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:11,170 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:11,170 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:11,170 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:11,496 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:11,496 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:11,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:12,606 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:12,606 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:12,607 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:12,607 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:12,690 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:12,690 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:12,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:13,497 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:13,497 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:13,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:14,054 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:14,054 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:14,054 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:14,054 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:14,497 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:14,691 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:14,691 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:14,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:15,474 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:15,474 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:15,474 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:15,475 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:15,497 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:15,497 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:15,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:15,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:16,692 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:16,692 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:16,822 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:16,822 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:16,822 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:16,823 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:16,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:17,498 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:17,498 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:17,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:18,218 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:18,218 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:18,218 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:18,218 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:18,498 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:18,692 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:18,692 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:18,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:19,497 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:19,498 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:19,498 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:19,499 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:19,499 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:19,499 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:19,891 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:20,693 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:20,693 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:20,742 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:20,742 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:20,742 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:20,742 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:20,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:21,499 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:21,499 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:21,890 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:21,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:22,050 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:22,050 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:22,050 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:22,050 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:22,499 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:22,693 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:22,693 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:22,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:23,414 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:23,414 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:23,414 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:23,414 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:23,500 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:23,500 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:23,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:24,725 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:24,726 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:24,726 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:24,729 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:24,730 ERROR   gpu       :102675 [interfaces.py:aggregate():159] Failed to serialize metric: division by zero
+2024-06-27 18:06:24,731 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:24,731 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:24,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:25,500 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:25,500 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:25,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-27 18:06:25,889 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: stop_status
+2024-06-27 18:06:25,930 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:25,930 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:26,222 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:26,222 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:26,223 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:26,500 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:26,731 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:26,731 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:26,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:27,135 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:27,174 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:27,351 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:27,351 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:27,352 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:27,501 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:27,501 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:27,501 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/config.yaml
+2024-06-27 18:06:27,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:28,386 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:28,386 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:28,386 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:28,387 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:28,501 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:28,732 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:28,732 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:28,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:29,501 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:29,614 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:29,614 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:29,614 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:29,614 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:29,892 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:30,502 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:30,733 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:30,733 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:30,886 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:30,886 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:30,886 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:30,886 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:30,893 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:31,502 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:31,502 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:31,893 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:32,170 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:32,170 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:32,170 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:32,170 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:32,502 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:32,733 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:32,734 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:32,893 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:33,171 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:33,430 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:33,430 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:33,430 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:33,430 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:33,502 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:33,503 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:33,893 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:34,650 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:34,651 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:34,651 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:34,651 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:34,734 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:34,734 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:34,893 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:35,503 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:35,503 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:35,902 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:35,902 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:35,902 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:35,902 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:35,903 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:36,503 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:36,735 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:36,735 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:36,893 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:37,186 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:37,186 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:37,186 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:37,186 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:37,503 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:37,503 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:37,893 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:38,187 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:38,490 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:38,490 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:38,490 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:38,490 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:38,504 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:38,735 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:38,735 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:38,894 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:39,504 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:39,794 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:39,794 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:39,794 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:39,794 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:39,894 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:40,504 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:40,736 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:40,736 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:40,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-27 18:06:40,889 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: stop_status
+2024-06-27 18:06:40,930 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:41,070 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:41,071 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:41,071 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:41,071 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:41,504 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:41,504 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:41,894 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:42,373 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:42,374 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:42,374 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:42,374 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:42,504 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:42,736 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:42,736 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:42,894 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:43,375 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:43,505 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:43,650 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:43,650 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:43,650 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:43,650 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:43,894 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:44,505 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:44,737 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:44,737 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:44,938 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:44,938 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:44,938 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:44,938 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:44,939 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:45,505 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:45,505 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:45,894 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:46,201 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:46,202 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:46,202 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:46,202 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:46,505 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:46,738 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:46,738 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:46,895 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:47,466 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:47,494 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:47,495 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:47,495 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:47,506 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:47,506 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:47,895 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:48,496 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:48,725 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:48,726 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:48,726 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:48,727 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:48,738 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:48,738 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:48,895 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:49,506 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:49,506 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:49,895 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:50,094 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:50,094 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:50,094 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:50,095 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:50,506 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:50,739 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:50,739 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:50,895 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:51,406 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:51,406 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:51,406 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:51,406 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:51,507 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:51,507 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:51,895 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:52,649 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:52,650 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:52,650 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:52,650 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:52,739 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:52,739 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:52,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:53,507 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:53,507 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:53,651 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:53,865 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:53,866 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:53,866 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:53,866 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:53,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:54,507 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:54,638 DEBUG   SystemMonitor:102675 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-06-27 18:06:54,639 DEBUG   SenderThread:102675 [sender.py:send():379] send: stats
+2024-06-27 18:06:54,774 ERROR   gpu       :102675 [interfaces.py:aggregate():159] Failed to serialize metric: division by zero
+2024-06-27 18:06:54,774 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:54,774 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:54,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:55,102 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:55,102 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:55,102 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:55,102 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:55,508 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:55,508 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:55,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-27 18:06:55,889 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: stop_status
+2024-06-27 18:06:55,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:56,454 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:56,454 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:56,454 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:56,454 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:56,508 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:56,775 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:56,775 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:56,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:57,508 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:57,821 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:57,822 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:57,822 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:57,823 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:57,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:58,509 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:58,776 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:58,776 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:06:58,823 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:06:58,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:06:59,117 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:06:59,118 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:06:59,118 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:06:59,118 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:06:59,509 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:06:59,509 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:06:59,896 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:00,397 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:00,398 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:00,398 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:00,398 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:00,509 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:00,776 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:00,776 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:00,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:01,509 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:01,653 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:01,654 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:01,654 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:01,654 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:01,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:02,510 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:02,777 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:02,777 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:02,922 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:02,922 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:02,922 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:02,923 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:02,923 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:03,510 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:03,510 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:03,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:03,924 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:07:04,178 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:04,178 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:04,178 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:04,178 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:04,510 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:04,778 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:04,778 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:04,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:05,458 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:05,458 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:05,458 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:05,458 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:05,510 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:05,510 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:05,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:06,750 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:06,750 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:06,750 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:06,750 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:06,778 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:06,778 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:06,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:07,511 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:07,511 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:07,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:08,206 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:08,206 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:08,206 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:08,207 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:08,511 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:08,779 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:08,779 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:08,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:09,207 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:07:09,511 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:09,642 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:09,642 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:09,642 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:09,642 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:09,897 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:10,512 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:10,779 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:10,779 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:10,889 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: stop_status
+2024-06-27 18:07:10,889 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: stop_status
+2024-06-27 18:07:10,930 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:11,170 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:11,170 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:11,170 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:11,171 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:11,512 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:11,512 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:11,898 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:12,550 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:12,550 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:12,550 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:12,550 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:12,780 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:12,780 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:12,898 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:13,512 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:13,512 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:13,838 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:13,838 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:13,838 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:13,839 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:13,898 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:14,512 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:14,780 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:14,780 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:14,839 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:07:14,898 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:15,122 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:15,122 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:15,122 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:15,122 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:15,513 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:15,513 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:15,898 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:16,470 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:16,470 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:16,470 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:16,470 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:16,513 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:16,781 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:16,781 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:16,899 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:17,513 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:17,818 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:17,818 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:17,819 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:17,819 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:17,899 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:18,513 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:18,782 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:18,782 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:18,899 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:19,178 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:19,178 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:19,178 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:19,178 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:19,514 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:19,514 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:19,899 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:20,179 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:07:20,454 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:20,454 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:20,454 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:20,454 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:20,514 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:20,782 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:20,782 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:20,899 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:21,514 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:21,794 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:21,794 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:21,794 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:21,794 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:21,944 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:22,515 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:22,702 DEBUG   SenderThread:102675 [sender.py:send():379] send: files
+2024-06-27 18:07:22,703 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file media/images/loss_15_64_64433efb4f3400facc87.png with policy now
+2024-06-27 18:07:22,750 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:22,751 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:22,751 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:22,751 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:22,783 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:22,783 ERROR   gpu       :102675 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-06-27 18:07:22,944 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:23,189 INFO    wandb-upload_0:102675 [upload_job.py:push():130] Uploaded file /tmp/tmpa43lx4apwandb/jmawcy67-media/images/loss_15_64_64433efb4f3400facc87.png
+2024-06-27 18:07:23,281 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: partial_history
+2024-06-27 18:07:23,281 DEBUG   SenderThread:102675 [sender.py:send():379] send: files
+2024-06-27 18:07:23,282 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file media/images/gen_samples_15_65_e163eb816bc68e4af7b7.png with policy now
+2024-06-27 18:07:23,282 DEBUG   SenderThread:102675 [sender.py:send():379] send: history
+2024-06-27 18:07:23,282 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: server_info
+2024-06-27 18:07:23,282 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: summary_record
+2024-06-27 18:07:23,283 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:23,283 DEBUG   SenderThread:102675 [sender.py:send():379] send: telemetry
+2024-06-27 18:07:23,283 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: server_info
+2024-06-27 18:07:23,476 DEBUG   SenderThread:102675 [sender.py:send():379] send: exit
+2024-06-27 18:07:23,476 INFO    SenderThread:102675 [sender.py:send_exit():586] handling exit code: 0
+2024-06-27 18:07:23,477 INFO    SenderThread:102675 [sender.py:send_exit():588] handling runtime: 88
+2024-06-27 18:07:23,477 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:23,478 INFO    SenderThread:102675 [sender.py:send_exit():594] send defer
+2024-06-27 18:07:23,478 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,478 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 0
+2024-06-27 18:07:23,479 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,479 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-06-27 18:07:23,479 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 1
+2024-06-27 18:07:23,480 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,480 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 1
+2024-06-27 18:07:23,480 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,481 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-06-27 18:07:23,481 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 2
+2024-06-27 18:07:23,481 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,482 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 2
+2024-06-27 18:07:23,482 INFO    HandlerThread:102675 [system_monitor.py:finish():203] Stopping system monitor
+2024-06-27 18:07:23,483 DEBUG   SystemMonitor:102675 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-06-27 18:07:23,484 DEBUG   SystemMonitor:102675 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-06-27 18:07:23,487 INFO    HandlerThread:102675 [interfaces.py:finish():200] Joined cpu monitor
+2024-06-27 18:07:23,487 INFO    HandlerThread:102675 [interfaces.py:finish():200] Joined disk monitor
+2024-06-27 18:07:23,517 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:23,517 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:23,517 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/media/images/gen_samples_15_65_e163eb816bc68e4af7b7.png
+2024-06-27 18:07:23,518 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/media/images/loss_15_64_64433efb4f3400facc87.png
+2024-06-27 18:07:23,518 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/media
+2024-06-27 18:07:23,518 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/media/images
+2024-06-27 18:07:23,554 ERROR   gpu       :102675 [interfaces.py:aggregate():159] Failed to serialize metric: division by zero
+2024-06-27 18:07:23,554 INFO    HandlerThread:102675 [interfaces.py:finish():200] Joined gpu monitor
+2024-06-27 18:07:23,554 INFO    HandlerThread:102675 [interfaces.py:finish():200] Joined memory monitor
+2024-06-27 18:07:23,554 INFO    HandlerThread:102675 [interfaces.py:finish():200] Joined network monitor
+2024-06-27 18:07:23,554 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,554 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-06-27 18:07:23,554 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 3
+2024-06-27 18:07:23,554 DEBUG   SenderThread:102675 [sender.py:send():379] send: stats
+2024-06-27 18:07:23,554 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,555 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 3
+2024-06-27 18:07:23,555 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,555 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-06-27 18:07:23,555 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 4
+2024-06-27 18:07:23,555 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,555 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 4
+2024-06-27 18:07:23,555 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,555 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-06-27 18:07:23,555 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 5
+2024-06-27 18:07:23,555 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,555 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 5
+2024-06-27 18:07:23,556 DEBUG   SenderThread:102675 [sender.py:send():379] send: summary
+2024-06-27 18:07:23,556 INFO    SenderThread:102675 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-06-27 18:07:23,556 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,556 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-06-27 18:07:23,556 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 6
+2024-06-27 18:07:23,556 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,556 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 6
+2024-06-27 18:07:23,556 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,556 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-06-27 18:07:23,558 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: status_report
+2024-06-27 18:07:23,758 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 7
+2024-06-27 18:07:23,758 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:23,758 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 7
+2024-06-27 18:07:23,758 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:23,758 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-06-27 18:07:23,875 INFO    wandb-upload_0:102675 [upload_job.py:push():130] Uploaded file /tmp/tmpa43lx4apwandb/8e2xy6dn-media/images/gen_samples_15_65_e163eb816bc68e4af7b7.png
+2024-06-27 18:07:24,148 INFO    wandb-upload_1:102675 [upload_job.py:push():130] Uploaded file /tmp/tmpa43lx4apwandb/1txgit68-media/images/loss_15_64_64433efb4f3400facc87.png
+2024-06-27 18:07:24,476 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: poll_exit
+2024-06-27 18:07:24,517 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:24,517 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/config.yaml
+2024-06-27 18:07:24,592 INFO    wandb-upload_0:102675 [upload_job.py:push():130] Uploaded file /tmp/tmpa43lx4apwandb/d9azavyk-media/images/gen_samples_15_65_e163eb816bc68e4af7b7.png
+2024-06-27 18:07:24,671 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 8
+2024-06-27 18:07:24,671 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: poll_exit
+2024-06-27 18:07:24,671 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:24,671 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 8
+2024-06-27 18:07:24,671 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:24,672 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-06-27 18:07:24,672 INFO    SenderThread:102675 [job_builder.py:build():440] Attempting to build job artifact
+2024-06-27 18:07:24,672 INFO    SenderThread:102675 [job_builder.py:_get_source_type():569] is repo sourced job
+2024-06-27 18:07:24,687 INFO    SenderThread:102675 [job_builder.py:build():545] adding wandb-job metadata file
+2024-06-27 18:07:24,736 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 9
+2024-06-27 18:07:24,736 DEBUG   SenderThread:102675 [sender.py:send():379] send: artifact
+2024-06-27 18:07:24,737 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:24,738 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 9
+2024-06-27 18:07:25,477 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: poll_exit
+2024-06-27 18:07:25,517 INFO    Thread-12 :102675 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:26,015 INFO    wandb-upload_1:102675 [upload_job.py:push():85] Skipped uploading /home/l11/.local/share/wandb/artifacts/staging/tmpli12agek
+2024-06-27 18:07:26,332 INFO    wandb-upload_0:102675 [upload_job.py:push():88] Uploaded file /tmp/tmpfu2q8roq/wandb-job.json
+2024-06-27 18:07:27,664 INFO    SenderThread:102675 [sender.py:send_artifact():1530] sent artifact job-git_github.com_luispky_ProbabilisticMachineLearningProject.git_scripts_run_diffusion.py - {'id': 'QXJ0aWZhY3Q6OTMxMzAzNzU2', 'state': 'PENDING', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjIzNjI3NzAwMA==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6OTMxMzAxOTg1', 'versionIndex': 14}}}
+2024-06-27 18:07:27,665 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:27,665 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-06-27 18:07:27,665 INFO    SenderThread:102675 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-06-27 18:07:28,519 INFO    SenderThread:102675 [dir_watcher.py:finish():388] scan: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files
+2024-06-27 18:07:28,520 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/conda-environment.yaml conda-environment.yaml
+2024-06-27 18:07:28,520 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/config.yaml config.yaml
+2024-06-27 18:07:28,526 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-metadata.json wandb-metadata.json
+2024-06-27 18:07:28,527 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json wandb-summary.json
+2024-06-27 18:07:28,533 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log output.log
+2024-06-27 18:07:28,541 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/requirements.txt requirements.txt
+2024-06-27 18:07:28,552 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/media/images/gen_samples_15_65_e163eb816bc68e4af7b7.png media/images/gen_samples_15_65_e163eb816bc68e4af7b7.png
+2024-06-27 18:07:28,553 INFO    SenderThread:102675 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/media/images/loss_15_64_64433efb4f3400facc87.png media/images/loss_15_64_64433efb4f3400facc87.png
+2024-06-27 18:07:28,553 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 10
+2024-06-27 18:07:28,553 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: poll_exit
+2024-06-27 18:07:28,553 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:28,554 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 10
+2024-06-27 18:07:28,555 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:28,555 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-06-27 18:07:28,555 INFO    SenderThread:102675 [file_pusher.py:finish():169] shutting down file pusher
+2024-06-27 18:07:28,996 INFO    wandb-upload_1:102675 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/conda-environment.yaml
+2024-06-27 18:07:28,997 INFO    wandb-upload_0:102675 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/config.yaml
+2024-06-27 18:07:29,005 INFO    wandb-upload_3:102675 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/output.log
+2024-06-27 18:07:29,011 INFO    wandb-upload_4:102675 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/requirements.txt
+2024-06-27 18:07:29,012 INFO    wandb-upload_2:102675 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/files/wandb-summary.json
+2024-06-27 18:07:29,213 INFO    Thread-11 (_thread_body):102675 [sender.py:transition_state():614] send defer: 11
+2024-06-27 18:07:29,214 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:29,215 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 11
+2024-06-27 18:07:29,216 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:29,216 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-06-27 18:07:29,216 INFO    SenderThread:102675 [file_pusher.py:join():175] waiting for file pusher
+2024-06-27 18:07:29,219 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 12
+2024-06-27 18:07:29,220 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:29,220 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 12
+2024-06-27 18:07:29,221 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:29,221 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-06-27 18:07:29,221 INFO    SenderThread:102675 [file_stream.py:finish():601] file stream finish called
+2024-06-27 18:07:29,479 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: poll_exit
+2024-06-27 18:07:29,917 INFO    SenderThread:102675 [file_stream.py:finish():605] file stream finish is done
+2024-06-27 18:07:29,917 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 13
+2024-06-27 18:07:29,918 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: poll_exit
+2024-06-27 18:07:29,919 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:29,919 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 13
+2024-06-27 18:07:29,920 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:29,920 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-06-27 18:07:29,920 INFO    SenderThread:102675 [sender.py:transition_state():614] send defer: 14
+2024-06-27 18:07:29,921 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: defer
+2024-06-27 18:07:29,921 INFO    HandlerThread:102675 [handler.py:handle_request_defer():184] handle defer: 14
+2024-06-27 18:07:29,922 DEBUG   SenderThread:102675 [sender.py:send():379] send: final
+2024-06-27 18:07:29,922 DEBUG   SenderThread:102675 [sender.py:send():379] send: footer
+2024-06-27 18:07:29,922 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: defer
+2024-06-27 18:07:29,923 INFO    SenderThread:102675 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-06-27 18:07:29,924 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: poll_exit
+2024-06-27 18:07:29,925 DEBUG   SenderThread:102675 [sender.py:send_request():406] send_request: poll_exit
+2024-06-27 18:07:29,927 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: internal_messages
+2024-06-27 18:07:29,929 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: get_summary
+2024-06-27 18:07:29,931 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: sampled_history
+2024-06-27 18:07:29,935 DEBUG   HandlerThread:102675 [handler.py:handle_request():158] handle_request: shutdown
+2024-06-27 18:07:29,935 INFO    HandlerThread:102675 [handler.py:finish():882] shutting down handler
+2024-06-27 18:07:30,925 INFO    WriterThread:102675 [datastore.py:close():296] close: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240627_180553-enl6qek1/run-enl6qek1.wandb
+2024-06-27 18:07:30,926 INFO    SenderThread:102675 [sender.py:finish():1608] shutting down sender
+2024-06-27 18:07:30,926 INFO    SenderThread:102675 [file_pusher.py:finish():169] shutting down file pusher
+2024-06-27 18:07:30,926 INFO    SenderThread:102675 [file_pusher.py:join():175] waiting for file pusher
