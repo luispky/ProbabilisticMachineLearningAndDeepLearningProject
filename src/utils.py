@@ -437,6 +437,13 @@ class Probabilities:
             start += self.n_values[i]
         return self.to_onehot(x)
 
+    def add_noise(self, p, k=1.):
+        """Add noise to the probabilities"""
+        assert len(p.shape) == 2, f'{len(p.shape)} != 2'
+        assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
+        return self.normalize(p + np.random.random(p.shape) * k)
+
+
 
 class bcolors:
     """ Author: Omar
@@ -456,7 +463,7 @@ class bcolors:
 
 def cprint(text, color, end='\n'):
     """ Author: Omar
-    Colorful print function
+    Colorful print function. To see the colors, go to the class bcolors.
 
     Usage:
     cprint('You may fluff her tai', bcolors.OKGREEN)
