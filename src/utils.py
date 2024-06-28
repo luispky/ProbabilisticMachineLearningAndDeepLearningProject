@@ -18,6 +18,7 @@ class GaussianInpaintingData:
 
     def generate_data(self):
         # Define the number of samples to generate
+        # todo: why do you hate passing arguments to functions? òwò
         num_samples = 2000
         
         # Define means and covariances with added randomness
@@ -78,7 +79,7 @@ class GaussianDataset:
             return self.dataloader
         
         # Define the number of samples to generate
-        # todo: why do you hate passing arguments to functions?
+        # todo: why do you hate passing arguments to functions? òwò
         num_samples = 3000
 
         # Define the mean and covariance of the four gaussians
@@ -95,6 +96,7 @@ class GaussianDataset:
         # cov4 = [[2, 0], [0, 2]]
         
         # todo cov1, cov2, cov3, cov4 may be of the wrong type, plz check
+        # todo: expected type _SupportsArray[...] | int | float | bool | ..., got list[list[int]] instead
         # Generate the samples
         samples1 = np.random.multivariate_normal(mean1, cov1, num_samples)
         samples2 = np.random.multivariate_normal(mean2, cov2, num_samples)

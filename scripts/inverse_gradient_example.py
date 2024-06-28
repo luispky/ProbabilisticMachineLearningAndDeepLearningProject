@@ -3,29 +3,7 @@ import torch
 from src.utils import cprint, bcolors, Probabilities
 import os
 import matplotlib.pyplot as plt
-from torch.utils.data import TensorDataset, DataLoader
 from scripts.inverse_gradient import InverseGradient
-
-
-class GaussianDataset:
-    r""" Author: Omar
-    Class to generate the dataset for the Inverse Gradient method
-    """
-    def __init__(self):
-        self.dataset = None
-        self.labels = None
-        self.dataloader = None
-
-    def generate_data(self, num_samples, with_labels=True):
-        raise NotImplementedError
-
-    def get_dataset_shape(self):
-        assert self.dataset is not None, 'Dataset not generated'
-        return self.dataset.shape
-
-    def plot_data(self):
-        # Generate the dataset
-        raise NotImplementedError
 
 
 def generate_data(size, n_values: list | tuple, threshold):
@@ -49,6 +27,34 @@ def generate_data(size, n_values: list | tuple, threshold):
     y = torch.tensor(y, dtype=torch.float64)
 
     return p, y
+
+
+class SumCapDataset:
+    r""" Author: Omar
+    Class to generate the dataset for the Inverse Gradient method
+    """
+    def __init__(self):
+        self.dataset = None
+        self.labels = None
+        self.dataloader = None
+
+    def generate_data(self, size, n_values: list | tuple, threshold):
+        """
+        Anomaly if sum of numbers is more than k
+        """
+        if self.dataset is not None:
+            print('Data already generated')
+            return self.dataset
+        else:
+            self.dataset = generate_data(size, n_values, threshold)
+
+    def get_dataset_shape(self):
+        assert self.dataset is not None, 'Dataset not generated'
+        return self.dataset.shape
+
+    def plot_data(self):
+        # Generate the dataset
+        raise NotImplementedError
 
 
 def main(n_data=1000, n_values=(2, 2, 4), threshold=3.5, hidden=2,
