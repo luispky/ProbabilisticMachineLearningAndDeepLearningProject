@@ -26,11 +26,11 @@ class Architecture(nn.Module):
         
         # Maybe add a embedding layer for each linear layer
         
-        out1 = 16
-        out2 = 32
-        out3 = 64
+        out1 = 32
+        out2 = 64
+        out3 = 32
         
-        # Sequential layers
+        # # Sequential layers
         self.blocks = nn.Sequential(
             nn.Linear(dataset_shape[1], out1),
             nn.ReLU(),
@@ -38,17 +38,8 @@ class Architecture(nn.Module):
             nn.ReLU(),
             nn.Linear(out2, out3),
             nn.ReLU(),
-            nn.Linear(out3, out2),
-            nn.ReLU(),
-            nn.Linear(out2, dataset_shape[1]),
+            nn.Linear(out3, dataset_shape[1]),
         )
-        
-        # Feedforward layers
-        # self.fc1 = nn.Linear(dataset_shape[1], 10)
-        # self.fc2 = nn.Linear(10, 20)
-        # self.fc3 = nn.Linear(20, 25)
-        # self.fc4 = nn.Linear(25, 10)
-        # self.fc5 = nn.Linear(10, dataset_shape[1])
 
     def forward(self, x_t, t):
         # The goal is to predict the noise for the diffusion model
@@ -74,16 +65,6 @@ class Architecture(nn.Module):
         
         # Application of transformation layers
         x = self.blocks(x_t + emb)
-        
-        # x = self.fc1(x_t + emb)
-        # x = nn.ReLU()(x)
-        # x = self.fc2(x)# + emb)
-        # x = nn.ReLU()(x)
-        # x = self.fc3(x)# + emb)
-        # x = nn.ReLU()(x)
-        # x = self.fc4(x)# + emb)
-        # x = nn.ReLU()(x)
-        # x = self.fc5(x)# + emb)
         
         return x
 

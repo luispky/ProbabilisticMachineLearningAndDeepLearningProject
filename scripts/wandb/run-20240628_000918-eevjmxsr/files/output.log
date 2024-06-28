@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 108, in <module>
+    main()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 74, in main
+    scheduler = CosineNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 243, in __init__
+    self._initialize_schedule()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 248, in _initialize_schedule
+    alphas_bar = f(t)/f(0)
+                 ^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 247, in <lambda>
+    f = lambda t: torch.cos((t / self.noise_timesteps + self.s) / (1 + self.s) * math.pi / 2) ** 2
+                                                                                 ^^^^
+NameError: name 'math' is not defined. Did you forget to import 'math'

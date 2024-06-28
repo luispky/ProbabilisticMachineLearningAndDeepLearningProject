@@ -1,0 +1,61 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 63 | Loss: 0.0627:  98%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████  | 63/64 [01:24<00:01,  1.28s/it]
+Training Finished
+Sampling...
+Epoch: 64 | Loss: 0.0636: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [01:26<00:00,  1.35s/it]
+128it [00:00, 698.50it/s]
+Inpainting...
+0it [00:00, ?it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 121, in <module>
+    main()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 109, in main
+    inpainted_data = diffusion.inpaint(diffusion.ema_model, original_data, mask)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/DenoisingDiffusionPM.py", line 222, in inpaint
+    x_t_minus_one = x_known * mask + x_unknown * (~mask)
+                    ~~~~~~~~^~~~~~
+RuntimeError: The size of tensor a (2) must match the size of tensor b (8000) at non-singleton dimension 1

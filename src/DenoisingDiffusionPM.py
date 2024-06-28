@@ -10,11 +10,6 @@ from safetensors.torch import load_model as safe_load_model
 import wandb
 
 from .modules import NoisePredictor
-
-"""
-! Observations:
-* I could modify the Noise Scheduler like in the OpenAI implementation
-"""
     
 class DDPM:
     r"""
@@ -148,7 +143,7 @@ class DDPM:
             train_losses.append(epoch_loss)
             
             pbar.set_description(f'Epoch: {epoch+1} | Loss: {epoch_loss:.4f}')
-            
+                
             wandb.log({'loss': epoch_loss})
             
         print('Training Finished')
@@ -156,23 +151,23 @@ class DDPM:
         return train_losses
 
     # Sampling method according to the DDPM paper
-    def sample(self, model, labels, cfg_strength=3):
+    def sample(self, model, labels = None, cfg_strength=3):
         model.eval()
         model.to(self.args.device)
         samples_shape = self.model.architecture.dataset_shape
+        
+        labels = labels.to(self.args.device) if labels is not None else None
         
         print('Sampling...')
         
         with torch.no_grad():
             # x_{T} ~ N(0, I)
             x = torch.randn((self.args.samples, *samples_shape[1:])).to(self.args.device)
-            
-            # for t = T, T-1, ..., 1
-            for i in tqdm(reversed(range(1, self.scheduler.noise_timesteps)), position=0):
+            ones = torch.ones(self.args.samples)
+            # for t = T, T-1, ..., 1 (-1 in Python)
+            for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
                 
-                # This might give problems because here this is an array of shape (samples,)
-                # instead of a simple scalar 
-                t = (torch.ones(self.args.samples) * i).long().to(self.args.device)
+                t = (ones * i).long().to(self.args.device)
                 predicted_noise = model(x, t, labels)
                 
                 # Classifier Free Guidance Sampling
@@ -182,28 +177,54 @@ class DDPM:
                     # C-FG paper formula:
                     predicted_noise = (1 + cfg_strength) * predicted_noise - cfg_strength * uncond_predicted_noise
                     
-                # noise = z ~ N(0, I) if t > 1 else 0
-                if t[0] > 0:
-                    noise = torch.randn_like(x)
-                else:
-                    noise = torch.zeros_like(x)
-
                 # x_{t-1} ~ p_{\theta}(x_{t-1}|x_{t})
-                betas = self.scheduler.betas
-                sqrt_one_minus_alpha_cum_prod = self.scheduler.sqrt_one_minus_alpha_cum_prod
-                alphas = self.scheduler.alphas
-                alpha_cum_prod = self.scheduler.alpha_cum_prod
-                
-                # mean = x_{t} - const * predicted_noise 
-                mean = x - (betas[t] * predicted_noise) / sqrt_one_minus_alpha_cum_prod[t]
-                mean = mean / torch.sqrt(alphas[t])
-                std = (1.0 - alpha_cum_prod[t - 1]) / (1.0 - alpha_cum_prod[t]) * betas[t]
-                
-                # x_{t-1} = predicted_mean_reconstruction + fixed_std * noise
-                x = mean + std * noise  
+                x = self.scheduler.sample_prev_step(x, predicted_noise, t)
         
         model.train()
         
         print('Sampling Finished')
         
         return x
+
+    # Inpainting method according to the RePaint paper
+    def inpaint(self, model, original, mask):
+        model.eval()
+        model.to(self.args.device)
+        samples_shape = self.model.architecture.dataset_shape
+        
+        original = original.to(self.args.device)
+        mask = mask.to(self.args.device)
+        
+        print('Inpainting...')
+        
+        U = 10
+        
+        with torch.no_grad():
+            # x_{T} ~ N(0, I)
+            x_t = torch.randn_like(original).to(self.args.device)
+            x_t_minus_one = torch.randn_like(x_t)
+            ones = torch.ones(x_t.shape[0])
+            
+            # for t = T, T-1, ..., 1 (-1 in Python)
+            for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
+                
+                for u in range(U):
+                    t = (ones * i).long().to(self.args.device)
+                    
+                    # epsilon = N(0, I) if t > 1 else 0
+                    forward_noise = torch.randn_like(x_t) if t[0] > 0 else torch.zeros_like(x_t)
+                    
+                    # differs from the algorithm in the paper but doesn't maatter because of stochasticity
+                    x_known = self.scheduler.add_noise(original, forward_noise, t)
+                    
+                    predicted_noise = model(x_t, t)
+                    x_unknown = self.scheduler.sample_prev_step(x_t, predicted_noise, t)
+                    
+                    x_t_minus_one = x_known * mask + x_unknown * (~mask)
+                    
+                    x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < U and i > 0) else x_t
+
+
+        print('Inpainting Finished')
+        
+        return x_t_minus_one.to('cpu')

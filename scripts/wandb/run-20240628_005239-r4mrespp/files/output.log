@@ -1,0 +1,65 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 63 | Loss: 0.0636:  98%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▊  | 63/64 [01:27<00:01,  1.26s/it]
+
+Epoch: 64 | Loss: 0.0643: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [01:28<00:00,  1.38s/it]
+Sampling...
+Sampling Finished
+Inpainting...
+128it [00:00, 229.80it/s]
+0it [00:00, ?it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 121, in <module>
+    main()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 109, in main
+    inpainted_data = diffusion.inpaint(diffusion.ema_model, original_data, mask)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/DenoisingDiffusionPM.py", line 216, in inpaint
+    x_known = self.scheduler.add_noise(original, forward_noise, t)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 264, in add_noise
+    return self.sqrt_alpha_cum_prod[t] * x0 + self.sqrt_one_minus_alpha_cum_prod[t] * noise
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+RuntimeError: The size of tensor a (1000) must match the size of tensor b (8000) at non-singleton dimension 0

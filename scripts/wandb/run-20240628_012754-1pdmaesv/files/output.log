@@ -1,0 +1,63 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 63 | Loss: 0.0633:  98%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████  | 63/64 [01:24<00:01,  1.34s/it]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 121, in <module>
+    main()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 82, in main
+    train_losses = diffusion.train(dataloader, ema)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/DenoisingDiffusionPM.py", line 132, in train
+    loss.backward()
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/_tensor.py", line 525, in backward
+    torch.autograd.backward(
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/autograd/__init__.py", line 267, in backward
+    _engine_run_backward(
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/autograd/graph.py", line 740, in _engine_run_backward
+    attach_logging_hooks = log.getEffectiveLevel() <= logging.DEBUG
+                           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/logging/__init__.py", line 1784, in getEffectiveLevel
+    while logger:
+          ^^^^^^
+KeyboardInterrupt
