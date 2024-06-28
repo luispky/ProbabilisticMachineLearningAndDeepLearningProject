@@ -79,7 +79,7 @@ class Dataset:
             return self.dataloader
         
         # Define the number of samples to generate
-        num_samples = 2000
+        num_samples = 3000
 
         # Define the mean and covariance of the four gaussians
         mean1 = [-4, -4]
@@ -91,27 +91,29 @@ class Dataset:
         mean3 = [-4, 7]
         cov3 = [[2, 0], [0, 2]]
 
-        mean4 = [6, -4]
-        cov4 = [[2, 0], [0, 2]]
+        # mean4 = [6, -4]
+        # cov4 = [[2, 0], [0, 2]]
         
         # Generate the samples
         samples1 = np.random.multivariate_normal(mean1, cov1, num_samples)
         samples2 = np.random.multivariate_normal(mean2, cov2, num_samples)
         samples3 = np.random.multivariate_normal(mean3, cov3, num_samples)
-        samples4 = np.random.multivariate_normal(mean4, cov4, num_samples)
+        # samples4 = np.random.multivariate_normal(mean4, cov4, num_samples)
 
         # Concatenate the samples to create the dataset
-        self.dataset = np.concatenate((samples1, samples2, samples3, samples4), axis=0)
+        # self.dataset = np.concatenate((samples1, samples2, samples3, samples4), axis=0)
+        self.dataset = np.concatenate((samples1, samples2, samples3), axis=0)
 
         if with_labels:
             # Create labels for the samples
             labels1 = np.zeros((num_samples, 1)) # label 0 for samples1
             labels2 = np.zeros((num_samples, 1)) # label 0 for samples2
             labels3 = np.zeros((num_samples, 1)) # label 0 for samples3
-            labels4 = np.ones((num_samples, 1))  # label 1 for samples4
+            # labels4 = np.ones((num_samples, 1))  # label 1 for samples4
 
             # Concatenate the labels
-            self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
+            # self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
+            self.labels = np.concatenate((labels1, labels2, labels3), axis=0)
             # labels.shape = (4*num_samples, 1)
         
         # Transform the dataset and labels to torch tensors

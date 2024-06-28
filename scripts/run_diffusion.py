@@ -34,7 +34,7 @@ def main():
     sampler_comment = 'ema_model'
     args.epochs = 64
     
-    experiment_number = '29'
+    experiment_number = '30'
     architecture_comment = '4 layers, ins: 2, 32, 64, 32 | sum x and t'
     #  Hyperparameters that influence the model
     noise_time_steps = 128 # 128 good value, try 256
@@ -57,7 +57,7 @@ def main():
                         'noise_time_steps': noise_time_steps,
                         'time_dim_embedding': time_dim_embedding,
                         'epochs': args.epochs,
-                        'scheduler': 'cosine',
+                        'scheduler': 'linear',
                         'learning_rate': args.lr,
                         'cfg_strength': args.cfg_strength,
                         'beta_ema': beta_ema,
