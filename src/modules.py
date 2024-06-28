@@ -2,7 +2,6 @@
 ! Observations:
 * I need to modify the Architecture class to solve the specific problem at hand
 * Encode the time steps better depending on the layers of the model
-* I still need to implement inpainting and other methods
 """
 import torch
 import torch.nn as nn

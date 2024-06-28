@@ -1,6 +1,3 @@
-"""
-todo: name of the file is usually lowercase, consider renaming to denoising_diffusion_pm.py
-"""
 import os
 import torch
 import numpy as np
