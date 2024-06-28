@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import TensorDataset, DataLoader
 
 
-class InpaintingData:
+class GaussianInpaintingData:
     """ Author: Luis
     Class to generate the dataset for the diffusion model, with masking for the 4th distribution.
     """
@@ -61,11 +61,9 @@ class InpaintingData:
         return dataset_tensor, mask_tensor
 
 
-class Dataset:
+class GaussianDataset:
     r"""" Author: Luis
     Class to generate the dataset for the DDPM model.
-
-    todo: name 'Dataset' is already part of torch.utils.data, plz consider renaming to something else
     """
     
     def __init__(self):
@@ -80,7 +78,7 @@ class Dataset:
             return self.dataloader
         
         # Define the number of samples to generate
-        num_samples = 2000
+        num_samples = 3000
 
         # Define the mean and covariance of the four gaussians
         mean1 = [-4, -4]
@@ -92,28 +90,30 @@ class Dataset:
         mean3 = [-4, 7]
         cov3 = [[2, 0], [0, 2]]
 
-        mean4 = [6, -4]
-        cov4 = [[2, 0], [0, 2]]
-
+        # mean4 = [6, -4]
+        # cov4 = [[2, 0], [0, 2]]
+        
         # todo cov1, cov2, cov3, cov4 may be of the wrong type, plz check
         # Generate the samples
         samples1 = np.random.multivariate_normal(mean1, cov1, num_samples)
         samples2 = np.random.multivariate_normal(mean2, cov2, num_samples)
         samples3 = np.random.multivariate_normal(mean3, cov3, num_samples)
-        samples4 = np.random.multivariate_normal(mean4, cov4, num_samples)
+        # samples4 = np.random.multivariate_normal(mean4, cov4, num_samples)
 
         # Concatenate the samples to create the dataset
-        self.dataset = np.concatenate((samples1, samples2, samples3, samples4), axis=0)
+        # self.dataset = np.concatenate((samples1, samples2, samples3, samples4), axis=0)
+        self.dataset = np.concatenate((samples1, samples2, samples3), axis=0)
 
         if with_labels:
             # Create labels for the samples
             labels1 = np.zeros((num_samples, 1)) # label 0 for samples1
             labels2 = np.zeros((num_samples, 1)) # label 0 for samples2
             labels3 = np.zeros((num_samples, 1)) # label 0 for samples3
-            labels4 = np.ones((num_samples, 1))  # label 1 for samples4
+            # labels4 = np.ones((num_samples, 1))  # label 1 for samples4
 
             # Concatenate the labels
-            self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
+            # self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
+            self.labels = np.concatenate((labels1, labels2, labels3), axis=0)
             # labels.shape = (4*num_samples, 1)
         
         # Transform the dataset and labels to torch tensors
@@ -154,7 +154,7 @@ class Dataset:
 
 def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"):
     """ Author: Luis
-    # todo comment missing, nani tf daz dis duu  (0 w  0) ??
+    Save the plot of the generated samples in the plots folder and in the wandb dashboard.
     """
     if not os.path.exists(path):
         os.makedirs(path)
@@ -178,7 +178,8 @@ def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"
 
 def plot_data_to_inpaint(dataset, mask):
     """ Author: Luis
-    # todo comment
+    Plot the dataset to inpaint with the mask applied.
+    It saves the plot in the wandb dashboard.
     """
     # Convert tensors to numpy arrays for plotting
     dataset_np = dataset.numpy()
@@ -199,7 +200,6 @@ def plot_data_to_inpaint(dataset, mask):
     
     wandb.log({'Dataset with Mask': wandb.Image(fig)})
 
-
 class EMA:
     """
     Exponential Moving Average
@@ -213,6 +213,7 @@ class EMA:
         self.step = 0
 
     def update_model_average(self, ma_model, current_model):
+        """updates the parameters of the model average"""
         for current_params, ma_params in zip(current_model.parameters(), ma_model.parameters()):
             old_weight, up_weight = ma_params.data, current_params.data
             ma_params.data = self.update_average(old_weight, up_weight)
@@ -229,24 +230,24 @@ class EMA:
     def step_ema(self, ema_model, model, step_start_ema=2000):
         # warmup phase
         if self.step < step_start_ema:
-            self.reset_parameters(ema_model, model)
+            EMA.reset_parameters(ema_model, model) 
             self.step += 1
             return
         # update the model average
         self.update_model_average(ema_model, model)
         self.step += 1
     
-    def reset_parameters(self, ema_model, model):
+    @staticmethod
+    def reset_parameters(ema_model, model):
         """
-        # todo this method is static
+        Resets the parameters of the EMA model to match those of the current model.
         """
         ema_model.load_state_dict(model.state_dict())
 
+
         
 def plot_loss(losses, filename, path="../plots/"):
-    """ Author: Luis
-    todo comment
-    """
+    """plot the loss and save it in the plots folder and in the wandb dashboard."""
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -262,12 +263,18 @@ def plot_loss(losses, filename, path="../plots/"):
 
 class BaseNoiseScheduler(ABC):
     """ Author: Luis
-    # todo comment
+    Base class for the noise scheduler in the diffusion model.
+    It is an abstract class that defines the methods that the noise scheduler should implement.
     """
     def __init__(self, noise_timesteps, dataset_shape):
         self.noise_timesteps = noise_timesteps
         num_dims_to_add = len(dataset_shape) - 1 
         self.num_dims_to_add = num_dims_to_add
+        self.betas = None
+        self.alphas = None
+        self.alpha_cum_prod = None
+        self.sqrt_alpha_cum_prod = None
+        self.sqrt_one_minus_alpha_cum_prod = None
     
     @abstractmethod
     def _initialize_schedule(self):
@@ -275,7 +282,7 @@ class BaseNoiseScheduler(ABC):
 
     def _send_to_device(self, device):
         """
-        todo: fix all unresolved attributes (alphas, betas, ...)
+        Send the scheduler parameters to the device for efficient computation.
         """
         self.betas = self.betas.to(device)
         self.alphas = self.alphas.to(device)

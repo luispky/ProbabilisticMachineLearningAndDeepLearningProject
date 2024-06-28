@@ -1,21 +1,11 @@
-import torch
-import argparse
 import sys
 import os
-import wandb
-
-# * Run from the scripts directory with:
-# Add the parent directory of 'src' to sys.path
 sys.path.append(os.path.abspath('..'))
-# python run_diffusion.py
-
-# * Run from the parent directory with:
-# python -m scripts.run_diffusion 
-# not recommended because it will create another directory for the plots
-
-# todo: imports should be at the top of the file
-from src import DDPM, NoisePredictor, Dataset, LinearNoiseScheduler, EMA, save_plot_generated_samples, plot_loss
-from src import InpaintingData, plot_data_to_inpaint
+import torch
+import argparse
+import wandb
+from src import DDPM, NoisePredictor, GaussianDataset, LinearNoiseScheduler, EMA, save_plot_generated_samples, plot_loss
+from src import GaussianInpaintingData, plot_data_to_inpaint
 
 
 def main():
@@ -35,8 +25,8 @@ def main():
     args.lr = 1e-3
     sampler_comment = 'ema_model'
     args.epochs = 64
-
-    experiment_number = '29'
+    
+    experiment_number = '30'
     architecture_comment = '4 layers, ins: 2, 32, 64, 32 | sum x and t'
     #  Hyperparameters that influence the model
     noise_time_steps = 128  # 128 good value, try 256
@@ -54,21 +44,21 @@ def main():
 
     # Add all the hyperparameters to wandb
     wandb.config.update({"architecture": architecture_comment,
-                         "sampler": sampler_comment,
-                         'noise_time_steps': noise_time_steps,
-                         'time_dim_embedding': time_dim_embedding,
-                         'epochs': args.epochs,
-                         'scheduler': 'cosine',
-                         'learning_rate': args.lr,
-                         'cfg_strength': args.cfg_strength,
-                         'beta_ema': beta_ema,
-                         'samples': args.samples,
-                         'num_classes': num_classes,
-                         })
-
+                         "sampler": sampler_comment, 
+                        'noise_time_steps': noise_time_steps,
+                        'time_dim_embedding': time_dim_embedding,
+                        'epochs': args.epochs,
+                        'scheduler': 'linear',
+                        'learning_rate': args.lr,
+                        'cfg_strength': args.cfg_strength,
+                        'beta_ema': beta_ema,
+                        'samples': args.samples,
+                        'num_classes': num_classes,
+    })
+    
     # define the components of the DDPM model: dataset, scheduler, model, EMA class
     ema = EMA(beta=beta_ema)
-    dataset = Dataset()
+    dataset = GaussianDataset()
 
     dataloader = dataset.generate_data(with_labels=with_labels)
     dataset_shape = dataset.get_dataset_shape()
@@ -101,7 +91,7 @@ def main():
     save_plot_generated_samples(sample_image_name, samples, labels=labels)
 
     # generate inpainting samples
-    inpainting_data = InpaintingData()
+    inpainting_data = GaussianInpaintingData()
 
     original_data, mask = inpainting_data.generate_data()
     plot_data_to_inpaint(original_data, mask)
@@ -116,7 +106,7 @@ def main():
 
 
 def test():
-    dataset = Dataset()
+    dataset = GaussianDataset()
     dataset.plot_data()
 
 
