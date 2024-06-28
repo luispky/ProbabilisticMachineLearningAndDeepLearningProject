@@ -62,7 +62,7 @@ class GaussianInpaintingData:
 
 
 class GaussianDataset:
-    r"""" Author: Luis
+    r""" Author: Luis
     Class to generate the dataset for the DDPM model.
     """
     
@@ -78,6 +78,7 @@ class GaussianDataset:
             return self.dataloader
         
         # Define the number of samples to generate
+        # todo: why do you hate passing arguments to functions?
         num_samples = 3000
 
         # Define the mean and covariance of the four gaussians
@@ -200,6 +201,7 @@ def plot_data_to_inpaint(dataset, mask):
     
     wandb.log({'Dataset with Mask': wandb.Image(fig)})
 
+
 class EMA:
     """
     Exponential Moving Average
@@ -245,7 +247,6 @@ class EMA:
         ema_model.load_state_dict(model.state_dict())
 
 
-        
 def plot_loss(losses, filename, path="../plots/"):
     """plot the loss and save it in the plots folder and in the wandb dashboard."""
     if not os.path.exists(path):
@@ -449,7 +450,6 @@ class Probabilities:
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
         return self.normalize(p + np.random.random(p.shape) * k)
-
 
 
 class bcolors:

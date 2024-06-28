@@ -3,7 +3,29 @@ import torch
 from src.utils import cprint, bcolors, Probabilities
 import os
 import matplotlib.pyplot as plt
+from torch.utils.data import TensorDataset, DataLoader
 from scripts.inverse_gradient import InverseGradient
+
+
+class GaussianDataset:
+    r""" Author: Omar
+    Class to generate the dataset for the Inverse Gradient method
+    """
+    def __init__(self):
+        self.dataset = None
+        self.labels = None
+        self.dataloader = None
+
+    def generate_data(self, num_samples, with_labels=True):
+        raise NotImplementedError
+
+    def get_dataset_shape(self):
+        assert self.dataset is not None, 'Dataset not generated'
+        return self.dataset.shape
+
+    def plot_data(self):
+        # Generate the dataset
+        raise NotImplementedError
 
 
 def generate_data(size, n_values: list | tuple, threshold):
