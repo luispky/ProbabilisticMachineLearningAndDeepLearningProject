@@ -1,17 +1,14 @@
 import os
-import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from torch.utils.data import DataLoader, TensorDataset
 import wandb
 from abc import ABC, abstractmethod
-
-import numpy as np
 import torch
-from torch.utils.data import Dataset, TensorDataset, DataLoader
+from torch.utils.data import TensorDataset, DataLoader
+
 
 class InpaintingData:
-    """
+    """ Author: Luis
     Class to generate the dataset for the diffusion model, with masking for the 4th distribution.
     """
     
@@ -63,14 +60,18 @@ class InpaintingData:
 
         return dataset_tensor, mask_tensor
 
+
 class Dataset:
-    r""""
+    r"""" Author: Luis
     Class to generate the dataset for the DDPM model.
+
+    todo: name 'Dataset' is already part of torch.utils.data, plz consider renaming to something else
     """
     
     def __init__(self):
         self.dataset = None
         self.labels = None
+        self.dataloader = None
 
     def generate_data(self, with_labels=True):
         # Check if the dataset is already generated
@@ -93,7 +94,8 @@ class Dataset:
 
         mean4 = [6, -4]
         cov4 = [[2, 0], [0, 2]]
-        
+
+        # todo cov1, cov2, cov3, cov4 may be of the wrong type, plz check
         # Generate the samples
         samples1 = np.random.multivariate_normal(mean1, cov1, num_samples)
         samples2 = np.random.multivariate_normal(mean2, cov2, num_samples)
@@ -149,7 +151,11 @@ class Dataset:
         plt.legend()
         plt.show()
 
+
 def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"):
+    """ Author: Luis
+    # todo comment missing, nani tf daz dis duu  (0 w  0) ??
+    """
     if not os.path.exists(path):
         os.makedirs(path)
     
@@ -169,7 +175,11 @@ def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"
     
     wandb.log({filename: wandb.Image(fig)})
 
+
 def plot_data_to_inpaint(dataset, mask):
+    """ Author: Luis
+    # todo comment
+    """
     # Convert tensors to numpy arrays for plotting
     dataset_np = dataset.numpy()
     mask_np = mask.numpy().squeeze()
@@ -189,10 +199,14 @@ def plot_data_to_inpaint(dataset, mask):
     
     wandb.log({'Dataset with Mask': wandb.Image(fig)})
 
+
 class EMA:
-    # Exponential Moving Average
-    # This is a way to impose a smoother training process
-    # The weights of the model do not change abruptly
+    """
+    Exponential Moving Average
+    This is a way to impose a smoother training process
+    The weights of the model do not change abruptly
+    """
+
     def __init__(self, beta):
         super().__init__()
         self.beta = beta
@@ -204,8 +218,10 @@ class EMA:
             ma_params.data = self.update_average(old_weight, up_weight)
 
     def update_average(self, old, new):
-        # core idea of EMA
-        # the weights are an interpolation between the old and new weights weighted by beta
+        """
+        core idea of EMA
+        the weights are an interpolation between the old and new weights weighted by beta
+        """
         if old is None:
             return new
         return old * self.beta + (1 - self.beta) * new
@@ -221,10 +237,16 @@ class EMA:
         self.step += 1
     
     def reset_parameters(self, ema_model, model):
+        """
+        # todo this method is static
+        """
         ema_model.load_state_dict(model.state_dict())
 
         
 def plot_loss(losses, filename, path="../plots/"):
+    """ Author: Luis
+    todo comment
+    """
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -237,7 +259,11 @@ def plot_loss(losses, filename, path="../plots/"):
     
     wandb.log({filename: wandb.Image(fig)})
 
+
 class BaseNoiseScheduler(ABC):
+    """ Author: Luis
+    # todo comment
+    """
     def __init__(self, noise_timesteps, dataset_shape):
         self.noise_timesteps = noise_timesteps
         num_dims_to_add = len(dataset_shape) - 1 
@@ -248,6 +274,9 @@ class BaseNoiseScheduler(ABC):
         pass
 
     def _send_to_device(self, device):
+        """
+        todo: fix all unresolved attributes (alphas, betas, ...)
+        """
         self.betas = self.betas.to(device)
         self.alphas = self.alphas.to(device)
         self.alpha_cum_prod = self.alpha_cum_prod.to(device)
@@ -291,15 +320,15 @@ class BaseNoiseScheduler(ABC):
         
         return x_t_minus_one * torch.sqrt(self.alphas[t-1]) + self.betas[t-1] * noise
 
+
 class LinearNoiseScheduler(BaseNoiseScheduler):
-    r""""
+    r"""" Author: Luis
     Class for the linear noise scheduler that is used in DDPM.
     The dimensions of the noise scheduler parameters are expanded to match the
     dimensions of the samples of the dataset. 
     This is required to make broadcasting operations between the noise and the samples.
     This change is only added to the betas attribute and is propagated to the other attributes.
     """
-    
     def __init__(self, noise_timesteps, dataset_shape, beta_start=1e-4, beta_end=2e-2):
         super().__init__(noise_timesteps, dataset_shape)
         self.beta_start = beta_start
@@ -307,14 +336,18 @@ class LinearNoiseScheduler(BaseNoiseScheduler):
         self._initialize_schedule()
 
     def _initialize_schedule(self):
-        self.betas = torch.linspace(self.beta_start, self.beta_end, self.noise_timesteps).view(*( [-1] + [1]*self.num_dims_to_add ))
+        linspace = torch.linspace(self.beta_start, self.beta_end, self.noise_timesteps)    # note: Omar split this line
+        self.betas = linspace.view(*([-1] + [1]*self.num_dims_to_add))                     # because it was too long
         self.alphas = 1. - self.betas
         self.alpha_cum_prod = torch.cumprod(self.alphas, dim=0)
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
         self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
 
-# Needs improvement with offset
+
 class CosineNoiseScheduler(BaseNoiseScheduler):
+    """Author: Luis
+    # todo Needs improvement with offset
+    """
     def __init__(self, noise_timesteps, s=0.008, dataset_shape=None):
         super().__init__(noise_timesteps, dataset_shape)
         self.s = torch.tensor(s)
@@ -323,15 +356,111 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
     def _initialize_schedule(self):
         t = torch.linspace(0, self.noise_timesteps, self.noise_timesteps)
         f = lambda t: torch.cos((t / self.noise_timesteps + self.s) / (1 + self.s) * torch.pi / 2) ** 2
-        alphas_bar = f(t)/f(0)
+        alphas_bar = f(t) / f(0)   # todo: do not assign a lambda function to a variable, use def instead
         
         self.alphas = torch.ones_like(alphas_bar)
         self.alphas[1:] = alphas_bar[1:] / alphas_bar[:-1]
         self.alphas[0] = alphas_bar[0]
         self.betas = torch.clip(1-self.alphas, 0, 0.999)
         
-        self.betas = self.betas.view(*( [-1] + [1]*self.num_dims_to_add ))
-        self.alphas = self.alphas.view(*( [-1] + [1]*self.num_dims_to_add ))
+        self.betas = self.betas.view(*([-1] + [1] * self.num_dims_to_add))
+        self.alphas = self.alphas.view(*([-1] + [1] * self.num_dims_to_add))
         self.alpha_cum_prod = torch.cumprod(self.alphas, dim=0)
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
         self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
+
+
+class Probabilities:
+    """ Author: Omar
+    This class helps normalize probabilities for a set
+    of features with different number of values
+    """
+    def __init__(self, n_values: list):
+        self.n_values = n_values
+        self.n = len(n_values)
+        self.length = sum(n_values)
+        self.mat = None
+        self._set_mat()
+
+    def _set_mat(self):
+        """Create binary masks that divide the various features"""
+        self.mat = np.zeros((self.length, self.length), dtype=np.float64)
+        for i in range(self.n):
+            start = sum(self.n_values[:i])
+            for j in range(self.n_values[i]):
+                self.mat[start:start+j+1, start:start+self.n_values[i]] = 1
+
+    def normalize(self, p):
+        """Cap at 0, then normalize the probabilities for each feature"""
+        assert len(p.shape) == 2, f'{len(p.shape)} != 2'
+        assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
+        p = np.maximum(0, p)
+        s = np.dot(p, self.mat)
+        assert np.all(s > 0), f'Zero sum: {s}'
+        return p / s
+
+    def to_onehot(self, x):
+        """Convert the original values to one-hot encoding"""
+        assert len(x.shape) == 2, f'{len(x.shape)} != 2'
+        assert x.shape[1] == self.n, f'{x.shape[1]} != {self.n}'
+        # check that each value of x is less than the number of values for that feature
+        assert np.all(np.max(x, axis=0) < self.n_values), f'Values out of range'
+        # check that values are positive
+        assert np.all(x >= 0), f'Negative values'
+
+        x1 = np.zeros((x.shape[0], self.length), dtype=np.float64)
+        start = 0
+        for i in range(self.n):
+            x1[np.arange(x.shape[0]), x[:, i] + start] = 1
+            start += self.n_values[i]
+        return x1
+
+    def onehot_to_values(self, x):
+        """Return the original values from the one-hot encoding"""
+        assert len(x.shape) == 2, f'{len(x.shape)} != 2'
+        assert x.shape[1] == self.length, f'{x.shape[1]} != {self.length}'
+        x1 = np.zeros((x.shape[0], self.n), dtype=np.int64)
+        start = 0
+        for i in range(self.n):
+            x1[:, i] = np.argmax(x[:, start:start+self.n_values[i]], axis=1)
+            start += self.n_values[i]
+        return x1
+
+    def prob_to_onehot(self, p):
+        """Convert the probabilities to one-hot encoding"""
+        assert len(p.shape) == 2, f'{len(p.shape)} != 2'
+        assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
+        x = np.zeros((p.shape[0], self.n), dtype=np.int64)
+        start = 0
+        for i in range(self.n):
+            x[:, i] = np.argmax(p[:, start:start+self.n_values[i]], axis=1)
+            start += self.n_values[i]
+        return self.to_onehot(x)
+
+
+class bcolors:
+    """ Author: Omar
+    This class helps to print colored text in the terminal.
+    To uce this class, call cprint(text, color)
+    """
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+def cprint(text, color, end='\n'):
+    """ Author: Omar
+    Colorful print function
+
+    Usage:
+    cprint('You may fluff her tai', bcolors.OKGREEN)
+    cprint('Warning: no sadge allowed', bcolors.WARNING)
+    cprint('Failed to be sadge', bcolors.FAIL)
+    """
+    print(color + text + bcolors.ENDC, end=end)

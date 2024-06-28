@@ -10,7 +10,8 @@ from safetensors.torch import load_model as safe_load_model
 import wandb
 
 from .modules import NoisePredictor
-    
+
+
 class DDPM:
     r"""
     Class for the Denoising Diffusion Probabilistic Model.
@@ -26,9 +27,12 @@ class DDPM:
         self.ema_model = None
 
         # send the scheduler attributes to the device
-        self.scheduler._send_to_device(self.args.device)
+        self.scheduler._send_to_device(self.args.device)  # todo: accessing protected member
         
     def save_model(self, model, filename, path = "../models/"):
+        """
+        # todo: method is static, consider moving outside the class
+        """
         if not os.path.exists(path):
             os.makedirs(path)
         
@@ -38,7 +42,7 @@ class DDPM:
         
         print(f'Model saved in {filename}')
     
-    def load_model(self, model_params, filename, path = "../models/"):
+    def load_model(self, model_params, filename, path="../models/"):
         r"""
         Load model parameters from a file using safetensors.
         """
@@ -88,7 +92,7 @@ class DDPM:
             running_loss = 0.0
             num_elements = 0
             
-            for i, batch_data in enumerate(dataloader): # x_{0} ~ q(x_{0})
+            for i, batch_data in enumerate(dataloader):  # x_{0} ~ q(x_{0})
                 optimizer.zero_grad()
                 
                 # extract data from the batch verifying if it has labels
@@ -151,7 +155,7 @@ class DDPM:
         return train_losses
 
     # Sampling method according to the DDPM paper
-    def sample(self, model, labels = None, cfg_strength=3):
+    def sample(self, model, labels=None, cfg_strength=3):
         model.eval()
         model.to(self.args.device)
         samples_shape = self.model.architecture.dataset_shape
@@ -190,14 +194,14 @@ class DDPM:
     def inpaint(self, model, original, mask):
         model.eval()
         model.to(self.args.device)
-        samples_shape = self.model.architecture.dataset_shape
+        samples_shape = self.model.architecture.dataset_shape   # todo: not used, remove?
         
         original = original.to(self.args.device)
         mask = mask.to(self.args.device)
         
         print('Inpainting...')
         
-        U = 10
+        U = 10   # todo if U is a parameter it should be passed as an argument
         
         with torch.no_grad():
             # x_{T} ~ N(0, I)
@@ -223,7 +227,6 @@ class DDPM:
                     x_t_minus_one = x_known * mask + x_unknown * (~mask)
                     
                     x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < U and i > 0) else x_t
-
 
         print('Inpainting Finished')
         
