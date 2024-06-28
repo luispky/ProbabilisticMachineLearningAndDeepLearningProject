@@ -1,3 +1,7 @@
+""" Author: Omar
+In this module, we use the inverse gradient algorithm to correct anomalies in a dataset.
+The algorithm is used to correct anomalies in a dataset by using the inverse gradient algorithm.
+"""
 import numpy as np
 import torch
 from copy import deepcopy
@@ -7,7 +11,10 @@ import matplotlib.pyplot as plt
 
 
 class InverseGradient:
-
+    """ Author: Omar
+    This method is used to correct anomalies in a dataset
+    by using the inverse gradient algorithm.
+    """
     def __init__(self, x: torch.tensor, y: torch.tensor, model_name: str):
         self.x = x
         self.y = y
@@ -143,7 +150,9 @@ class InverseGradient:
 
 
 def generate_data(size, n_values: list | tuple, threshold):
-    """anomaly if sum of numbers is more than k"""
+    """
+    Anomaly if sum of numbers is more than k
+    """
     proba = Probabilities(n_values)
 
     # raw data
@@ -175,6 +184,7 @@ def main(n_data=1000, n_values=(2, 2, 4), threshold=3.5, hidden=2,
     np.random.seed(42)
     torch.set_default_dtype(torch.float64)
 
+    # set model name
     if model_name is None:
         model_name = f'model_{os.path.splitext(os.path.basename(__file__))[0]}.pkl'
 
