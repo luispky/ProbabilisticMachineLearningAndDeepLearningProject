@@ -7,11 +7,11 @@ import torch
 from copy import deepcopy
 from src.utils import cprint, bcolors, Probabilities
 
-
 class InverseGradient:
     """ Author: Omar
     This method is used to correct anomalies in a dataset
     by using the inverse gradient algorithm.
+    # todo: consider moving this file to the src directory
     """
     def __init__(self, x: torch.tensor, y: torch.tensor, model_name: str):
         self.x = x

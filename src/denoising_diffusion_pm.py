@@ -142,6 +142,7 @@ class DDPM:
 
     # Sampling method according to the DDPM paper
     def sample(self, model, labels=None, cfg_strength=3):
+        # ?: maybe something must be changed for the SumCategoricalDataset
         model.eval()
         model.to(self.args.device)
         samples_shape = self.model.architecture.dataset_shape
@@ -161,7 +162,7 @@ class DDPM:
                 predicted_noise = model(x, t, labels)
                 
                 # Classifier Free Guidance Sampling
-                if cfg_strength > 0:
+                if cfg_strength > 0 and labels is not None:
                     uncond_predicted_noise = model(x, t, None)
                     # interpolate between conditional and unconditional noise
                     # C-FG paper formula:
@@ -180,6 +181,7 @@ class DDPM:
     def inpaint(self, model, original, mask, U=10):
         # todo: review the inpainting method to properly implement it
         # the parameters U is not totally clear
+        # ?: maybe something must be changed for the SumCategoricalDataset
         model.eval()
         model.to(self.args.device)
         

@@ -7,7 +7,7 @@ while getopts "ab" opt; do
       python run_diffusion.py
       ;;
     b)
-      python inverse_gradient_2.py
+      python3 run_diffusion.py 
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2

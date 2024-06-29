@@ -1,10 +1,15 @@
+import sys
+import os
+sys.path.append(os.path.abspath('..'))
 import numpy as np
 import torch
 from src.utils import cprint, bcolors, Probabilities
-import os
 import matplotlib.pyplot as plt
 from scripts.inverse_gradient import InverseGradient
 
+
+# todo: consider moving this file to the tests directory
+# since this is an example
 
 def generate_data(size, n_values: list | tuple, threshold):
     """

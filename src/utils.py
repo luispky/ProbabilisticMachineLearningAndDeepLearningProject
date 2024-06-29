@@ -35,7 +35,7 @@ class SumCategoricalDataset:
 
         # convert to torch tensors
         x = torch.tensor(p, dtype=torch.float64)
-        y = torch.tensor(y, dtype=torch.float64)
+        y = torch.tensor(y, dtype=torch.bool)
 
         self.dataset = {'x': x, 'y': y}
         
@@ -49,11 +49,17 @@ class SumCategoricalDataset:
         if with_labels:
             tensor_dataset = TensorDataset(dataset['x'], dataset['y'])
         else:
-            tensor_dataset = TensorDataset(dataset['x'])
+            y = dataset['y'].to(torch.bool).squeeze()
+            
+            tensor_dataset = TensorDataset(dataset['x'][~y])
         
         dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=shuffle)
         
         return dataloader
+    
+    def get_dataset_shape(self):
+        assert self.dataset is not None, 'Dataset not generated'
+        return self.dataset['x'].shape
     
     def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True):
         """Generate the dataset with the mask to inpaint."""
@@ -68,8 +74,9 @@ class SumCategoricalDataset:
         dataset = self.dataset if self.dataset is not None else self.generate_dataset()
         
         # add the mask to the dataset
-        dataset.pop('y')
         dataset['mask'] = mask
+        
+        dataset['label_values'] = self.label_values
         
         return dataset
     
@@ -86,19 +93,21 @@ class SumCategoricalDataset:
         
     def _mask_one_feature_values(self):
         """
-        Identify which element(s) in the label_values 2D array contribute the most to each row's sum exceeding a certain threshold.
+        Identify which element(s) in the label values 2D array contribute the most to each row's sum exceeding a certain threshold.
         If there are multiple elements contributing equally to the sum, the one with the lowest index is selected.
+        Since we work with probability space coming from a one-hot encoding, the mask is repeated for each feature.
         
-        Returns:
-        - np.ndarray: 2D boolean array where True indicates element(s) contributing the most to the sum exceeding the threshold.
-        
-        Example:
+        Example in terms of the label values:
         self.label_values = np.array([[0 2 3], [1 2 2]])
         self.threshold = 4
         
-        mask_one_feature_values()
+        Output:
         > array([[False, False,  True],
                 [False, True,  False]])
+
+        The mask for the probabilities is:
+        > array([[False, False,  True, False, False,  True, False,  True],
+                [False, True,  False, False, True,  False, False,  True]])
         """
         
         # Fetch the label values
@@ -118,17 +127,22 @@ class SumCategoricalDataset:
             max_value_indices = np.argmax(array[exceeding_rows_indices], axis=1)
             result[exceeding_rows_indices, max_value_indices] = True
         
-        return result
+        # Repeat each column according to the specified repetition counts
+        repeated_result = np.repeat(result, self.n_values, axis=1)
+        
+        return repeated_result
     
     def _mask_features_values(self):
         """
         Identify which elements in the array contribute the most to each row's sum exceeding a certain threshold.
         If there are multiple elements contributing equally to the sum then both are selected.
-        Example:
+        Since we work with probability space coming from a one-hot encoding, the mask is repeated for each feature.
+        
+        Example in terms of the label values:
         self.label_values = np.array([[0 2 3], [1 2 2]])
         self.threshold = 4
         
-        mask_one_feature_values(array, threshold)
+        Output:
         > array([[False, False,  True],
                 [False, True,  True]])
         """
@@ -151,7 +165,9 @@ class SumCategoricalDataset:
         # Combine the conditions: the sum exceeds the threshold and the element is the maximum
         result = np.logical_and(exceed_threshold[:, None], is_max)
         
-        return result
+        repeated_result = np.repeat(result, self.n_values, axis=1)
+        
+        return repeated_result
 
 class GaussianDataset:
     """
@@ -501,7 +517,7 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
         self.s = torch.tensor(s, dtype=torch.float32)
         self._initialize_schedule()
 
-    def _cosine_schedule(self, t: Tensor) -> Tensor:
+    def _cosine_schedule(self, t: torch.tensor) -> torch.tensor:
         """
         Computes the cosine schedule function.
         """
