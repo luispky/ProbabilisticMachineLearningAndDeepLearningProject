@@ -18,6 +18,7 @@ class GaussianInpaintingData:
 
     def generate_data(self):
         # Define the number of samples to generate
+        # todo: why do you hate passing arguments to functions? òwò
         num_samples = 2000
         
         # Define means and covariances with added randomness
@@ -62,7 +63,7 @@ class GaussianInpaintingData:
 
 
 class GaussianDataset:
-    r"""" Author: Luis
+    r""" Author: Luis
     Class to generate the dataset for the DDPM model.
     """
     
@@ -78,6 +79,7 @@ class GaussianDataset:
             return self.dataloader
         
         # Define the number of samples to generate
+        # todo: why do you hate passing arguments to functions? òwò
         num_samples = 3000
 
         # Define the mean and covariance of the four gaussians
@@ -94,6 +96,7 @@ class GaussianDataset:
         # cov4 = [[2, 0], [0, 2]]
         
         # todo cov1, cov2, cov3, cov4 may be of the wrong type, plz check
+        # todo: expected type _SupportsArray[...] | int | float | bool | ..., got list[list[int]] instead
         # Generate the samples
         samples1 = np.random.multivariate_normal(mean1, cov1, num_samples)
         samples2 = np.random.multivariate_normal(mean2, cov2, num_samples)
@@ -200,6 +203,7 @@ def plot_data_to_inpaint(dataset, mask):
     
     wandb.log({'Dataset with Mask': wandb.Image(fig)})
 
+
 class EMA:
     """
     Exponential Moving Average
@@ -245,7 +249,6 @@ class EMA:
         ema_model.load_state_dict(model.state_dict())
 
 
-        
 def plot_loss(losses, filename, path="../plots/"):
     """plot the loss and save it in the plots folder and in the wandb dashboard."""
     if not os.path.exists(path):
@@ -444,6 +447,12 @@ class Probabilities:
             start += self.n_values[i]
         return self.to_onehot(x)
 
+    def add_noise(self, p, k=1.):
+        """Add noise to the probabilities"""
+        assert len(p.shape) == 2, f'{len(p.shape)} != 2'
+        assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
+        return self.normalize(p + np.random.random(p.shape) * k)
+
 
 class bcolors:
     """ Author: Omar
@@ -463,7 +472,7 @@ class bcolors:
 
 def cprint(text, color, end='\n'):
     """ Author: Omar
-    Colorful print function
+    Colorful print function. To see the colors, go to the class bcolors.
 
     Usage:
     cprint('You may fluff her tai', bcolors.OKGREEN)
