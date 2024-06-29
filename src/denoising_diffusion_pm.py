@@ -11,7 +11,6 @@ import wandb
 
 from .modules import NoisePredictor
 
-
 class DDPM:
     r"""
     Class for the Denoising Diffusion Probabilistic Model.
@@ -27,21 +26,8 @@ class DDPM:
         self.ema_model = None
 
         # send the scheduler attributes to the device
-        self.scheduler._send_to_device(self.args.device)  # todo: accessing protected member
+        self.scheduler.send_to_device(self.args.device) 
         
-    def save_model(self, model, filename, path = "../models/"):
-        """
-        # todo: method is static, consider moving outside the class
-        """
-        if not os.path.exists(path):
-            os.makedirs(path)
-        
-        filename = path + filename + '.safetensors'
-        
-        safe_save_model(model, filename + '.safetensors')
-        
-        print(f'Model saved in {filename}')
-    
     def load_model(self, model_params, filename, path="../models/"):
         r"""
         Load model parameters from a file using safetensors.
@@ -191,17 +177,16 @@ class DDPM:
         return x
 
     # Inpainting method according to the RePaint paper
-    def inpaint(self, model, original, mask):
+    def inpaint(self, model, original, mask, U=10):
+        # todo: review the inpainting method to properly implement it
+        # the parameters U is not totally clear
         model.eval()
         model.to(self.args.device)
-        samples_shape = self.model.architecture.dataset_shape   # todo: not used, remove?
         
         original = original.to(self.args.device)
         mask = mask.to(self.args.device)
         
         print('Inpainting...')
-        
-        U = 10   # todo if U is a parameter it should be passed as an argument
         
         with torch.no_grad():
             # x_{T} ~ N(0, I)
@@ -231,3 +216,17 @@ class DDPM:
         print('Inpainting Finished')
         
         return x_t_minus_one.to('cpu')
+
+
+def save_model_to_dir(model, filename, path = "../models/"):
+    """
+    Save the model using safetensors.
+    """
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    filename = path + filename + '.safetensors'
+    
+    safe_save_model(model, filename + '.safetensors')
+    
+    print(f'Model saved in {filename}')

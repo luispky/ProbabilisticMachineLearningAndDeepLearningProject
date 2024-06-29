@@ -6,153 +6,295 @@ from abc import ABC, abstractmethod
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 
-
-class GaussianInpaintingData:
-    """ Author: Luis
-    Class to generate the dataset for the diffusion model, with masking for the 4th distribution.
-    """
+class SumCategoricalDataset:
     
-    def __init__(self):
+    def __init__(self, size, n_values: list | tuple, threshold):
+        self.threshold = threshold
+        self.size = size
+        self.n_values = n_values
+        self.threshold = threshold
         self.dataset = None
-        self.mask = None
+        self.label_values = None
 
-    def generate_data(self):
-        # Define the number of samples to generate
-        num_samples = 2000
+    def generate_dataset(self):
+        """
+        Generate a dataset in probability space that represents arrays of label encoded categories.
+        The y labels are binary, True/Anomaly if the sum of the values in the array exceeds the threshold.
+        """
         
-        # Define means and covariances with added randomness
-        mean1 = [-5, -5] + np.random.normal(0, 0.25, 2)
-        cov1 = [[1.5, 0], [0, 1.5]] + np.random.normal(0, 0.1, (2, 2))
-        
-        mean2 = [9, 9] + np.random.normal(0, 0.25, 2)
-        cov2 = [[1.5, 0], [0, 1.5]] + np.random.normal(0, 0.1, (2, 2))
-        
-        mean3 = [-5, 8] + np.random.normal(0, 0.25, 2)
-        cov3 = [[1.5, 0], [0, 1.5]] + np.random.normal(0, 0.1, (2, 2))
-        
-        mean4 = [7, -5] + np.random.normal(0, 0.25, 2)
-        cov4 = [[1.5, 0], [0, 1.5]] + np.random.normal(0, 0.1, (2, 2))
+        proba = Probabilities(self.n_values)
 
-        # Ensure covariance matrices are positive semi-definite
-        cov1 = np.dot(cov1, cov1.T)
-        cov2 = np.dot(cov2, cov2.T)
-        cov3 = np.dot(cov3, cov3.T)
-        cov4 = np.dot(cov4, cov4.T)
+        # raw data
+        p = np.random.random(size=(self.size, sum(self.n_values)))
+        p = proba.normalize(p)
+
+        x = proba.prob_to_onehot(p)
+        self.label_values = proba.onehot_to_values(x)
+        y = np.sum(self.label_values, axis=1) > self.threshold
+        y = np.expand_dims(y, axis=1)
+
+        # convert to torch tensors
+        x = torch.tensor(p, dtype=torch.float64)
+        y = torch.tensor(y, dtype=torch.float64)
+
+        self.dataset = {'x': x, 'y': y}
         
-        # Generate the samples
-        samples1 = np.random.multivariate_normal(mean1, cov1, num_samples)
-        samples2 = np.random.multivariate_normal(mean2, cov2, num_samples)
-        samples3 = np.random.multivariate_normal(mean3, cov3, num_samples)
-        samples4 = np.random.multivariate_normal(mean4, cov4, num_samples)
+        return self.dataset
 
-        # Concatenate the samples to create the dataset
-        self.dataset = np.concatenate((samples1, samples2, samples3, samples4), axis=0)
-
-        # Create mask: False for samples from distribution 4, True otherwise
-        self.mask = np.ones(4 * num_samples, dtype=bool)
-        self.mask[3 * num_samples:] = False
+    def get_dataloader(self, with_labels=False, batch_size=14, shuffle=True):
+        """Generate a dataloader for the dataset."""
         
-        self.mask = self.mask[:, np.newaxis]
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
         
-        # Convert dataset and mask to torch tensors
-        dataset_tensor = torch.tensor(self.dataset, dtype=torch.float32)
-        mask_tensor = torch.tensor(self.mask, dtype=torch.bool)
+        if with_labels:
+            tensor_dataset = TensorDataset(dataset['x'], dataset['y'])
+        else:
+            tensor_dataset = TensorDataset(dataset['x'])
+        
+        dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=shuffle)
+        
+        return dataloader
+    
+    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True):
+        """Generate the dataset with the mask to inpaint."""
+        
+        if mask_anomaly_points:
+            mask = self._mask_anomaly_points()
+        elif mask_one_feature:
+            mask = self._mask_one_feature_values()
+        else:
+            mask = self._mask_features_values()
+        
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
+        
+        # add the mask to the dataset
+        dataset.pop('y')
+        dataset['mask'] = mask
+        
+        return dataset
+    
+    def _mask_anomaly_points(self):
+        """
+        Identify the anomaly points in the dataset.
+        """
+        
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
+        mask = ~dataset['y']
+        mask = mask.to(torch.bool)
 
-        return dataset_tensor, mask_tensor
-
+        return mask
+        
+    def _mask_one_feature_values(self):
+        """
+        Identify which element(s) in the label_values 2D array contribute the most to each row's sum exceeding a certain threshold.
+        If there are multiple elements contributing equally to the sum, the one with the lowest index is selected.
+        
+        Returns:
+        - np.ndarray: 2D boolean array where True indicates element(s) contributing the most to the sum exceeding the threshold.
+        
+        Example:
+        self.label_values = np.array([[0 2 3], [1 2 2]])
+        self.threshold = 4
+        
+        mask_one_feature_values()
+        > array([[False, False,  True],
+                [False, True,  False]])
+        """
+        
+        # Fetch the label values
+        array = self.label_values
+        
+        # Calculate the sum of each row
+        row_sums = np.sum(array, axis=1)
+        
+        # Create a boolean array to store the result
+        result = np.zeros_like(array, dtype=bool)
+        
+        # Identify rows where the sum exceeds the threshold
+        exceeding_rows_indices = np.where(row_sums > self.threshold)[0]
+        
+        if exceeding_rows_indices.size > 0:
+            # Find the index of the maximum value in the rows that exceed the threshold
+            max_value_indices = np.argmax(array[exceeding_rows_indices], axis=1)
+            result[exceeding_rows_indices, max_value_indices] = True
+        
+        return result
+    
+    def _mask_features_values(self):
+        """
+        Identify which elements in the array contribute the most to each row's sum exceeding a certain threshold.
+        If there are multiple elements contributing equally to the sum then both are selected.
+        Example:
+        self.label_values = np.array([[0 2 3], [1 2 2]])
+        self.threshold = 4
+        
+        mask_one_feature_values(array, threshold)
+        > array([[False, False,  True],
+                [False, True,  True]])
+        """
+        
+        # Fetch the label values 
+        array = self.label_values
+        
+        # Calculate the sum of each row
+        row_sums = np.sum(array, axis=1)
+        
+        # Identify rows where the sum exceeds the threshold
+        exceed_threshold = row_sums > self.threshold
+        
+        # Identify the maximum value in each row
+        row_maxes = np.max(array, axis=1)
+        
+        # For each row, create a boolean array where True indicates that the element is the maximum
+        is_max = array == row_maxes[:, None]
+        
+        # Combine the conditions: the sum exceeds the threshold and the element is the maximum
+        result = np.logical_and(exceed_threshold[:, None], is_max)
+        
+        return result
 
 class GaussianDataset:
-    r"""" Author: Luis
+    """
+    Author: Luis
     Class to generate the dataset for the DDPM model.
     """
     
     def __init__(self):
         self.dataset = None
-        self.labels = None
-        self.dataloader = None
 
-    def generate_data(self, with_labels=True):
-        # Check if the dataset is already generated
-        if self.dataset is not None:
-            print('Data already generated')
-            return self.dataloader
+    def generate_samples(self, mean, cov, num_samples):
+        """
+        Generates samples using an alternative approach to handle non-positive definite covariance matrices.
         
-        # Define the number of samples to generate
-        num_samples = 3000
-
-        # Define the mean and covariance of the four gaussians
-        mean1 = [-4, -4]
-        cov1 = [[2, 0], [0, 2]]
-
-        mean2 = [8, 8]
-        cov2 = [[2, 0], [0, 2]]
-
-        mean3 = [-4, 7]
-        cov3 = [[2, 0], [0, 2]]
-
-        # mean4 = [6, -4]
-        # cov4 = [[2, 0], [0, 2]]
+        Parameters:
+        - mean (list): Mean vector for the Gaussian distribution.
+        - cov (list): Covariance matrix for the Gaussian distribution.
+        - num_samples (int): Number of samples to generate.
         
-        # todo cov1, cov2, cov3, cov4 may be of the wrong type, plz check
-        # Generate the samples
-        samples1 = np.random.multivariate_normal(mean1, cov1, num_samples)
-        samples2 = np.random.multivariate_normal(mean2, cov2, num_samples)
-        samples3 = np.random.multivariate_normal(mean3, cov3, num_samples)
-        # samples4 = np.random.multivariate_normal(mean4, cov4, num_samples)
+        Returns:
+        - torch.Tensor: Generated samples.
+        """
+        mean_tensor = torch.tensor(mean, dtype=torch.float32)
+        cov_tensor = torch.tensor(cov, dtype=torch.float32)
 
-        # Concatenate the samples to create the dataset
-        # self.dataset = np.concatenate((samples1, samples2, samples3, samples4), axis=0)
-        self.dataset = np.concatenate((samples1, samples2, samples3), axis=0)
+        # Ensure the covariance matrix is symmetric
+        cov_tensor = (cov_tensor + cov_tensor.T) / 2
 
-        if with_labels:
-            # Create labels for the samples
-            labels1 = np.zeros((num_samples, 1)) # label 0 for samples1
-            labels2 = np.zeros((num_samples, 1)) # label 0 for samples2
-            labels3 = np.zeros((num_samples, 1)) # label 0 for samples3
-            # labels4 = np.ones((num_samples, 1))  # label 1 for samples4
+        # Use SVD to generate samples
+        U, S, V = torch.svd(cov_tensor)
+        transform_matrix = U @ torch.diag(torch.sqrt(S))
 
-            # Concatenate the labels
-            # self.labels = np.concatenate((labels1, labels2, labels3, labels4), axis=0)
-            self.labels = np.concatenate((labels1, labels2, labels3), axis=0)
-            # labels.shape = (4*num_samples, 1)
+        normal_samples = torch.randn(num_samples, len(mean))
+        samples = normal_samples @ transform_matrix.T + mean_tensor
+
+        return samples
+
+    def generate_dataset(self, means, covariances, num_samples_per_distribution, labels=None):
+        """
+        Generates a dataset based on the provided Gaussian distribution parameters.
         
-        # Transform the dataset and labels to torch tensors
-        dataset = torch.tensor(self.dataset, dtype=torch.float32)
+        Parameters:
+        - means (list): List of mean vectors for each Gaussian distribution.
+        - covariances (list): List of covariance matrices for each Gaussian distribution.
+        - num_samples_per_distribution (list): List of sample counts for each Gaussian distribution.
+        - labels (list): List of labels corresponding to each distribution.
         
-        if with_labels:
-            labels = torch.tensor(self.labels, dtype=torch.float32)
+        Returns:
+        - dict: Dictionary containing the dataset ('x') and the labels ('y') as torch tensors.
+        """
+        
+        if labels is None:
+            labels = torch.ones(len(means), dtype=torch.int)  # Generate default labels
             
-            # Create a tensor dataset
-            tensor_dataset = TensorDataset(dataset, labels)
-            
-        else: 
-            tensor_dataset = TensorDataset(dataset)
+        assert len(means) == len(covariances) == len(num_samples_per_distribution) == len(labels), \
+            "The lengths of means, covariances, num_samples_per_distribution, and labels must be the same."
         
-        # Create a dataloader
-        self.dataloader = DataLoader(tensor_dataset, batch_size=14, shuffle=True)
+        assert len(labels) == len(means), \
+            "The length of labels must match the number of distributions."
         
-        return self.dataloader
+        samples = []
+        labels_list = []
+        
+        for mean, cov, num_samples, label in zip(means, covariances, num_samples_per_distribution, labels):
+            samples_i = self.generate_samples(mean, cov, num_samples)
+            labels_i = torch.full((num_samples, 1), label)  # Assign the specified label to the samples
+            samples.append(samples_i)
+            labels_list.append(labels_i)
+        
+        # Concatenate all samples and labels
+        x_tensor = torch.cat(samples, dim=0)
+        y_tensor = torch.cat(labels_list, dim=0)
+        
+        self.dataset = {'x': x_tensor, 'y': y_tensor}
+        
+        return self.dataset
     
     def get_dataset_shape(self):
         assert self.dataset is not None, 'Dataset not generated'
-        return self.dataset.shape
+        return self.dataset['x'].shape
+    
+    def get_dataloader(self, means, covariances, num_samples_per_distribution, with_labels=False, labels=None, batch_size=14, shuffle=True):
+        """
+        Generates a dataloader for the dataset.
+        """
+        
+        # either labels are provided or not, but not both
+        assert (labels is None) != with_labels, 'Either labels are provided or not'
+        
+        if self.dataset is None:
+            dataset = self.generate_dataset(means, covariances, num_samples_per_distribution)
+        else:
+            dataset = self.dataset  
+        
+        if with_labels:
+            tensor_dataset = TensorDataset(dataset['x'], dataset['y'])
+        else: 
+            tensor_dataset = TensorDataset(dataset['x']) 
+            
+        self.dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=shuffle)
+        
+        return self.dataloader
+
+    def get_features_with_mask(self, means, covariances, num_samples_per_distribution, boolean_labels):
+        """
+        Generates the dataset with the mask to inpaint.
+        """
+        
+        # inspect if the labels are boolean
+        assert all(isinstance(label, bool) for label in boolean_labels), 'Labels must be boolean'
+        
+        dataset = self.generate_dataset(means, covariances, num_samples_per_distribution, boolean_labels)
+        dataset['mask'] = dataset.pop('y')
+        dataset['mask'] = ~dataset['mask']
+        dataset['mask'] = dataset['mask'].to(torch.bool)
+        
+        return dataset
 
     def plot_data(self):
-        # Generate the dataset
-        self.generate_data(with_labels=True)
-        # Plot the dataset with different colors for different labels
-        mask = self.labels.flatten() == 0
-        # labels.flatten() has shape (4*num_samples,)
-        plt.scatter(self.dataset[:, 0][mask], self.dataset[:, 1][mask], alpha=0.5, label='Normal')
-        plt.scatter(self.dataset[:, 0][~mask], self.dataset[:, 1][~mask], alpha=0.5, label='Anomaly')
-        plt.title('2D Mixture of Gaussians')
+        """
+        Plots the dataset with different colors for different labels.
+        """
+        assert self.dataset is not None, 'Dataset not generated'
+        
+        x = self.dataset['x'].numpy()
+        y = self.dataset['y'].numpy().flatten()
+
+        unique_labels = np.unique(y)
+        plt.figure(figsize=(8, 6))
+
+        for label in unique_labels:
+            mask = y == label
+            plt.scatter(x[mask, 0], x[mask, 1], alpha=0.5, label=f'Labels {int(label)}')
+
+        plt.title('2D Gaussians')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.legend()
+        plt.grid(True)
         plt.show()
+    
 
-
-def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"):
+def save_plot_generated_samples(samples, filename, labels=None, path="../plots/"):
     """ Author: Luis
     Save the plot of the generated samples in the plots folder and in the wandb dashboard.
     """
@@ -161,10 +303,11 @@ def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"
     
     fig = plt.figure()
     
+    
     if labels is not None:
-        mask = labels == 0
-        plt.scatter(samples[:, 0][mask], samples[:, 1][mask], alpha=0.5, label='Normal')
-        plt.scatter(samples[:, 0][~mask], samples[:, 1][~mask], alpha=0.5, label='Anomaly')
+        mask = labels == 1
+        plt.scatter(samples[~mask, 0], samples[~mask, 1], alpha=0.5, label='Normal')
+        plt.scatter(samples[mask, 0], samples[mask, 1], alpha=0.5, label='Anomaly')
         plt.legend()
     else:
         plt.scatter(samples[:, 0], samples[:, 1], alpha=0.5)
@@ -176,23 +319,19 @@ def save_plot_generated_samples(filename, samples, labels=None, path="../plots/"
     wandb.log({filename: wandb.Image(fig)})
 
 
-def plot_data_to_inpaint(dataset, mask):
+def plot_data_to_inpaint(x, mask):
     """ Author: Luis
     Plot the dataset to inpaint with the mask applied.
     It saves the plot in the wandb dashboard.
     """
     # Convert tensors to numpy arrays for plotting
-    dataset_np = dataset.numpy()
-    mask_np = mask.numpy().squeeze()
-
-    # Extract samples from each distribution based on the mask
-    samples1 = dataset_np[~mask_np]
-    samples4 = dataset_np[mask_np]
+    x = x.numpy()
+    mask = mask.numpy().squeeze()
 
     # Scatter plot of the dataset
     fig = plt.figure(figsize=(8, 6))
-    plt.scatter(samples1[:, 0], samples1[:, 1], c='blue', label='Reference')
-    plt.scatter(samples4[:, 0], samples4[:, 1], c='red', label='Masked')
+    plt.scatter(x[~mask, 0], x[~mask, 1], alpha=0.5, label='Reference')
+    plt.scatter(x[mask, 0], x[mask, 1], alpha=0.5, label='Masked')
     plt.title('Dataset with Mask')
     plt.xlabel('X')
     plt.ylabel('Y')
@@ -245,7 +384,6 @@ class EMA:
         ema_model.load_state_dict(model.state_dict())
 
 
-        
 def plot_loss(losses, filename, path="../plots/"):
     """plot the loss and save it in the plots folder and in the wandb dashboard."""
     if not os.path.exists(path):
@@ -280,7 +418,7 @@ class BaseNoiseScheduler(ABC):
     def _initialize_schedule(self):
         pass
 
-    def _send_to_device(self, device):
+    def send_to_device(self, device):
         """
         Send the scheduler parameters to the device for efficient computation.
         """
@@ -350,32 +488,43 @@ class LinearNoiseScheduler(BaseNoiseScheduler):
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
         self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
 
-
 class CosineNoiseScheduler(BaseNoiseScheduler):
-    """Author: Luis
-    # todo Needs improvement with offset
     """
-    def __init__(self, noise_timesteps, s=0.008, dataset_shape=None):
+    Author: Luis
+    Cosine Noise Scheduler for DDPM model.
+    # todo: needs improvement with offset parameter. Check papers for more details.
+    """
+    
+    def __init__(self, noise_timesteps: int, s: float = 0.008, dataset_shape: tuple = None):
         super().__init__(noise_timesteps, dataset_shape)
-        self.s = torch.tensor(s)
+        self.s = torch.tensor(s, dtype=torch.float32)
         self._initialize_schedule()
 
+    def _cosine_schedule(self, t: Tensor) -> Tensor:
+        """
+        Computes the cosine schedule function.
+        """
+        return torch.cos((t / self.noise_timesteps + self.s) / (1 + self.s) * torch.pi / 2) ** 2
+
     def _initialize_schedule(self):
-        t = torch.linspace(0, self.noise_timesteps, self.noise_timesteps)
-        f = lambda t: torch.cos((t / self.noise_timesteps + self.s) / (1 + self.s) * torch.pi / 2) ** 2
-        alphas_bar = f(t) / f(0)   # todo: do not assign a lambda function to a variable, use def instead
-        
-        self.alphas = torch.ones_like(alphas_bar)
-        self.alphas[1:] = alphas_bar[1:] / alphas_bar[:-1]
-        self.alphas[0] = alphas_bar[0]
-        self.betas = torch.clip(1-self.alphas, 0, 0.999)
-        
-        self.betas = self.betas.view(*([-1] + [1] * self.num_dims_to_add))
-        self.alphas = self.alphas.view(*([-1] + [1] * self.num_dims_to_add))
-        self.alpha_cum_prod = torch.cumprod(self.alphas, dim=0)
+        """
+        Initializes the schedule for alpha and beta values based on the cosine schedule.
+        """
+        t = torch.linspace(0, self.noise_timesteps, self.noise_timesteps, dtype=torch.float32)
+        self.alpha_cum_prod = self._cosine_schedule(t) / self._cosine_schedule(torch.tensor(0.0, dtype=torch.float32))
+
+        self.alphas = torch.ones_like(self.alphas_cum_prod)
+        self.alphas[1:] = self.alpha_cum_prod[1:] / self.alpha_cum_prod[:-1]
+        self.alphas[0] = self.alpha_cum_prod[0]
+
+        self.betas = torch.clamp(1 - self.alphas, 0.0001, 0.999)
+
+        shape = [-1] + [1] * self.num_dims_to_add
+        self.betas = self.betas.view(*shape)
+        self.alphas = self.alphas.view(*shape)
+        self.alpha_cum_prod = self.alpha_cum_prod.view(*shape)
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
         self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
-
 
 class Probabilities:
     """ Author: Omar
