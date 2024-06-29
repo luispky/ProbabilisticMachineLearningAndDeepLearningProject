@@ -68,7 +68,6 @@ class Architecture(nn.Module):
         
         return x
 
-
 class NoisePredictor(nn.Module):
     r"""
     Neural network for the noise predictor in DDPM.
@@ -85,37 +84,12 @@ class NoisePredictor(nn.Module):
         if num_classes is not None:
             self.label_emb = nn.Embedding(num_classes, time_dim)  # label_emb(labels) has shape (batch_size, time_dim)
         
-    def positional_encoding(self, time_steps, embedding_dim):
-        r"""
-        Sinusoidal positional encoding for the time steps.
-        The sinusoidal positional encoding is a way of encoding the
-        position of elements in a sequence using sinusoidal functions.
-        It is defined as:
-        PE(pos, 2i) = sin(pos / 10000^(2i/d_model))
-        PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
-        where 
-            - pos is the position of the element in the sequence, 
-            - i is the dimension of the positional encoding, and 
-            - d_model is the dimension of the input
-        The sinusoidal positional encoding is used in the Transformer model
-        to encode the position of elements in the input sequence.
-        # todo this method might be static
-        """
-        inv_freq = 1.0 / (
-            10000
-            ** (torch.arange(0, embedding_dim, 2).float() / embedding_dim)
-        ).to(time_steps.device)
-        pos_enc_a = torch.sin(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
-        pos_enc_b = torch.cos(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
-        pos_enc = torch.cat([pos_enc_a, pos_enc_b], dim=-1)
-        return pos_enc
-        
     def forward(self, x_t, t, y=None):
         
         # Positional encoding for the time steps
         t = t.unsqueeze(-1).type(torch.float)  # t has shape (batch_size,1)
         # Now, t has shape (batch_size)
-        t = self.positional_encoding(t, self.time_dim) 
+        t = positional_encoding(t, self.time_dim) 
         # t has shape (batch_size, time_dim)
         
         # Label embedding
@@ -132,3 +106,28 @@ class NoisePredictor(nn.Module):
         # Apply the architecture 
         output = self.architecture(x_t, t)
         return output
+
+
+def positional_encoding(time_steps, embedding_dim):
+    r"""
+    Sinusoidal positional encoding for the time steps.
+    The sinusoidal positional encoding is a way of encoding the
+    position of elements in a sequence using sinusoidal functions.
+    It is defined as:
+    PE(pos, 2i) = sin(pos / 10000^(2i/d_model))
+    PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+    where 
+        - pos is the position of the element in the sequence, 
+        - i is the dimension of the positional encoding, and 
+        - d_model is the dimension of the input
+    The sinusoidal positional encoding is used in the Transformer model
+    to encode the position of elements in the input sequence.
+    """
+    inv_freq = 1.0 / (
+        10000
+        ** (torch.arange(0, embedding_dim, 2).float() / embedding_dim)
+    ).to(time_steps.device)
+    pos_enc_a = torch.sin(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
+    pos_enc_b = torch.cos(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
+    pos_enc = torch.cat([pos_enc_a, pos_enc_b], dim=-1)
+    return pos_enc

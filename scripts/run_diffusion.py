@@ -2,10 +2,14 @@ import sys
 import os
 sys.path.append(os.path.abspath('..'))
 import torch
+import numpy as np
 import argparse
 import wandb
-from src import DDPM, NoisePredictor, GaussianDataset, LinearNoiseScheduler, EMA, save_plot_generated_samples, plot_loss
-from src import GaussianInpaintingData, plot_data_to_inpaint
+from src.utils import GaussianDataset, LinearNoiseScheduler, EMA, save_plot_generated_samples, plot_loss
+from src.utils import plot_data_to_inpaint
+from src.modules import NoisePredictor
+from src.denoising_diffusion_pm import DDPM
+from src.denoising_diffusion_pm import save_model_to_dir
 
 
 def main():
@@ -58,10 +62,12 @@ def main():
     
     # define the components of the DDPM model: dataset, scheduler, model, EMA class
     ema = EMA(beta=beta_ema)
-    dataset = GaussianDataset()
-
-    dataloader = dataset.generate_data(with_labels=with_labels)
-    dataset_shape = dataset.get_dataset_shape()
+    means = [[-4, -4], [8, 8], [-4, 7]]
+    covariances = [[[2, 0], [0, 2]], [[2, 0], [0, 2]], [[2, 0], [0, 2]]]
+    num_samples_per_distribution = [1000, 2000, 1500]
+    dataset_generator = GaussianDataset()
+    dataloader = dataset_generator.get_dataloader(means, covariances, num_samples_per_distribution)
+    dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     # scheduler = CosineNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     model = NoisePredictor(dataset_shape=dataset_shape, time_dim=time_dim_embedding, num_classes=num_classes)
@@ -77,7 +83,7 @@ def main():
 
     # save model
     if save_model:
-        diffusion.save_model(diffusion.model, model_name)
+        save_model_to_dir(diffusion.model, model_name)
 
     # generate samples 
     labels = torch.randint(0, num_classes, (args.samples,)) if with_labels else None
@@ -88,22 +94,35 @@ def main():
     labels = labels.cpu().numpy() if with_labels else None
 
     # save the generated samples
-    save_plot_generated_samples(sample_image_name, samples, labels=labels)
+    save_plot_generated_samples(samples, sample_image_name, labels=labels)
 
     # generate inpainting samples
-    inpainting_data = GaussianInpaintingData()
+    noise_means = np.random.normal(0, 0.25, 2)
+    noise_covariances = np.random.normal(0, 0.1, (2, 2))
+    means = [[-4, -4], [8, 8], [-4, 7], [6, -4]]
+    covariances = [[[2, 0], [0, 2]],
+                   [[2, 0], [0, 2]],
+                   [[2, 0], [0, 2]],
+                   [[2, 0], [0, 2]]]
+    means = [mean + noise_means for mean in means]
+    covariances = [cov + noise_covariances for cov in covariances]
+    num_samples_per_distribution = [1000, 2000, 1500, 2500]
+    boolean_labels = [False, False, False, True]
+    inpainting_data = dataset_generator.get_features_with_mask(means,
+                                                               covariances,
+                                                               num_samples_per_distribution,
+                                                               boolean_labels)
 
-    original_data, mask = inpainting_data.generate_data()
-    plot_data_to_inpaint(original_data, mask)
+    x, mask = inpainting_data['x'], inpainting_data['mask']
+    plot_data_to_inpaint(x, mask)
 
     # inpaint the masked data
-    inpainted_data = diffusion.inpaint(diffusion.ema_model, original_data, mask)
+    inpainted_data = diffusion.inpaint(diffusion.ema_model, x, mask)
 
     # save the inpainted data
-    save_plot_generated_samples(inpainted_data_name, inpainted_data)
+    save_plot_generated_samples(inpainted_data, inpainted_data_name)
 
     wandb.finish()
-
 
 def test():
     dataset = GaussianDataset()
