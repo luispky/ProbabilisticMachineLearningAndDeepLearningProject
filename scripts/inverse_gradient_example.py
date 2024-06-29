@@ -53,7 +53,6 @@ class SumCapDataset:
         return self.dataset.shape
 
     def plot_data(self):
-        # Generate the dataset
         raise NotImplementedError
 
 
