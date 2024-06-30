@@ -51,6 +51,7 @@ class Architecture(nn.Module):
         """
         # Time embedding
         emb = self.emb_layer(t)  # emb has shape (batch_size, dataset_shape[1])
+        # emb is of datatype float = torch.float32
         
         # Cases for broadcasting emb to match x_t
         if x_t.shape == emb.shape:
@@ -64,6 +65,9 @@ class Architecture(nn.Module):
             # add more cases for different shapes of x_t
         
         # Application of transformation layers
+        # torch layers work better with float32
+        # thus we convert x_t to float32
+        x_t = x_t.to(torch.float32)
         x = self.blocks(x_t + emb)
         
         return x

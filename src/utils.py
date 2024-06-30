@@ -5,6 +5,7 @@ import wandb
 from abc import ABC, abstractmethod
 import torch
 from torch.utils.data import TensorDataset, DataLoader
+import seaborn as sns
 
 class SumCategoricalDataset:
     
@@ -34,7 +35,7 @@ class SumCategoricalDataset:
         y = np.expand_dims(y, axis=1)
 
         # convert to torch tensors
-        x = torch.tensor(p, dtype=torch.float64)
+        x = torch.tensor(p, dtype=torch.float32)
         y = torch.tensor(y, dtype=torch.bool)
 
         self.dataset = {'x': x, 'y': y}
@@ -130,7 +131,7 @@ class SumCategoricalDataset:
         # Repeat each column according to the specified repetition counts
         repeated_result = np.repeat(result, self.n_values, axis=1)
         
-        return repeated_result
+        return torch.tensor(repeated_result, dtype=torch.bool)
     
     def _mask_features_values(self):
         """
@@ -167,7 +168,7 @@ class SumCategoricalDataset:
         
         repeated_result = np.repeat(result, self.n_values, axis=1)
         
-        return repeated_result
+        return torch.tensor(repeated_result, dtype=torch.bool)
 
 class GaussianDataset:
     """
@@ -643,3 +644,104 @@ def cprint(text, color, end='\n'):
     cprint('Failed to be sadge', bcolors.FAIL)
     """
     print(color + text + bcolors.ENDC, end=end)
+    
+    
+def plot_agreement_disagreement_transformation(array1, array2, filename, path="../plots/"):
+    """
+    Plot the agreement and disagreement between two boolean arrays and show transformations.
+    
+    Parameters:
+    - array1 (np.ndarray): First boolean array.
+    - array2 (np.ndarray): Second boolean array.
+    """
+    # Ensure the inputs are boolean arrays
+    assert array1.dtype == bool and array2.dtype == bool, "Inputs must be boolean arrays"
+    assert len(array1) == len(array2), "Arrays must be of the same length"
+
+    # Identify agreement and disagreement
+    agree = array1 == array2
+    disagree = ~agree
+
+    # Identify proper transformations (True in array1 to False in array2)
+    proper_transformed = (array1 & ~array2)
+    # Identify wrong transformations (False in array1 to True in array2)
+    wrong_transformed = (~array1 & array2)
+
+    # Create the plot with higher DPI
+    plt.figure(figsize=(30, 7), dpi=300)
+    
+    y_ticks = np.array([1, 2, 3, 4, 5])
+    pm = 0.1
+  
+    # Plot array1 representation
+    plt.vlines(np.where(array1)[0], y_ticks[4]-pm, y_ticks[4]+pm, color='c', label='Orig.: T')
+    plt.vlines(np.where(~array1)[0], y_ticks[4]-pm, y_ticks[4]+pm, color='y', label='Orig.: F')
+
+    # Plot array2 representation
+    plt.vlines(np.where(array2)[0], y_ticks[3]-pm, y_ticks[3]+pm, color='b', label='Trans.: T')
+    plt.vlines(np.where(~array2)[0], y_ticks[3]-pm, y_ticks[3]+pm, color='m', label='Trans.: F')
+
+    # Plot agreement
+    plt.vlines(np.where(agree)[0], y_ticks[2]-pm, y_ticks[2]+pm, color='g', label='Agree')
+
+    # Plot disagreement
+    plt.vlines(np.where(disagree)[0], y_ticks[2]-pm, y_ticks[2]+pm, color='r', label='Disagree')
+
+    # Plot proper transformations
+    plt.vlines(np.where(wrong_transformed)[0], y_ticks[1]-pm, y_ticks[1]+pm, color='b', label='x Trans. (F to T)')
+
+    # Plot wrong transformations
+    plt.vlines(np.where(proper_transformed)[0], y_ticks[0]-pm, y_ticks[0]+pm, color='m', label='✓ Trans. (T to T)')
+
+    # Add grid and labels
+    plt.yticks(y_ticks, ['', '', '', '', ''])
+    plt.xlabel('Index')
+    plt.title('Agreement, Disagreement, and Transformation between Two Boolean Arrays')
+    plt.legend(bbox_to_anchor=(1.005, 1), loc='upper left')
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    
+    # Remove x and y ticks
+    plt.xticks([])
+    
+    # Save the plot
+    plt.savefig(path + filename + '.png')
+    
+    # Save the plot to wandb
+    wandb.log({filename: wandb.Image(plt)})
+    
+    
+def plot_categories(data, filename, path="../plots/"):
+    # Melt the dataframe to have a long format suitable for seaborn
+    melted_data = data.melt(var_name='Category', value_name='Value')
+
+    # Create a figure with subplots for each category
+    fig, axs = plt.subplots(1, 5, figsize=(30, 6), sharey=True)
+
+    # Get the maximum number of unique values in all categories
+    max_unique_values = max(data.nunique())
+
+    # Iterate over each category
+    for i, category in enumerate(data.columns):
+        # Create the bar plot for the current category
+        ax = sns.countplot(data=melted_data[melted_data['Category'] == category], x='Category', hue='Value', ax=axs[i])
+
+        # Adjust the width of the bars according to the number of unique values in the category
+        for patch in ax.patches:
+            current_width = patch.get_width()
+            diff = current_width - (current_width * data[category].nunique() / max_unique_values)
+            patch.set_width(current_width - diff)
+
+        # Adding labels and title
+        axs[i].set_ylabel('Count') if i == 0 else axs[i].set_ylabel('')
+        axs[i].legend(title='Values')
+        axs[i].set_xlabel('')  # Remove the x-label
+        axs[i].grid(True)
+
+    # Display the plots
+    plt.tight_layout()
+    
+    # Save the plot
+    # plt.savefig(path + filename + '.png')
+    
+    # Save the plot to wandb
+    wandb.log({filename: wandb.Image(plt)})

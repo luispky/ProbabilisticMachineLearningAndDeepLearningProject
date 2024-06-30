@@ -1,0 +1,26 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 61 | Loss: 0.0178:  95%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▎      | 61/64 [00:23<00:01,  2.62it/s]
+
+Epoch: 64 | Loss: 0.0168: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:24<00:00,  2.60it/s]
+Inpainting...
+Inpainting Finished
+128it [00:01, 80.68it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 220, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 203, in main_sum_categorical_data
+    inpainted_data = prob_instance.onehot_to_values(one_hot_data).cpu().numpy()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'numpy.ndarray' object has no attribute 'cpu'
