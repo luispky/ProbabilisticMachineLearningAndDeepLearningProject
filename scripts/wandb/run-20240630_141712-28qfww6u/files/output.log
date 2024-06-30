@@ -1,0 +1,38 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 61 | Loss: 0.0625:  95%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉        | 61/64 [00:43<00:02,  1.46it/s]
+
+Epoch: 64 | Loss: 0.0625: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:45<00:00,  1.42it/s]
+Sampling...
+Sampling Finished
+128it [00:00, 791.76it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 279, in <module>
+    main_gaussian_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 99, in main_gaussian_data
+    save_plot_generated_samples(samples, sample_image_name, labels=labels)
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 292, in save_plot_generated_samples
+    samples = samples.numpy()
+              ^^^^^^^^^^^^^
+AttributeError: 'numpy.ndarray' object has no attribute 'numpy'. Did you mean: 'dump'?

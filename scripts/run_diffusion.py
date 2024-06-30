@@ -67,7 +67,8 @@ def main_gaussian_data():
     covariances = [[[2, 0], [0, 2]], [[2, 0], [0, 2]], [[2, 0], [0, 2]]]
     num_samples_per_distribution = [1000, 2000, 1500]
     dataset_generator = GaussianDataset()
-    dataloader = dataset_generator.get_dataloader(means, covariances, num_samples_per_distribution)
+    dataset_generator.generate_dataset(means, covariances, num_samples_per_distribution)
+    dataloader = dataset_generator.get_dataloader()
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     # scheduler = CosineNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
@@ -119,6 +120,7 @@ def main_gaussian_data():
 
     # inpaint the masked data
     inpainted_data = diffusion.inpaint(diffusion.ema_model, x, mask)
+    inpainted_data = inpainted_data.cpu().numpy()
 
     # save the inpainted data
     save_plot_generated_samples(inpainted_data, inpainted_data_name)
@@ -126,6 +128,7 @@ def main_gaussian_data():
     wandb.finish()
 
 def main_sum_categorical_data():
+    # todo: check if I am properly using the label_values attribute of the SumCategoricalDataset class
     # define the arguments
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
@@ -172,6 +175,7 @@ def main_sum_categorical_data():
     threshold = 15
     n_values = [2, 3, 5, 7, 11]
     dataset_generator = SumCategoricalDataset(size, n_values, threshold)
+    _ = dataset_generator.generate_dataset()
     dataloader = dataset_generator.get_dataloader()
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
@@ -273,6 +277,6 @@ def main_sum_categorical_data():
     wandb.finish()
 
 if __name__ == '__main__':
-    # main_gaussian_data()
-    main_sum_categorical_data()
+    main_gaussian_data()
+    # main_sum_categorical_data()
     
