@@ -217,7 +217,7 @@ class DDPM:
 
         print('Inpainting Finished')
         
-        return x_t_minus_one.to('cpu')
+        return x_t_minus_one
 
 
 def save_model_to_dir(model, filename, path = "../models/"):
