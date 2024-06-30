@@ -504,8 +504,7 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
         t = torch.linspace(0, self.noise_timesteps, self.noise_timesteps, dtype=torch.float32)
         self.alpha_cum_prod = self._cosine_schedule(t) / self._cosine_schedule(torch.tensor(0.0, dtype=torch.float32))
 
-        # todo unresolved reference to 'alphas_cum_prod' for CosineNoiseScheduler
-        self.alphas = torch.ones_like(self.alphas_cum_prod)
+        self.alphas = torch.ones_like(self.alpha_cum_prod)
         self.alphas[1:] = self.alpha_cum_prod[1:] / self.alpha_cum_prod[:-1]
         self.alphas[0] = self.alpha_cum_prod[0]
 
