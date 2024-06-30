@@ -7,14 +7,42 @@ import torch
 from torch.utils.data import TensorDataset, DataLoader
 import seaborn as sns
 
-class SumCategoricalDataset:
-    
-    def __init__(self, size, n_values: list | tuple, threshold):
-        self.threshold = threshold
+
+class BaseDataset(ABC):
+    def __init__(self):
+        self.dataset = None
+
+    @abstractmethod
+    def generate_dataset(self):
+        pass
+
+    def get_dataloader(self, batch_size=14, shuffle=True, with_labels=False):
+        """Generate a dataloader for the dataset."""
+        if self.dataset is None:
+            self.generate_dataset()
+        
+        if with_labels:
+            tensor_dataset = TensorDataset(self.dataset['x'], self.dataset['y'])
+        else:
+            tensor_dataset = TensorDataset(self.dataset['x'])
+        
+        return DataLoader(tensor_dataset, batch_size=batch_size, shuffle=shuffle)
+
+    def get_dataset_shape(self):
+        assert self.dataset is not None, 'Dataset not generated'
+        return self.dataset['x'].shape
+
+    @abstractmethod
+    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True):
+        pass
+
+
+class SumCategoricalDataset(BaseDataset):
+    def __init__(self, size, n_values, threshold):
+        super().__init__()
         self.size = size
         self.n_values = n_values
         self.threshold = threshold
-        self.dataset = None
         self.label_values = None
 
     def generate_dataset(self):
@@ -41,26 +69,6 @@ class SumCategoricalDataset:
         self.dataset = {'x': x, 'y': y}
         
         return self.dataset
-
-    def get_dataloader(self, with_labels=False, batch_size=14, shuffle=True):
-        """Generate a dataloader for the dataset."""
-        
-        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
-        
-        if with_labels:
-            tensor_dataset = TensorDataset(dataset['x'], dataset['y'])
-        else:
-            y = dataset['y'].to(torch.bool).squeeze()
-            
-            tensor_dataset = TensorDataset(dataset['x'][~y])
-        
-        dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=shuffle)
-        
-        return dataloader
-    
-    def get_dataset_shape(self):
-        assert self.dataset is not None, 'Dataset not generated'
-        return self.dataset['x'].shape
     
     def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True):
         """Generate the dataset with the mask to inpaint."""
@@ -88,9 +96,8 @@ class SumCategoricalDataset:
         
         dataset = self.dataset if self.dataset is not None else self.generate_dataset()
         mask = ~dataset['y']
-        mask = mask.to(torch.bool)
 
-        return mask
+        return mask.to(torch.bool)
         
     def _mask_one_feature_values(self):
         """
@@ -170,26 +177,19 @@ class SumCategoricalDataset:
         
         return torch.tensor(repeated_result, dtype=torch.bool)
 
-class GaussianDataset:
+
+class GaussianDataset(BaseDataset):
     """
     Author: Luis
     Class to generate the dataset for the DDPM model.
     """
     
     def __init__(self):
-        self.dataset = None
+        super().__init__()
 
-    def generate_samples(self, mean, cov, num_samples):
+    def _generate_samples(self, mean, cov, num_samples):
         """
         Generates samples using an alternative approach to handle non-positive definite covariance matrices.
-        
-        Parameters:
-        - mean (list): Mean vector for the Gaussian distribution.
-        - cov (list): Covariance matrix for the Gaussian distribution.
-        - num_samples (int): Number of samples to generate.
-        
-        Returns:
-        - torch.Tensor: Generated samples.
         """
         mean_tensor = torch.tensor(mean, dtype=torch.float32)
         cov_tensor = torch.tensor(cov, dtype=torch.float32)
@@ -226,15 +226,12 @@ class GaussianDataset:
         assert len(means) == len(covariances) == len(num_samples_per_distribution) == len(labels), \
             "The lengths of means, covariances, num_samples_per_distribution, and labels must be the same."
         
-        assert len(labels) == len(means), \
-            "The length of labels must match the number of distributions."
-        
         samples = []
         labels_list = []
         
         for mean, cov, num_samples, label in zip(means, covariances, num_samples_per_distribution, labels):
-            samples_i = self.generate_samples(mean, cov, num_samples)
-            labels_i = torch.full((num_samples, 1), label)  # Assign the specified label to the samples
+            samples_i = self._generate_samples(mean, cov, num_samples)
+            labels_i = torch.full((num_samples, 1), label)
             samples.append(samples_i)
             labels_list.append(labels_i)
         
@@ -245,46 +242,20 @@ class GaussianDataset:
         self.dataset = {'x': x_tensor, 'y': y_tensor}
         
         return self.dataset
-    
-    def get_dataset_shape(self):
-        assert self.dataset is not None, 'Dataset not generated'
-        return self.dataset['x'].shape
-    
-    def get_dataloader(self, means, covariances, num_samples_per_distribution, with_labels=False, labels=None, batch_size=14, shuffle=True):
-        """
-        Generates a dataloader for the dataset.
-        """
-        
-        # either labels are provided or not, but not both
-        assert (labels is None) != with_labels, 'Either labels are provided or not'
-        
-        if self.dataset is None:
-            dataset = self.generate_dataset(means, covariances, num_samples_per_distribution)
-        else:
-            dataset = self.dataset  
-        
-        if with_labels:
-            tensor_dataset = TensorDataset(dataset['x'], dataset['y'])
-        else: 
-            tensor_dataset = TensorDataset(dataset['x']) 
-            
-        self.dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=shuffle)
-        
-        return self.dataloader
 
     def get_features_with_mask(self, means, covariances, num_samples_per_distribution, boolean_labels):
         """
         Generates the dataset with the mask to inpaint.
         """
-        
+
         # inspect if the labels are boolean
         assert all(isinstance(label, bool) for label in boolean_labels), 'Labels must be boolean'
-        
-        dataset = self.generate_dataset(means, covariances, num_samples_per_distribution, boolean_labels)
+
+        dataset = self.generate_dataset(means, covariances, num_samples_per_distribution, boolean_labels).copy()
         dataset['mask'] = dataset.pop('y')
         dataset['mask'] = ~dataset['mask']
         dataset['mask'] = dataset['mask'].to(torch.bool)
-        
+
         return dataset
 
     def plot_data(self):
@@ -318,8 +289,9 @@ def save_plot_generated_samples(samples, filename, labels=None, path="../plots/"
     if not os.path.exists(path):
         os.makedirs(path)
     
-    fig = plt.figure()
+    samples = samples
     
+    fig = plt.figure()
     
     if labels is not None:
         mask = labels == 1
@@ -506,6 +478,7 @@ class LinearNoiseScheduler(BaseNoiseScheduler):
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
         self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
 
+
 class CosineNoiseScheduler(BaseNoiseScheduler):
     """
     Author: Luis
@@ -543,6 +516,7 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
         self.alpha_cum_prod = self.alpha_cum_prod.view(*shape)
         self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
         self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
+
 
 class Probabilities:
     """ Author: Omar
