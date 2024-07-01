@@ -138,7 +138,7 @@ class SumCategoricalDataset(BaseDataset):
         # Repeat each column according to the specified repetition counts
         repeated_result = np.repeat(result, self.n_values, axis=1)
 
-        return torch.tensor(repeated_result, dtype=torch.bool)
+        return ~torch.tensor(repeated_result, dtype=torch.bool)
 
     def _mask_features_values(self):
         """
@@ -175,7 +175,7 @@ class SumCategoricalDataset(BaseDataset):
 
         repeated_result = np.repeat(result, self.n_values, axis=1)
 
-        return torch.tensor(repeated_result, dtype=torch.bool)
+        return ~torch.tensor(repeated_result, dtype=torch.bool)
 
 
 class GaussianDataset(BaseDataset):
@@ -282,11 +282,11 @@ class GaussianDataset(BaseDataset):
         plt.show()
 
 
-def save_plot_generated_samples(samples, filename, labels=None, path="../plots/"):
+def plot_generated_samples(samples, filename, labels=None, save_locally=False, path="../plots/"):
     """ Author: Luis
     Save the plot of the generated samples in the plots folder and in the wandb dashboard.
     """
-    if not os.path.exists(path):
+    if not os.path.exists(path) and save_locally:
         os.makedirs(path)
     
     fig = plt.figure()
@@ -301,7 +301,9 @@ def save_plot_generated_samples(samples, filename, labels=None, path="../plots/"
     plt.title('Generated Samples')
     plt.xlabel('X')
     plt.ylabel('Y')
-    plt.savefig(path + filename + '.png')
+    
+    if save_locally:
+        plt.savefig(path + filename + '.png')
 
     wandb.log({filename: wandb.Image(fig)})
 
