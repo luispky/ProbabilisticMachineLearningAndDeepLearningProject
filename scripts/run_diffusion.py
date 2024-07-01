@@ -173,6 +173,7 @@ def main_sum_categorical_data():
     size = 3000
     threshold = 15
     n_values = [2, 3, 5, 7, 11]
+    prob_normalizer = Probabilities(n_values)
     dataset_generator = SumCategoricalDataset(size, n_values, threshold)
     _ = dataset_generator.generate_dataset(remove_anomalies=True)
     dataloader = dataset_generator.get_dataloader()
@@ -194,23 +195,20 @@ def main_sum_categorical_data():
     plot_loss(train_losses, loss_name)
     
     # generate samples
-    samples = diffusion.sample(diffusion.ema_model)
+    samples = diffusion.sample(diffusion.ema_model, probabilities_normalizer=prob_normalizer)
     # clamp the inpainted data to the range [0, 1]
     # the normalize method of the Probabilities class only works with values in the range [0, 1]
-    samples = torch.clamp(samples, 0, 1)
-    samples = samples.cpu().numpy()
     
     # print the min and max values of the inpainted data
     print(f'Min value: {samples.min()}')
     print(f'Max value: {samples.max()}') 
     
     # normalize the inpainted data with the Probabilities class
-    normalized_data = prob_instance.normalize(samples)
-    one_hot_data = prob_instance.prob_to_onehot(normalized_data)
-    sampled_values = prob_instance.onehot_to_values(one_hot_data)
+    onehot_data = prob_instance.prob_to_onehot(samples)
+    samples = prob_instance.onehot_to_values(onehot_data)
     
     # save the generated samples
-    plot_categories(sampled_values, n_values, sample_image_name)
+    plot_categories(samples, n_values, sample_image_name)
     
     # generate inpainting samples
     size = 1500

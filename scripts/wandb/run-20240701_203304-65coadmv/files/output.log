@@ -1,0 +1,37 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 61 | Loss: 0.0214:  95%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉        | 61/64 [00:23<00:01,  2.25it/s]
+Training Finished
+Sampling...
+Epoch: 64 | Loss: 0.0219: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:24<00:00,  2.57it/s]
+128it [00:00, 851.15it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 272, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 198, in main_sum_categorical_data
+    samples = diffusion.sample(diffusion.ema_model, probabilities_normalizer=prob_normalizer)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/denoising_diffusion_pm.py", line 182, in sample
+    x = probabilities_normalizer.normalize(torch.clamp(x, 0., 1.).cpu().numpy())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 559, in normalize
+    assert np.all(s > 0), f'Zero sum: {s}'
+           ^^^^^^^^^^^^^
+AssertionError: Zero sum: [[1.         1.         1.20397146 ... 2.18870077 2.18870077 2.18870077]
+ [1.         1.         1.39610571 ... 2.1745736  2.1745736  2.1745736 ]
+ [1.         1.         1.29800245 ... 2.49201143 2.49201143 2.49201143]
+ ...
+ [0.43287684 0.43287684 1.83910552 ... 2.69294935 2.69294935 2.69294935]
+ [1.         1.         2.         ... 4.05587713 4.05587713 4.05587713]
+ [0.6206004  0.6206004  1.15928899 ... 2.68015045 2.68015045 2.68015045]]

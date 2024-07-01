@@ -1,4 +1,6 @@
+import sys 
 import os
+sys.path.append(os.path.abspath('..'))
 import torch
 import numpy as np
 import torch.nn as nn
@@ -10,6 +12,7 @@ from safetensors.torch import load_model as safe_load_model
 import wandb
 
 from .modules import NoisePredictor
+
 
 class DDPM:
     """
@@ -141,7 +144,7 @@ class DDPM:
         return train_losses
 
     # Sampling method according to the DDPM paper
-    def sample(self, model, labels=None, cfg_strength=3):
+    def sample(self, model, labels=None, cfg_strength=3, probabilities_normalizer=None):
         # ?: maybe something must be changed for the SumCategoricalDataset
         model.eval()
         model.to(self.args.device)
@@ -175,10 +178,13 @@ class DDPM:
         
         print('Sampling Finished')
         
+        if probabilities_normalizer is not None:
+            x = probabilities_normalizer.normalize(torch.clamp(x, 0., 1.).cpu().numpy())
+        
         return x
 
     # Inpainting method according to the RePaint paper
-    def inpaint(self, model, original, mask, U=10):
+    def inpaint(self, model, original, mask, U=10, probabilities_normalizer=None):
         # todo: review the inpainting method to properly implement it
         # the parameters U is not totally clear
         # ?: maybe something must be changed for the SumCategoricalDataset
@@ -188,6 +194,9 @@ class DDPM:
         original = original.to(self.args.device)
         mask = mask.to(self.args.device)
         
+        # lambda function to normalize the probabilities if probabilities_normalizer is not None
+        normalize = lambda x: probabilities_normalizer.normalize(x.numpy()) if probabilities_normalizer is not None else x        
+        
         print('Inpainting...')
         
         with torch.no_grad():
@@ -195,6 +204,8 @@ class DDPM:
             x_t = torch.randn_like(original).to(self.args.device)
             x_t_minus_one = torch.randn_like(x_t)
             ones = torch.ones(x_t.shape[0])
+            
+            x_t = normalize(x_t)
             
             # for t = T, T-1, ..., 1 (-1 in Python)
             for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
@@ -207,13 +218,18 @@ class DDPM:
                     
                     # differs from the algorithm in the paper but doesn't matter because of stochasticity
                     x_known = self.scheduler.add_noise(original, forward_noise, t)
+                    x_known = normalize(x_known)
                     
                     predicted_noise = model(x_t, t)
                     x_unknown = self.scheduler.sample_prev_step(x_t, predicted_noise, t)
+                    x_unknown = normalize(x_unknown)
                     
+                    # todo: check this step
                     x_t_minus_one = x_known * mask + x_unknown * (~mask)
+                    x_t_minus_one = normalize(x_t_minus_one)
                     
                     x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < U and i > 0) else x_t
+                    x_t = normalize(x_t)
 
         print('Inpainting Finished')
         
