@@ -11,7 +11,6 @@ from src.modules import NoisePredictor
 from src.denoising_diffusion_pm import DDPM
 from src.denoising_diffusion_pm import save_model_to_dir
 from src.utils import Probabilities, plot_agreement_disagreement_transformation, plot_categories
-import pandas as pd
 
 def main_gaussian_data():
     # define the arguments
@@ -183,9 +182,7 @@ def main_sum_categorical_data():
     prob_instance = Probabilities(n_values)
     
     # plot the train label encoded values
-    df_train = pd.DataFrame(dataset_generator.label_values, columns=n_values)
-    
-    plot_categories(df_train, original_data_name)
+    plot_categories(dataset_generator.label_values, n_values, original_data_name)
     
     # Instantiate the DDPM model
     diffusion = DDPM(scheduler, model, args)
@@ -210,12 +207,10 @@ def main_sum_categorical_data():
     # normalize the inpainted data with the Probabilities class
     normalized_data = prob_instance.normalize(samples)
     one_hot_data = prob_instance.prob_to_onehot(normalized_data)
-    samples_values = prob_instance.onehot_to_values(one_hot_data)
+    sampled_values = prob_instance.onehot_to_values(one_hot_data)
     
-    df_samples = pd.DataFrame(samples_values, columns=n_values)
-
     # save the generated samples
-    plot_categories(df_samples, sample_image_name)
+    plot_categories(sampled_values, n_values, sample_image_name)
     
     # generate inpainting samples
     size = 1500
@@ -225,8 +220,7 @@ def main_sum_categorical_data():
 
     x, mask = data_to_inpaint['x'], data_to_inpaint['mask']
     
-    df_values_to_inpaint = pd.DataFrame(dataset_generator.label_values, columns=n_values)
-    plot_categories(df_values_to_inpaint, data_to_inpaint_name)
+    plot_categories(dataset_generator.label_values, n_values, data_to_inpaint_name)
     
     # inpaint the masked data: probabilities
     inpainted_data = diffusion.inpaint(diffusion.ema_model, x, mask)
@@ -238,7 +232,7 @@ def main_sum_categorical_data():
     # the normalize method of the Probabilities class only works with values in the range [0, 1]
     inpainted_data = torch.clamp(inpainted_data, 0, 1).cpu().numpy()
     
-    # todo: I get assert np.all(s > 0), f'Zero sum: {s}' error
+    # todo: I get "assert np.all(s > 0), f'Zero sum: {s}' error"
     # I have to check the sum of the inpainted data
     
     # normalize the inpainted data with the Probabilities class
@@ -253,30 +247,29 @@ def main_sum_categorical_data():
     # Count the number of times the threshold is exceeded
     y_after = inpainted_data.sum(axis=1) > threshold
     number_remaining_anomalies = np.sum(y_after)
+    percentage_change = (number_remaining_anomalies - number_anomalies) / number_anomalies * 100
     
     right_changes = (y & ~y_after).sum().item()
     wrong_changes = (~y & y_after).sum().item()
     
     # plot the inpainted data and the agreement/disagreement transformation
-    df_inpaint = pd.DataFrame(dataset_generator.label_values, columns=n_values)
-    plot_categories(df_inpaint, inpainted_data_name) 
+    plot_categories(dataset_generator.label_values, n_values, inpainted_data_name) 
     
     plot_agreement_disagreement_transformation(y, y_after, inpainted_data_name)
     
-    print(f'Anomalies before inpainting: {number_anomalies}')
-    print(f'Remaining anomalies: {number_remaining_anomalies}')
-    print(f'Correct changes: {right_changes}')
-    print(f'Wrong changes: {wrong_changes}')
+    print(f'Data size: {size}')
+    print(f'Anomalies before inpainting / Total: {number_anomalies} / {size}')
+    print(f'Remaining anomalies / Total: {number_remaining_anomalies} / {size}')
+    print(f'Percentage change: {percentage_change:.2f}%')
+    print(f'Correct changes (balance): {right_changes} ({number_anomalies - right_changes})')
+    print(f'Wrong changes (balance): {wrong_changes} ({number_anomalies - wrong_changes})')
     
-    # todo: 
-    # 1. compare labels that changed from 1 to 0 and vice versa
-    # there should be two counters: 
-    # one for the number of anomalies that changed from 1 to 0
-    # another for the number of non-anomalies that changed to anomalies
+    # ?: perform element-wise inspection of the values representation to see if the inpainting 
+    # only changed the values that were supposed to be changed
     
     wandb.finish()
 
 if __name__ == '__main__':
-    main_gaussian_data()
-    # main_sum_categorical_data()
+    # main_gaussian_data()
+    main_sum_categorical_data()
     
