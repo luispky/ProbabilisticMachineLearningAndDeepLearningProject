@@ -527,7 +527,7 @@ class Probabilities:
     of features with different number of values
     """
 
-    def __init__(self, n_values: list):
+    def __init__(self, n_values: list | tuple):
         self.n_values = n_values
         self.n = len(n_values)
         self.length = sum(n_values)
