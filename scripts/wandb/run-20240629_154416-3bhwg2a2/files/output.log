@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 131, in <module>
-    main()
-  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 70, in main
-    dataloader = dataset_generator.generate_data(means, covariances, num_samples_per_distribution)
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'GaussianDataset' object has no attribute 'generate_data'. Did you mean: 'generate_dataset'?
