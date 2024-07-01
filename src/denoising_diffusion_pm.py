@@ -12,7 +12,7 @@ import wandb
 from .modules import NoisePredictor
 
 class DDPM:
-    r"""
+    """
     Class for the Denoising Diffusion Probabilistic Model.
     It just implements methods but not the model itself.
     It implements the training and sampling methods for the model according to the DDPM paper.
@@ -205,7 +205,7 @@ class DDPM:
                     # epsilon = N(0, I) if t > 1 else 0
                     forward_noise = torch.randn_like(x_t) if t[0] > 0 else torch.zeros_like(x_t)
                     
-                    # differs from the algorithm in the paper but doesn't maatter because of stochasticity
+                    # differs from the algorithm in the paper but doesn't matter because of stochasticity
                     x_known = self.scheduler.add_noise(original, forward_noise, t)
                     
                     predicted_noise = model(x_t, t)

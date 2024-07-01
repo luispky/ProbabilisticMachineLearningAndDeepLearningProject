@@ -5,7 +5,7 @@ import torch
 import numpy as np
 import argparse
 import wandb
-from src.utils import GaussianDataset, LinearNoiseScheduler, EMA, save_plot_generated_samples, plot_loss
+from src.utils import GaussianDataset, LinearNoiseScheduler, EMA, plot_generated_samples, plot_loss
 from src.utils import plot_data_to_inpaint, SumCategoricalDataset
 from src.modules import NoisePredictor
 from src.denoising_diffusion_pm import DDPM
@@ -34,7 +34,7 @@ def main_gaussian_data():
     architecture_comment = '4 layers, ins: 2, 32, 64, 32 | sum x and t'
     #  Hyperparameters that influence the model
     noise_time_steps = 128  # 128 good value, try 256
-    time_dim_embedding = 64  # >=32 work well
+    time_dim_embedding = 64  # >=32 works well
 
     save_model = False
 
@@ -95,7 +95,7 @@ def main_gaussian_data():
     labels = labels.cpu().numpy() if with_labels else None
 
     # save the generated samples
-    save_plot_generated_samples(samples, sample_image_name, labels=labels)
+    plot_generated_samples(samples, sample_image_name, labels=labels)
 
     # generate inpainting samples
     noise_means = np.random.normal(0, 0.25, 2)
@@ -122,7 +122,7 @@ def main_gaussian_data():
     inpainted_data = inpainted_data.cpu().numpy()
 
     # save the inpainted data
-    save_plot_generated_samples(inpainted_data, inpainted_data_name)
+    plot_generated_samples(inpainted_data, inpainted_data_name)
 
     wandb.finish()
 
@@ -174,7 +174,7 @@ def main_sum_categorical_data():
     threshold = 15
     n_values = [2, 3, 5, 7, 11]
     dataset_generator = SumCategoricalDataset(size, n_values, threshold)
-    _ = dataset_generator.generate_dataset()
+    _ = dataset_generator.generate_dataset(remove_anomalies=True)
     dataloader = dataset_generator.get_dataloader()
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
@@ -253,14 +253,14 @@ def main_sum_categorical_data():
     wrong_changes = (~y & y_after).sum().item()
     
     # plot the inpainted data and the agreement/disagreement transformation
-    plot_categories(dataset_generator.label_values, n_values, inpainted_data_name) 
+    plot_categories(inpainted_data, n_values, inpainted_data_name) 
     
     plot_agreement_disagreement_transformation(y, y_after, inpainted_data_name)
     
     print(f'Data size: {size}')
     print(f'Anomalies before inpainting / Total: {number_anomalies} / {size}')
     print(f'Remaining anomalies / Total: {number_remaining_anomalies} / {size}')
-    print(f'Percentage change: {percentage_change:.2f}%')
+    print(f'Percentage change (-100% desired): {percentage_change:.2f}%')
     print(f'Correct changes (balance): {right_changes} ({number_anomalies - right_changes})')
     print(f'Wrong changes (balance): {wrong_changes} ({number_anomalies - wrong_changes})')
     

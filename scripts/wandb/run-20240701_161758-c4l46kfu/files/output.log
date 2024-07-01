@@ -1,0 +1,36 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 61 | Loss: 0.0178:  95%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▋       | 61/64 [00:31<00:01,  2.08it/s]
+Training Finished
+Sampling...
+Sampling Finished
+Min value: 0.0
+Epoch: 64 | Loss: 0.0177: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:32<00:00,  1.95it/s]
+128it [00:00, 959.80it/s]
+Inpainting...
+96it [00:00, 102.19it/s]
+Inpainting Finished
+Min value: 1.02033736766316e-05
+
+128it [00:01, 100.20it/s]
+Data size: 1500
+Anomalies before inpainting / Total: 272 / 1500
+Remaining anomalies / Total: 86 / 1500
+Percentage change: -68.38%
+Correct changes (balance): 186 (86)
+Wrong changes (balance): 0 (272)
