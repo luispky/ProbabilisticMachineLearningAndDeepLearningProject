@@ -1,0 +1,55 @@
+2024-07-01 12:32:49,692 INFO    StreamThr :148803 [internal.py:wandb_internal():85] W&B internal server running at pid: 148803, started at: 2024-07-01 12:32:49.691167
+2024-07-01 12:32:49,697 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: status
+2024-07-01 12:32:49,699 INFO    WriterThread:148803 [datastore.py:open_for_write():87] open: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240701_123249-7ixhm0dj/run-7ixhm0dj.wandb
+2024-07-01 12:32:49,703 DEBUG   SenderThread:148803 [sender.py:send():379] send: header
+2024-07-01 12:32:49,710 DEBUG   SenderThread:148803 [sender.py:send():379] send: run
+2024-07-01 12:32:50,176 INFO    SenderThread:148803 [dir_watcher.py:__init__():211] watching files in: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240701_123249-7ixhm0dj/files
+2024-07-01 12:32:50,176 INFO    SenderThread:148803 [sender.py:_start_run_threads():1188] run started: 7ixhm0dj with start time 1719829969.691555
+2024-07-01 12:32:50,181 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: check_version
+2024-07-01 12:32:50,181 DEBUG   SenderThread:148803 [sender.py:send_request():406] send_request: check_version
+2024-07-01 12:32:50,272 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: run_start
+2024-07-01 12:32:50,284 DEBUG   HandlerThread:148803 [system_info.py:__init__():26] System info init
+2024-07-01 12:32:50,284 DEBUG   HandlerThread:148803 [system_info.py:__init__():41] System info init done
+2024-07-01 12:32:50,285 INFO    HandlerThread:148803 [system_monitor.py:start():194] Starting system monitor
+2024-07-01 12:32:50,285 INFO    SystemMonitor:148803 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-07-01 12:32:50,285 INFO    HandlerThread:148803 [system_monitor.py:probe():214] Collecting system info
+2024-07-01 12:32:50,286 INFO    SystemMonitor:148803 [interfaces.py:start():188] Started cpu monitoring
+2024-07-01 12:32:50,286 INFO    SystemMonitor:148803 [interfaces.py:start():188] Started disk monitoring
+2024-07-01 12:32:50,287 INFO    SystemMonitor:148803 [interfaces.py:start():188] Started gpu monitoring
+2024-07-01 12:32:50,287 INFO    SystemMonitor:148803 [interfaces.py:start():188] Started memory monitoring
+2024-07-01 12:32:50,288 INFO    SystemMonitor:148803 [interfaces.py:start():188] Started network monitoring
+2024-07-01 12:32:50,294 DEBUG   HandlerThread:148803 [system_info.py:probe():152] Probing system
+2024-07-01 12:32:50,294 ERROR   gpu       :148803 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-01 12:32:50,294 ERROR   gpu       :148803 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-01 12:32:50,296 DEBUG   HandlerThread:148803 [system_info.py:_probe_git():137] Probing git
+2024-07-01 12:32:50,300 DEBUG   HandlerThread:148803 [system_info.py:_probe_git():145] Probing git done
+2024-07-01 12:32:50,300 DEBUG   HandlerThread:148803 [system_info.py:probe():200] Probing system done
+2024-07-01 12:32:50,300 DEBUG   HandlerThread:148803 [system_monitor.py:probe():223] {'os': 'Linux-6.5.0-41-generic-x86_64-with-glibc2.35', 'python': '3.12.4', 'heartbeatAt': '2024-07-01T10:32:50.294574', 'startedAt': '2024-07-01T10:32:49.680824', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py', 'codePathLocal': 'run_diffusion.py', 'codePath': 'scripts/run_diffusion.py', 'git': {'remote': 'git@github.com:luispky/ProbabilisticMachineLearningProject.git', 'commit': '5c0fa136a9b38a5d340b865186669fa0d9a7ad50'}, 'email': 'luispalaciosky@gmail.com', 'root': '/home/l11/Documents/ProbabilisticMachineLearningProject', 'host': 'l11', 'username': 'l11', 'executable': '/home/l11/miniconda3/envs/DL/bin/python', 'cpu_count': 6, 'cpu_count_logical': 12, 'cpu_freq': {'current': 2.8000833333333333, 'min': 800.0, 'max': 4100.0}, 'cpu_freq_per_core': [{'current': 2.806, 'min': 800.0, 'max': 4100.0}, {'current': 0.8, 'min': 800.0, 'max': 4100.0}, {'current': 3.9, 'min': 800.0, 'max': 4100.0}, {'current': 0.8, 'min': 800.0, 'max': 4100.0}, {'current': 0.8, 'min': 800.0, 'max': 4100.0}, {'current': 3.898, 'min': 800.0, 'max': 4100.0}, {'current': 3.899, 'min': 800.0, 'max': 4100.0}, {'current': 3.9, 'min': 800.0, 'max': 4100.0}, {'current': 0.8, 'min': 800.0, 'max': 4100.0}, {'current': 3.899, 'min': 800.0, 'max': 4100.0}, {'current': 3.899, 'min': 800.0, 'max': 4100.0}, {'current': 3.899, 'min': 800.0, 'max': 4100.0}], 'disk': {'/': {'total': 915.3232879638672, 'used': 48.2065315246582}}, 'gpu': 'NVIDIA GeForce GTX 1050 Ti', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce GTX 1050 Ti', 'memory_total': 4294967296}], 'memory': {'total': 15.301258087158203}}
+2024-07-01 12:32:50,300 INFO    HandlerThread:148803 [system_monitor.py:probe():224] Finished collecting system info
+2024-07-01 12:32:50,300 INFO    HandlerThread:148803 [system_monitor.py:probe():227] Publishing system info
+2024-07-01 12:32:50,300 DEBUG   HandlerThread:148803 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-07-01 12:32:51,176 INFO    Thread-12 :148803 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240701_123249-7ixhm0dj/files/conda-environment.yaml
+2024-07-01 12:32:51,867 DEBUG   HandlerThread:148803 [system_info.py:_save_conda():224] Saving conda packages done
+2024-07-01 12:32:51,868 INFO    HandlerThread:148803 [system_monitor.py:probe():229] Finished publishing system info
+2024-07-01 12:32:51,869 DEBUG   SenderThread:148803 [sender.py:send():379] send: files
+2024-07-01 12:32:51,869 INFO    SenderThread:148803 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-07-01 12:32:51,927 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: python_packages
+2024-07-01 12:32:51,927 DEBUG   SenderThread:148803 [sender.py:send_request():406] send_request: python_packages
+2024-07-01 12:32:51,929 DEBUG   SenderThread:148803 [sender.py:send():379] send: telemetry
+2024-07-01 12:32:51,929 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 12:32:51,929 DEBUG   SenderThread:148803 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 12:32:51,930 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 12:32:52,160 DEBUG   SenderThread:148803 [sender.py:send():379] send: config
+2024-07-01 12:32:52,176 INFO    Thread-12 :148803 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240701_123249-7ixhm0dj/files/conda-environment.yaml
+2024-07-01 12:32:52,176 INFO    Thread-12 :148803 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240701_123249-7ixhm0dj/files/wandb-metadata.json
+2024-07-01 12:32:52,176 INFO    Thread-12 :148803 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/scripts/wandb/run-20240701_123249-7ixhm0dj/files/requirements.txt
+2024-07-01 12:32:52,298 ERROR   gpu       :148803 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-01 12:32:52,299 ERROR   gpu       :148803 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-01 12:32:52,542 INFO    wandb-upload_0:148803 [upload_job.py:push():130] Uploaded file /tmp/tmpi3nz0nc8wandb/ql7qiu4d-wandb-metadata.json
+2024-07-01 12:32:52,928 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 12:32:53,262 DEBUG   SenderThread:148803 [sender.py:send():379] send: files
+2024-07-01 12:32:53,262 INFO    SenderThread:148803 [sender.py:_save_file():1454] saving file media/images/original_data_01_0_8eca8ff6f8ceb954608e.png with policy now
+2024-07-01 12:32:53,305 DEBUG   HandlerThread:148803 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 12:32:53,306 DEBUG   SenderThread:148803 [sender.py:send():379] send: history
+2024-07-01 12:32:53,306 DEBUG   SenderThread:148803 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 12:32:53,308 INFO    SenderThread:148803 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 import seaborn as sns
-
+import pandas as pd
 
 class BaseDataset(ABC):
     def __init__(self):
@@ -372,7 +372,7 @@ class EMA:
         ema_model.load_state_dict(model.state_dict())
 
 
-def plot_loss(losses, filename, path="../plots/"):
+def plot_loss(losses, filename, save_locally=False, save_wandb=False, path="../plots/"):
     """plot the loss and save it in the plots folder and in the wandb dashboard."""
     if not os.path.exists(path):
         os.makedirs(path)
@@ -382,9 +382,12 @@ def plot_loss(losses, filename, path="../plots/"):
     plt.title('Training Loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
-    plt.savefig(path + filename + '.png')
+    
+    if save_locally:
+        plt.savefig(path + filename + '.png')
 
-    wandb.log({filename: wandb.Image(fig)})
+    if save_wandb:
+        wandb.log({filename: wandb.Image(fig)})
 
 
 class BaseNoiseScheduler(ABC):
@@ -621,7 +624,7 @@ def cprint(text, color, end='\n'):
     print(color + text + bcolors.ENDC, end=end)
 
 
-def plot_agreement_disagreement_transformation(array1, array2, filename, path="../plots/"):
+def plot_agreement_disagreement_transformation(array1, array2, filename, save_locally=False, path="../plots/"):
     """
     Plot the agreement and disagreement between two boolean arrays and show transformations.
     
@@ -678,17 +681,18 @@ def plot_agreement_disagreement_transformation(array1, array2, filename, path=".
     # Remove x and y ticks
     plt.xticks([])
 
-    # Save the plot
-    plt.savefig(path + filename + '.png')
+    # Save the plot locally
+    if save_locally:
+        plt.savefig(path + filename + '.png')
 
     # Save the plot to wandb
     wandb.log({filename: wandb.Image(plt)})
 
 
-def plot_categories(data, filename, path="../plots/"):
-    """
-    todo comment + path not used
-    """
+def plot_categories(label_values, n_values, filename, save_locally=False, path="../plots/"):
+    
+    data = pd.DataFrame(label_values, columns=[f'Category {i}' for i in range(len(n_values))])
+    
     # Melt the dataframe to have a long format suitable for seaborn
     melted_data = data.melt(var_name='Category', value_name='Value')
 
@@ -718,8 +722,9 @@ def plot_categories(data, filename, path="../plots/"):
     # Display the plots
     plt.tight_layout()
 
-    # Save the plot
-    # plt.savefig(path + filename + '.png')
+    # Save the plot locally
+    if save_locally:
+        plt.savefig(path + filename + '.png')
 
     # Save the plot to wandb
     wandb.log({filename: wandb.Image(plt)})

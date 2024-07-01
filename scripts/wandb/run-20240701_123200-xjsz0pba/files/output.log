@@ -1,0 +1,40 @@
+
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 62 | Loss: 0.0217:  97%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████     | 62/64 [00:31<00:01,  1.66it/s]
+Training Finished
+Sampling...
+Sampling Finished
+Min value: 0.0
+Epoch: 64 | Loss: 0.0218: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:32<00:00,  1.97it/s]
+128it [00:00, 898.40it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 274, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 208, in main_sum_categorical_data
+    normalized_data = prob_instance.normalize(samples)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 551, in normalize
+    assert np.all(s > 0), f'Zero sum: {s}'
+           ^^^^^^^^^^^^^
+AssertionError: Zero sum: [[1.96115559 1.96115559 1.96220362 ... 2.15381001 2.15381001 2.15381001]
+ [1.67220008 1.67220008 1.79076225 ... 1.49099158 1.49099158 1.49099158]
+ [1.         1.         1.79590583 ... 1.91371738 1.91371738 1.91371738]
+ ...
+ [0.31355059 0.31355059 1.         ... 2.73837001 2.73837001 2.73837001]
+ [0.99573481 0.99573481 1.         ... 2.0608431  2.0608431  2.0608431 ]
+ [1.         1.         1.28859645 ... 1.00611085 1.00611085 1.00611085]]
