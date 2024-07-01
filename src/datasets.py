@@ -20,7 +20,7 @@ class BaseDataset:
         Anomaly if sum of numbers is more than k
         """
         if self.dataset is None:
-            self.dataset = self._generate_data()
+            self._generate_data()
         assert type(self.dataset) is dict, 'self.dataset must be a dictionary, please modify ._generate_data()'
         return self.dataset
 
@@ -71,8 +71,8 @@ class SumCategoricalDataset(BaseDataset):
         y = np.expand_dims(y, axis=1)
 
         # convert to torch tensors
-        x = torch.tensor(p, dtype=torch.float32)
-        y = torch.tensor(y, dtype=torch.bool)
+        x = torch.tensor(p, dtype=torch.float64)
+        y = torch.tensor(y, dtype=torch.float64)
 
         self.dataset = {'x': x, 'y': y}
 
@@ -98,8 +98,8 @@ class GaussianDataset(BaseDataset):
         cov_tensor = (cov_tensor + cov_tensor.T) / 2
 
         # Use SVD to generate samples
-        U, S, V = torch.svd(cov_tensor)
-        transform_matrix = U @ torch.diag(torch.sqrt(S))
+        u, s, v = torch.svd(cov_tensor)
+        transform_matrix = u @ torch.diag(torch.sqrt(s))
 
         normal_samples = torch.randn(self.size, len(self.mean))
         samples = normal_samples @ transform_matrix.T + mean_tensor
