@@ -12,7 +12,7 @@ from src.datasets import SumCategoricalDataset
 DEFAULT_MODEL_NAME = f'model_{os.path.splitext(os.path.basename(__file__))[0]}.pkl'
 
 
-def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5,
+def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5, n_iter=100,
          critical_p=0.1, hidden=2, n_epochs=3000, lr=0.1,
          weight_decay=1e-4, momentum=0.9, n_data_examples=15,
          n_anomalies=3, model_name=DEFAULT_MODEL_NAME):
@@ -83,7 +83,7 @@ def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5,
             anomaly = x_positives[i:i+1]
 
             # run the inverse gradient algorithm
-            new_anomaly, loss = method.run(anomaly, n_values, threshold=critical_p)
+            new_anomaly, loss = method.run(anomaly, n_values, n_iter=n_iter, threshold=critical_p)
             corrected_anomaly = new_anomaly.detach().numpy()
             anomaly_probability = method.model(anomaly).item()
             new_anomaly_probability = method.model(new_anomaly).item()
