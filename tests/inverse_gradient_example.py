@@ -12,56 +12,6 @@ from src.datasets import SumCategoricalDataset
 DEFAULT_MODEL_NAME = f'model_{os.path.splitext(os.path.basename(__file__))[0]}.pkl'
 
 
-# def generate_data(size, n_values: list | tuple, threshold):
-#     """ Author: Omar
-#     Anomaly if sum of numbers is more than k
-#     """
-#     proba = Probabilities(n_values)
-#
-#     # raw data
-#     p = np.random.random(size=(size, sum(n_values)))
-#     p = proba.normalize(p)
-#
-#     x = proba.prob_to_onehot(p)
-#     values = proba.onehot_to_values(x)
-#     y = np.sum(values, axis=1) > threshold
-#     y = np.expand_dims(y, axis=1)
-#     p = proba.add_noise(x)
-#
-#     # convert to torch tensors
-#     p = torch.tensor(p, dtype=torch.float64)
-#     y = torch.tensor(y, dtype=torch.float64)
-#
-#     return p, y
-
-
-# class SumCapDataset:
-#     """ Author: Omar
-#     Class to generate the dataset for the Inverse Gradient method
-#     """
-#     def __init__(self):
-#         self.dataset = None
-#         self.labels = None
-#         self.dataloader = None
-#
-#     def generate_data(self, size, n_values: list | tuple, threshold):
-#         """
-#         Anomaly if sum of numbers is more than k
-#         """
-#         if self.dataset is not None:
-#             print('Data already generated')
-#             return self.dataset
-#         else:
-#             self.dataset = generate_data(size, n_values, threshold)
-#
-#     def get_dataset_shape(self):
-#         assert self.dataset is not None, 'Dataset not generated'
-#         return self.dataset.shape
-#
-#     def plot_data(self):
-#         raise NotImplementedError
-
-
 def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5,
          critical_p=0.1, hidden=2, n_epochs=3000, lr=0.1,
          weight_decay=1e-4, momentum=0.9, n_data_examples=15,
