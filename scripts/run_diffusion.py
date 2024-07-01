@@ -174,7 +174,7 @@ def main_sum_categorical_data():
     threshold = 15
     n_values = [2, 3, 5, 7, 11]
     dataset_generator = SumCategoricalDataset(size, n_values, threshold)
-    _ = dataset_generator.generate_dataset()
+    _ = dataset_generator.generate_dataset(remove_anomalies=True)
     dataloader = dataset_generator.get_dataloader()
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
@@ -253,7 +253,7 @@ def main_sum_categorical_data():
     wrong_changes = (~y & y_after).sum().item()
     
     # plot the inpainted data and the agreement/disagreement transformation
-    plot_categories(dataset_generator.label_values, n_values, inpainted_data_name) 
+    plot_categories(inpainted_data, n_values, inpainted_data_name) 
     
     plot_agreement_disagreement_transformation(y, y_after, inpainted_data_name)
     

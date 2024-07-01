@@ -33,7 +33,7 @@ class BaseDataset(ABC):
         return self.dataset['x'].shape
 
     @abstractmethod
-    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True):
+    def get_features_with_mask(self):
         pass
 
 
@@ -45,7 +45,7 @@ class SumCategoricalDataset(BaseDataset):
         self.threshold = threshold
         self.label_values = None
 
-    def generate_dataset(self):
+    def generate_dataset(self, remove_anomalies=False):
         """
         Generate a dataset in probability space that represents arrays of label encoded categories.
         The y labels are binary, True/Anomaly if the sum of the values in the array exceeds the threshold.
@@ -60,6 +60,12 @@ class SumCategoricalDataset(BaseDataset):
         x = proba.prob_to_onehot(p)
         self.label_values = proba.onehot_to_values(x)
         y = np.sum(self.label_values, axis=1) > self.threshold
+        
+        if remove_anomalies:
+            p = p[~y]
+            self.label_values = self.label_values[~y]
+            y = y[~y]
+        
         y = np.expand_dims(y, axis=1)
 
         # convert to torch tensors
