@@ -26,3 +26,10 @@ config: {}
 2024-07-01 12:32:51,928 INFO    MainThread:148751 [wandb_run.py:_redirect():2325] Redirects installed.
 2024-07-01 12:32:51,929 INFO    MainThread:148751 [wandb_init.py:init():838] run started, returning control to user process
 2024-07-01 12:32:51,929 INFO    MainThread:148751 [wandb_run.py:_config_callback():1382] config_cb None None {'architecture': '4 layers, ins: 2, 32, 64, 32 | sum x and t', 'sampler': 'ema_model', 'noise_time_steps': 128, 'time_dim_embedding': 64, 'epochs': 64, 'scheduler': 'linear', 'learning_rate': 0.001, 'beta_ema': 0.999, 'samples': 1000}
+2024-07-01 12:33:29,983 INFO    MainThread:148751 [wandb_run.py:_finish():2109] finishing run l11p11/DiffusionModelSumCategorical/7ixhm0dj
+2024-07-01 12:33:29,983 INFO    MainThread:148751 [wandb_run.py:_atexit_cleanup():2349] got exitcode: 0
+2024-07-01 12:33:29,984 INFO    MainThread:148751 [wandb_run.py:_restore():2332] restore
+2024-07-01 12:33:29,984 INFO    MainThread:148751 [wandb_run.py:_restore():2338] restore done
+2024-07-01 12:33:36,052 INFO    MainThread:148751 [wandb_run.py:_footer_history_summary_info():3991] rendering history
+2024-07-01 12:33:36,053 INFO    MainThread:148751 [wandb_run.py:_footer_history_summary_info():4023] rendering summary
+2024-07-01 12:33:36,059 INFO    MainThread:148751 [wandb_run.py:_footer_sync_info():3950] logging synced files
