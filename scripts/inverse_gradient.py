@@ -7,6 +7,7 @@ import torch
 from copy import deepcopy
 from src.utils import cprint, bcolors, Probabilities
 
+
 class InverseGradient:
     """ Author: Omar
     This method is used to correct anomalies in a dataset
@@ -18,6 +19,8 @@ class InverseGradient:
         self.y = y
         self.model_name = model_name
         self.model = None
+        self._p_copy = None
+        self._module = None
         self._load_model()
 
     def _load_model(self):
@@ -95,14 +98,25 @@ class InverseGradient:
         # save the model
         torch.save(self.model, self.get_model_name())
 
+    def _compute_p_copy(self, p, proba, eta):
+        self._p_copy = p.detach().clone()
+        dp = - p.grad
+        self._module = np.linalg.norm(dp.numpy().flatten())
+        dp = dp / self._module * eta
+        self._p_copy += dp
+        self._p_copy = proba.normalize(self._p_copy)
+
     def run(self, x, n_values, eta=0.01, n_iter=300, threshold=0.05):
         """
         Given a classifier and a set of data points, modify the data points
         so that the classification changes from 1 to 0
         """
         assert self.model is not None
+        assert x.shape[0] == 1
+
         p = deepcopy(x)
         proba = Probabilities(n_values)
+        v_old = proba.onehot_to_values(p)[0]
 
         # add gaussian noise to the input
         p.requires_grad = True
@@ -121,30 +135,34 @@ class InverseGradient:
             loss.backward()
 
             # Create a copy of x and update the copy
-            p_copy = p.detach().clone()
-            dp = - p.grad
-            module = np.linalg.norm(dp.numpy().flatten())
-            dp = dp / module * eta
-            p_copy += dp
-            p_copy = proba.normalize(p_copy)
+            self._compute_p_copy(p, proba, eta)
 
             # Update the original x with the modified copy
-            p.data = p_copy
+            p.data = self._p_copy
 
             # Clear the gradient for the next iteration
             p.grad.zero_()
 
-            # print loss
+            # Check if v_new is different to v_old
+            v_new = proba.onehot_to_values(p.detach().numpy())[0]
+            changed = np.any(v_old != v_new)
+
+            # check if the loss is below the threshold
             loss_value = loss.item()
-            if loss_value < threshold:
-                cprint(f'\rIteration {i}) loss is {loss_value:.3f} < {threshold}', bcolors.OKGREEN)
-                return p, loss_value
             print(f'\rIteration {i+1}, Loss {loss_value:.3f}', end=' ')
+            if loss_value < threshold:
+                if changed:
+                    cprint(f'\rIteration {i}) loss is {loss_value:.3f} < {threshold}', bcolors.OKGREEN)
+                    break
 
-            if module == 0:
+            # check if the gradient is zero
+            if self._module == 0:
                 cprint('Warning: Gradient is zero', bcolors.WARNING)
-                return p, loss_value
+                break
 
+            # check if the maximum number of iterations is reached
             if i == n_iter:
                 cprint('Warning: Maximum iterations reached', bcolors.WARNING)
-                return p, loss_value
+                break
+
+        return p, loss_value
