@@ -1,1 +1,0 @@
-{"loss": 0.020506795556519977, "_timestamp": 1719701169.1757922, "_runtime": 28.25871729850769, "_step": 64, "loss_01": {"_type": "image-file", "sha256": "f875166c5c38a2aa2404c66d29fff595ea773e029530ecec158d1965a6805b39", "size": 20714, "path": "media/images/loss_01_64_f875166c5c38a2aa2404.png", "format": "png", "width": 640, "height": 480}, "_wandb": {"runtime": 29}}
