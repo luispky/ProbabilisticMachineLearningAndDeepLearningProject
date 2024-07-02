@@ -45,7 +45,7 @@ class SumCategoricalDataset(BaseDataset):
         self.threshold = threshold
         self.label_values = None
 
-    def generate_dataset(self, remove_anomalies=False):
+    def generate_dataset(self, remove_anomalies=False, logits=False):
         """
         Generate a dataset in probability space that represents arrays of label encoded categories.
         The y labels are binary, True/Anomaly if the sum of the values in the array exceeds the threshold.
@@ -71,25 +71,32 @@ class SumCategoricalDataset(BaseDataset):
         # convert to torch tensors
         x = torch.tensor(p, dtype=torch.float32)
         y = torch.tensor(y, dtype=torch.bool)
-
+        
+        if logits:
+            x = torch.log(x / (1 - x))
+        
         self.dataset = {'x': x, 'y': y}
 
         return self.dataset
-    
-    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True):
+
+    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False):
         """Generate the dataset with the mask to inpaint."""
+        
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
 
         if mask_anomaly_points:
             mask = self._mask_anomaly_points()
+            values_mask = mask.numpy() if label_values_mask else None
         elif mask_one_feature:
-            mask = self._mask_one_feature_values()
+            masks = self._mask_one_feature_values(label_values_mask)
         else:
-            mask = self._mask_features_values()
-
-        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
+            masks = self._mask_features_values(label_values_mask)
+        mask = masks[0]
+        values_mask = masks[1] if label_values_mask else None
 
         # add the mask to the dataset
         dataset['mask'] = mask
+        dataset['values_mask'] = values_mask
 
         dataset['label_values'] = self.label_values
 
@@ -101,11 +108,11 @@ class SumCategoricalDataset(BaseDataset):
         """
 
         dataset = self.dataset if self.dataset is not None else self.generate_dataset()
-        mask = ~dataset['y']
+        mask = dataset['y']
 
         return mask.to(torch.bool)
         
-    def _mask_one_feature_values(self):
+    def _mask_one_feature_values(self, label_values_mask=False):
         """
         Identify which element(s) in the label values 2D array contribute the most to each row's sum exceeding a certain threshold.
         If there are multiple elements contributing equally to the sum, the one with the lowest index is selected.
@@ -143,10 +150,13 @@ class SumCategoricalDataset(BaseDataset):
 
         # Repeat each column according to the specified repetition counts
         repeated_result = np.repeat(result, self.n_values, axis=1)
+        repeated_result = torch.tensor(repeated_result, dtype=torch.bool) 
+        
+        if label_values_mask:
+            return [repeated_result, result]
+        return [repeated_result]
 
-        return ~torch.tensor(repeated_result, dtype=torch.bool)
-
-    def _mask_features_values(self):
+    def _mask_features_values(self, label_values_mask=False):
         """
         Identify which elements in the array contribute the most to each row's sum exceeding a certain threshold.
         If there are multiple elements contributing equally to the sum then both are selected.
@@ -181,7 +191,11 @@ class SumCategoricalDataset(BaseDataset):
 
         repeated_result = np.repeat(result, self.n_values, axis=1)
 
-        return ~torch.tensor(repeated_result, dtype=torch.bool)
+        repeated_result =  torch.tensor(repeated_result, dtype=torch.bool)
+        
+        if label_values_mask:
+            return [repeated_result, result]
+        return [repeated_result]
 
 
 class GaussianDataset(BaseDataset):
@@ -259,7 +273,7 @@ class GaussianDataset(BaseDataset):
 
         dataset = self.generate_dataset(means, covariances, num_samples_per_distribution, boolean_labels).copy()
         dataset['mask'] = dataset.pop('y')
-        dataset['mask'] = ~dataset['mask']
+        # dataset['mask'] = ~dataset['mask']
         dataset['mask'] = dataset['mask'].to(torch.bool)
 
         return dataset
@@ -288,7 +302,7 @@ class GaussianDataset(BaseDataset):
         plt.show()
 
 
-def plot_generated_samples(samples, filename, labels=None, save_locally=False, path="../plots/"):
+def plot_generated_samples(samples, filename, save_locally=False, path="../plots/"):
     """ Author: Luis
     Save the plot of the generated samples in the plots folder and in the wandb dashboard.
     """
@@ -296,14 +310,18 @@ def plot_generated_samples(samples, filename, labels=None, save_locally=False, p
         os.makedirs(path)
     
     fig = plt.figure()
-    
-    if labels is not None:
-        mask = labels == 1
-        plt.scatter(samples[~mask, 0], samples[~mask, 1], alpha=0.5, label='Normal')
-        plt.scatter(samples[mask, 0], samples[mask, 1], alpha=0.5, label='Anomaly')
+    if len(samples) == 1:
+        x = samples[0].cpu().numpy()
+    else: 
+        x = samples.cpu().numpy() # plot inpainting samples
+    if len(samples) == 2:
+        y = samples[1].cpu().numpy()
+        mask = y == 1
+        plt.scatter(x[~mask, 0], x[~mask, 1], alpha=0.5, label='Normal')
+        plt.scatter(x[mask, 0], x[mask, 1], alpha=0.5, label='Anomaly')
         plt.legend()
     else:
-        plt.scatter(samples[:, 0], samples[:, 1], alpha=0.5)
+        plt.scatter(x[:, 0], x[:, 1], alpha=0.5)
     plt.title('Generated Samples')
     plt.xlabel('X')
     plt.ylabel('Y')
@@ -410,9 +428,9 @@ class BaseNoiseScheduler(ABC):
         self.num_dims_to_add = num_dims_to_add
         self.betas = None
         self.alphas = None
-        self.alpha_cum_prod = None
-        self.sqrt_alpha_cum_prod = None
-        self.sqrt_one_minus_alpha_cum_prod = None
+        self.alpha_bar = None
+        self.sqrt_alpha_bar = None
+        self.sqrt_one_minus_alpha_bar = None
 
     @abstractmethod
     def _initialize_schedule(self):
@@ -424,9 +442,9 @@ class BaseNoiseScheduler(ABC):
         """
         self.betas = self.betas.to(device)
         self.alphas = self.alphas.to(device)
-        self.alpha_cum_prod = self.alpha_cum_prod.to(device)
-        self.sqrt_alpha_cum_prod = self.sqrt_alpha_cum_prod.to(device)
-        self.sqrt_one_minus_alpha_cum_prod = self.sqrt_one_minus_alpha_cum_prod.to(device)
+        self.alpha_bar = self.alpha_bar.to(device)
+        self.sqrt_alpha_bar = self.sqrt_alpha_bar.to(device)
+        self.sqrt_one_minus_alpha_bar = self.sqrt_one_minus_alpha_bar.to(device)
 
     def add_noise(self, x0, noise, t):
         r"""
@@ -437,7 +455,7 @@ class BaseNoiseScheduler(ABC):
         t has shape (batch_size,)
         The scheduler parameters already have the correct shape to match x_{0} and noise.
         """
-        return self.sqrt_alpha_cum_prod[t] * x0 + self.sqrt_one_minus_alpha_cum_prod[t] * noise
+        return self.sqrt_alpha_bar[t] * x0 + self.sqrt_one_minus_alpha_bar[t] * noise
 
     def sample_prev_step(self, x_t, predicted_noise, t):
         r""""
@@ -448,9 +466,9 @@ class BaseNoiseScheduler(ABC):
         # noise = z ~ N(0, I) if t > 1 else 0
         backward_noise = torch.randn_like(x_t) if t[0] > 0 else torch.zeros_like(x_t)
 
-        mean = x_t - (self.betas[t] * predicted_noise) / self.sqrt_one_minus_alpha_cum_prod[t]
+        mean = x_t - (self.betas[t] * predicted_noise) / self.sqrt_one_minus_alpha_bar[t]
         mean = mean / torch.sqrt(self.alphas[t])
-        std = (1.0 - self.alpha_cum_prod[t - 1]) / (1.0 - self.alpha_cum_prod[t]) * self.betas[t]
+        std = (1.0 - self.alpha_bar[t - 1]) / (1.0 - self.alpha_bar[t]) * self.betas[t]
 
         # x_{t-1} = predicted_mean_reconstruction + fixed_std * noise
         return mean + std * backward_noise
@@ -463,7 +481,8 @@ class BaseNoiseScheduler(ABC):
         # noise = z ~ N(0, I)
         noise = torch.randn_like(x_t_minus_one)
 
-        return x_t_minus_one * torch.sqrt(self.alphas[t - 1]) + self.betas[t - 1] * noise
+        return x_t_minus_one * torch.sqrt(self.alphas[t]) + torch.sqrt(self.betas[t]) * noise
+        # return x_t_minus_one * torch.sqrt(self.alphas[t - 1]) + torch.sqrt(self.betas[t - 1]) * noise
 
 
 class LinearNoiseScheduler(BaseNoiseScheduler):
@@ -485,9 +504,9 @@ class LinearNoiseScheduler(BaseNoiseScheduler):
         linspace = torch.linspace(self.beta_start, self.beta_end, self.noise_timesteps)  # note: Omar split this line
         self.betas = linspace.view(*([-1] + [1] * self.num_dims_to_add))  # because it was too long
         self.alphas = 1. - self.betas
-        self.alpha_cum_prod = torch.cumprod(self.alphas, dim=0)
-        self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
-        self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
+        self.alpha_bar = torch.cumprod(self.alphas, dim=0)
+        self.sqrt_alpha_bar = torch.sqrt(self.alpha_bar)
+        self.sqrt_one_minus_alpha_bar = torch.sqrt(1 - self.alpha_bar)
 
 
 class CosineNoiseScheduler(BaseNoiseScheduler):
@@ -513,20 +532,20 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
         Initializes the schedule for alpha and beta values based on the cosine schedule.
         """
         t = torch.linspace(0, self.noise_timesteps, self.noise_timesteps, dtype=torch.float32)
-        self.alpha_cum_prod = self._cosine_schedule(t) / self._cosine_schedule(torch.tensor(0.0, dtype=torch.float32))
+        self.alpha_bar = self._cosine_schedule(t) / self._cosine_schedule(torch.tensor(0.0, dtype=torch.float32))
 
-        self.alphas = torch.ones_like(self.alpha_cum_prod)
-        self.alphas[1:] = self.alpha_cum_prod[1:] / self.alpha_cum_prod[:-1]
-        self.alphas[0] = self.alpha_cum_prod[0]
+        self.alphas = torch.ones_like(self.alpha_bar)
+        self.alphas[1:] = self.alpha_bar[1:] / self.alpha_bar[:-1]
+        self.alphas[0] = self.alpha_bar[0]
 
         self.betas = torch.clamp(1 - self.alphas, 0.0001, 0.999)
 
         shape = [-1] + [1] * self.num_dims_to_add
         self.betas = self.betas.view(*shape)
         self.alphas = self.alphas.view(*shape)
-        self.alpha_cum_prod = self.alpha_cum_prod.view(*shape)
-        self.sqrt_alpha_cum_prod = torch.sqrt(self.alpha_cum_prod)
-        self.sqrt_one_minus_alpha_cum_prod = torch.sqrt(1 - self.alpha_cum_prod)
+        self.alpha_bar = self.alpha_bar.view(*shape)
+        self.sqrt_alpha_bar = torch.sqrt(self.alpha_bar)
+        self.sqrt_one_minus_alpha_bar = torch.sqrt(1 - self.alpha_bar)
 
 
 class Probabilities:
@@ -603,6 +622,17 @@ class Probabilities:
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
         return self.normalize(p + np.random.random(p.shape) * k)
 
+    def logits_to_normalized_probs(self, logits):
+        """Convert logits to normalized probabilities"""
+        assert isinstance(logits, np.ndarray), 'logits must be a numpy array'
+        p = 1 / (1 + np.exp(-logits))
+        return self.normalize(p)
+    
+    def logits_to_values(self, logits):
+        """Convert logits to values"""
+        assert isinstance(logits, np.ndarray), 'logits must be a numpy array'
+        p = self.logits_to_normalized_probs(logits)
+        return self.onehot_to_values(self.prob_to_onehot(p))
 
 class bcolors:
     """ Author: Omar
@@ -699,6 +729,8 @@ def plot_agreement_disagreement_transformation(array1, array2, filename, save_lo
 
 def plot_categories(label_values, n_values, filename, save_locally=False, path="../plots/"):
     
+    assert isinstance(label_values, np.ndarray), 'label_values must be a numpy array'
+    
     data = pd.DataFrame(label_values, columns=[f'Category {i}' for i in range(len(n_values))])
     
     # Melt the dataframe to have a long format suitable for seaborn
@@ -736,3 +768,34 @@ def plot_categories(label_values, n_values, filename, save_locally=False, path="
 
     # Save the plot to wandb
     wandb.log({filename: wandb.Image(plt)})
+
+def element_wise_label_values_comparison(input, output, mask):
+    """
+    Compares the input array with the output array of the inpainting method
+    using a mask to identify differences. It returns the number of rows with
+    differences, the total number of values that should not have changed according
+    to the mask, and the total number of values that were actually changed with respect
+    to the mask.
+    """
+    # Check if the mask is compatible with the arrays
+    if input.shape != output.shape or input.shape != mask.shape:
+        raise ValueError("Array shapes and mask shape must match.")
+    
+    # Apply the mask to both arrays
+    masked_input = input[mask]
+    masked_output = output[mask]
+    
+    # Compare the masked arrays element-wise
+    element_wise_comparison = masked_input != masked_output
+    
+    # Calculate the total number of values wrongly changed
+    total_wrongly_changed_values = np.sum(element_wise_comparison)
+    
+    # Calculate the total number of values that should not have changed according to the mask
+    known_values = np.sum(mask)
+    
+    # Determine if any differences exist within the masked input
+    reshaped_comparison = element_wise_comparison.reshape(-1, known_values)
+    num_rows_differ = np.any(reshaped_comparison, axis=1).sum()
+    
+    return num_rows_differ, known_values, total_wrongly_changed_values

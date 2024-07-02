@@ -50,6 +50,7 @@ class Architecture(nn.Module):
                   or  (batch_size, rows, columns) where rows and columns are x.shape[1] and x.shape[2]
         """
         # Time embedding
+        # t has shape (batch_size, time_dim)
         emb = self.emb_layer(t)  # emb has shape (batch_size, dataset_shape[1])
         # emb is of datatype float = torch.float32
         

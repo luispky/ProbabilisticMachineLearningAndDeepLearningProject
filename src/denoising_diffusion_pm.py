@@ -27,6 +27,7 @@ class DDPM:
         self.model = model
         self.args = args
         self.ema_model = None
+        self.conditional_training = False
 
         # send the scheduler attributes to the device
         self.scheduler.send_to_device(self.args.device) 
@@ -72,11 +73,12 @@ class DDPM:
         # Initialize list to store losses during training
         train_losses = []        
         
+        # verify if the dataloader has labels
+        self.conditional_training = True if len(dataloader.dataset[0]) == 2 else False
+        
         # run the training loop
         pbar = tqdm(range(self.args.epochs))
         for epoch in pbar:
-            # verify if the dataloader has labels 
-            has_labels = True if len(dataloader.dataset[0]) == 2 else False
             
             running_loss = 0.0
             num_elements = 0
@@ -86,7 +88,7 @@ class DDPM:
                 
                 # extract data from the batch verifying if it has labels
                 
-                if has_labels:
+                if self.conditional_training:
                     batch_samples, labels = batch_data
                     labels = labels.to(self.args.device)
                 else:
@@ -110,8 +112,9 @@ class DDPM:
                 # If the labels are not provided, use them with a probability of 0.1
                 # This allows the conditional model to be trained with and without labels
                 # This is a form of data augmentation and allows the model to be more robust
-                if np.random.rand() < 0.1:
-                    labels = None
+                if self.conditional_training:
+                    if np.random.rand() < 0.1:
+                        labels = None
                 
                 # denoising step
                 # noise_{theta} = NN(x_{t}, t)
@@ -144,92 +147,93 @@ class DDPM:
         return train_losses
 
     # Sampling method according to the DDPM paper
-    def sample(self, model, labels=None, cfg_strength=3, probabilities_normalizer=None):
-        # ?: maybe something must be changed for the SumCategoricalDataset
+    @torch.no_grad()
+    def sample(self, model, with_labels=False, cfg_strength=3):
         model.eval()
         model.to(self.args.device)
         samples_shape = self.model.architecture.dataset_shape
         
-        labels = labels.to(self.args.device) if labels is not None else None
-        
+        if self.conditional_training:
+            assert cfg_strength > 0, 'The strength of the Classifier-Free Guidance must be positive'
+            assert hasattr(self.args, 'num_classes'), 'The number of classes in the labels must be specified'
+            labels = torch.randint(0, self.args.num_classes, (self.args.samples,)) if with_labels else None
+            labels = labels.to(self.args.device)
+        else:
+            if with_labels:
+                print('Model was not trained with labels. Labels not sampled.')
+            labels = None
+            
         print('Sampling...')
         
-        with torch.no_grad():
-            # x_{T} ~ N(0, I)
-            x = torch.randn((self.args.samples, *samples_shape[1:])).to(self.args.device)
-            ones = torch.ones(self.args.samples)
-            # for t = T, T-1, ..., 1 (-1 in Python)
-            for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
-                
-                t = (ones * i).long().to(self.args.device)
-                predicted_noise = model(x, t, labels)
-                
-                # Classifier Free Guidance Sampling
-                if cfg_strength > 0 and labels is not None:
+        # x_{T} ~ N(0, I)
+        x = torch.randn((self.args.samples, *samples_shape[1:])).to(self.args.device)
+        ones = torch.ones(self.args.samples)
+        # for t = T, T-1, ..., 1 (-1 in Python)
+        for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
+            
+            t = (ones * i).long().to(self.args.device)
+            predicted_noise = model(x, t, labels)
+            
+            # Classifier-Free Guidance Sampling
+            # The C-FG paper uses a conditional model to sample the noise
+            if self.conditional_training:
+                if labels is not None:
                     uncond_predicted_noise = model(x, t, None)
                     # interpolate between conditional and unconditional noise
                     # C-FG paper formula:
                     predicted_noise = (1 + cfg_strength) * predicted_noise - cfg_strength * uncond_predicted_noise
-                    
-                # x_{t-1} ~ p_{\theta}(x_{t-1}|x_{t})
-                x = self.scheduler.sample_prev_step(x, predicted_noise, t)
+                
+            # x_{t-1} ~ p_{\theta}(x_{t-1}|x_{t})
+            x = self.scheduler.sample_prev_step(x, predicted_noise, t)
         
         model.train()
         
         print('Sampling Finished')
         
-        if probabilities_normalizer is not None:
-            x = probabilities_normalizer.normalize(torch.clamp(x, 0., 1.).cpu().numpy())
-        
-        return x
+        if labels is not None:
+            return [x, labels]
+        return [x]
 
     # Inpainting method according to the RePaint paper
-    def inpaint(self, model, original, mask, U=10, probabilities_normalizer=None):
+    @torch.no_grad()
+    def inpaint(self, model, original, mask, U=10):
+        # !The Repaint paper uses an unconditionally trained model to inpaint the image
         # todo: review the inpainting method to properly implement it
         # the parameters U is not totally clear
-        # ?: maybe something must be changed for the SumCategoricalDataset
+        assert not self.conditional_training, 'Model must be unconditionally trained'
+        
         model.eval()
         model.to(self.args.device)
         
         original = original.to(self.args.device)
         mask = mask.to(self.args.device)
         
-        # lambda function to normalize the probabilities if probabilities_normalizer is not None
-        normalize = lambda x: probabilities_normalizer.normalize(x.numpy()) if probabilities_normalizer is not None else x        
-        
         print('Inpainting...')
         
-        with torch.no_grad():
-            # x_{T} ~ N(0, I)
-            x_t = torch.randn_like(original).to(self.args.device)
-            x_t_minus_one = torch.randn_like(x_t)
-            ones = torch.ones(x_t.shape[0])
+        # x_{T} ~ N(0, I)
+        x_t = torch.randn_like(original).to(self.args.device)
+        x_t_minus_one = torch.randn_like(x_t)
+        ones = torch.ones(x_t.shape[0])
+        
+        # for t = T, T-1, ..., 1 (-1 in Python)
+        for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
             
-            x_t = normalize(x_t)
-            
-            # for t = T, T-1, ..., 1 (-1 in Python)
-            for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
+            for u in range(U):
+                t = (ones * i).long().to(self.args.device)
                 
-                for u in range(U):
-                    t = (ones * i).long().to(self.args.device)
-                    
-                    # epsilon = N(0, I) if t > 1 else 0
-                    forward_noise = torch.randn_like(x_t) if t[0] > 0 else torch.zeros_like(x_t)
-                    
-                    # differs from the algorithm in the paper but doesn't matter because of stochasticity
-                    x_known = self.scheduler.add_noise(original, forward_noise, t)
-                    x_known = normalize(x_known)
-                    
-                    predicted_noise = model(x_t, t)
-                    x_unknown = self.scheduler.sample_prev_step(x_t, predicted_noise, t)
-                    x_unknown = normalize(x_unknown)
-                    
-                    # todo: check this step
-                    x_t_minus_one = x_known * mask + x_unknown * (~mask)
-                    x_t_minus_one = normalize(x_t_minus_one)
-                    
-                    x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < U and i > 0) else x_t
-                    x_t = normalize(x_t)
+                # epsilon = N(0, I) if t > 1 else 0
+                forward_noise = torch.randn_like(x_t) if t[0] > 0 else torch.zeros_like(x_t)
+                
+                # differs from the algorithm in the paper but doesn't matter because of stochasticity
+                x_known = self.scheduler.add_noise(original, forward_noise, t)
+                
+                predicted_noise = model(x_t, t)
+                x_unknown = self.scheduler.sample_prev_step(x_t, predicted_noise, t)
+                
+                # The mask is the opposite of the paper, they changed their notation and was published like that
+                x_t_minus_one = mask * x_unknown + x_known * (~mask)
+                
+                x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < U and i > 0) else x_t
 
         print('Inpainting Finished')
         
