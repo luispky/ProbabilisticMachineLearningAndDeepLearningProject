@@ -6,7 +6,7 @@ import numpy as np
 import argparse
 import wandb
 from src.utils import GaussianDataset, LinearNoiseScheduler, EMA, plot_generated_samples, plot_loss
-from src.utils import plot_data_to_inpaint, SumCategoricalDataset
+from src.utils import plot_data_to_inpaint, SumCategoricalDataset, compare_label_values_with_mask
 from src.modules import NoisePredictor
 from src.denoising_diffusion_pm import DDPM
 from src.denoising_diffusion_pm import save_model_to_dir
@@ -21,7 +21,7 @@ def main_gaussian_data():
     # Not required for the inpainting task
     with_labels = False
     args.cfg_strength = 3.0
-    num_classes = 2
+    args.num_classes = 2
 
     # Hyperparameters that don't influence the model too much
     beta_ema = 0.999
@@ -57,7 +57,7 @@ def main_gaussian_data():
                         'cfg_strength': args.cfg_strength,
                         'beta_ema': beta_ema,
                         'samples': args.samples,
-                        'num_classes': num_classes,
+                        'num_classes': args.num_classes,
     })
     
     # define the components of the DDPM model: dataset, scheduler, model, EMA class
@@ -71,7 +71,7 @@ def main_gaussian_data():
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     # scheduler = CosineNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
-    model = NoisePredictor(dataset_shape=dataset_shape, time_dim=time_dim_embedding, num_classes=num_classes)
+    model = NoisePredictor(dataset_shape=dataset_shape, time_dim=time_dim_embedding, num_classes=args.num_classes)
 
     # Instantiate the DDPM modelcd 
     diffusion = DDPM(scheduler, model, args)
@@ -87,15 +87,10 @@ def main_gaussian_data():
         save_model_to_dir(diffusion.model, model_name)
 
     # generate samples 
-    labels = torch.randint(0, num_classes, (args.samples,)) if with_labels else None
-
-    samples = diffusion.sample(diffusion.ema_model, labels, args.cfg_strength)
-    samples = samples.cpu().numpy()
-
-    labels = labels.cpu().numpy() if with_labels else None
+    samples = diffusion.sample(diffusion.ema_model)
 
     # save the generated samples
-    plot_generated_samples(samples, sample_image_name, labels=labels)
+    plot_generated_samples(samples, filename=sample_image_name)
 
     # generate inpainting samples
     noise_means = np.random.normal(0, 0.25, 2)
@@ -119,7 +114,6 @@ def main_gaussian_data():
 
     # inpaint the masked data
     inpainted_data = diffusion.inpaint(diffusion.ema_model, x, mask)
-    inpainted_data = inpainted_data.cpu().numpy()
 
     # save the inpainted data
     plot_generated_samples(inpainted_data, inpainted_data_name)
@@ -127,7 +121,6 @@ def main_gaussian_data():
     wandb.finish()
 
 def main_sum_categorical_data():
-    # todo: check if I am properly using the label_values attribute of the SumCategoricalDataset class
     # define the arguments
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
@@ -140,7 +133,7 @@ def main_sum_categorical_data():
     sampler_comment = 'ema_model'
     args.epochs = 64
     
-    experiment_number = '01'
+    experiment_number = '04'
     architecture_comment = '4 layers, ins: 2, 32, 64, 32 | sum x and t'
     #  Hyperparameters that influence the model
     noise_time_steps = 128  # 128 good value, try 256
@@ -173,14 +166,18 @@ def main_sum_categorical_data():
     size = 3000
     threshold = 15
     n_values = [2, 3, 5, 7, 11]
-    prob_normalizer = Probabilities(n_values)
     dataset_generator = SumCategoricalDataset(size, n_values, threshold)
-    _ = dataset_generator.generate_dataset(remove_anomalies=True)
-    dataloader = dataset_generator.get_dataloader()
+    _ = dataset_generator.generate_dataset(remove_anomalies=True, logits=True)
+    dataloader = dataset_generator.get_dataloader(with_labels=False)
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     model = NoisePredictor(dataset_shape=dataset_shape, time_dim=time_dim_embedding)
     prob_instance = Probabilities(n_values)
+    
+    print(f'Size of the dataset requested: {size} samples') 
+    print(f'Training dataset size without anomalies: {len(dataloader.dataset)} samples')
+    print(f'Logits to train min value: {dataloader.dataset.tensors[0].min()}')
+    print(f'Logits to train max value: {dataloader.dataset.tensors[0].max()}\n')
     
     # plot the train label encoded values
     plot_categories(dataset_generator.label_values, n_values, original_data_name)
@@ -190,22 +187,15 @@ def main_sum_categorical_data():
 
     # train the model
     train_losses = diffusion.train(dataloader, ema)
-
+    
     # Plot the loss
     plot_loss(train_losses, loss_name)
     
     # generate samples
-    samples = diffusion.sample(diffusion.ema_model, probabilities_normalizer=prob_normalizer)
-    # clamp the inpainted data to the range [0, 1]
-    # the normalize method of the Probabilities class only works with values in the range [0, 1]
-    
-    # print the min and max values of the inpainted data
-    print(f'Min value: {samples.min()}')
-    print(f'Max value: {samples.max()}') 
-    
-    # normalize the inpainted data with the Probabilities class
-    onehot_data = prob_instance.prob_to_onehot(samples)
-    samples = prob_instance.onehot_to_values(onehot_data)
+    samples_logits = diffusion.sample(diffusion.ema_model)[0]
+    print(f'Samples logits min value: {samples_logits.min()}')
+    print(f'Samples logits max value: {samples_logits.max()}\n')
+    samples = prob_instance.logits_to_values(samples_logits.cpu().numpy())
     
     # save the generated samples
     plot_categories(samples, n_values, sample_image_name)
@@ -213,30 +203,21 @@ def main_sum_categorical_data():
     # generate inpainting samples
     size = 1500
     dataset_generator = SumCategoricalDataset(size, n_values, threshold)
-    _ = dataset_generator.generate_dataset()
     data_to_inpaint = dataset_generator.get_features_with_mask()
-
-    x, mask = data_to_inpaint['x'], data_to_inpaint['mask']
-    
+    x, mask = data_to_inpaint['x'], data_to_inpaint['mask']    
     plot_categories(dataset_generator.label_values, n_values, data_to_inpaint_name)
     
+    print(f'Size if the dataset to inpaint: {x.shape[0]} samples')
+    print(f'Logits to inpaint min value: {x.min()}')
+    print(f'Logits to inpaint max value: {x.max()}\n')
+
     # inpaint the masked data: probabilities
     inpainted_data = diffusion.inpaint(diffusion.ema_model, x, mask)
-    # print the min and max values of the inpainted data
-    print(f'Min value: {inpainted_data.min()}')
-    print(f'Max value: {inpainted_data.max()}') 
+    print(f'Logits inpainted min value: {inpainted_data.min()}')
+    print(f'Logis inpainted max value: {inpainted_data.max()}\n') 
     
-    # clamp the inpainted data to the range [0, 1]
-    # the normalize method of the Probabilities class only works with values in the range [0, 1]
-    inpainted_data = torch.clamp(inpainted_data, 0, 1).cpu().numpy()
-    
-    # todo: I get "assert np.all(s > 0), f'Zero sum: {s}' error"
-    # I have to check the sum of the inpainted data
-    
-    # normalize the inpainted data with the Probabilities class
-    normalized_data = prob_instance.normalize(inpainted_data)
-    one_hot_data = prob_instance.prob_to_onehot(normalized_data)
-    inpainted_data = prob_instance.onehot_to_values(one_hot_data)
+    inpainted_data = prob_instance.logits_to_values(inpainted_data.cpu().numpy())
+    plot_categories(inpainted_data, n_values, inpainted_data_name) 
     
     # Count the number of original anomalies
     y = data_to_inpaint['y'].numpy().squeeze()
@@ -246,14 +227,14 @@ def main_sum_categorical_data():
     y_after = inpainted_data.sum(axis=1) > threshold
     number_remaining_anomalies = np.sum(y_after)
     percentage_change = (number_remaining_anomalies - number_anomalies) / number_anomalies * 100
-    
     right_changes = (y & ~y_after).sum().item()
     wrong_changes = (~y & y_after).sum().item()
     
-    # plot the inpainted data and the agreement/disagreement transformation
-    plot_categories(inpainted_data, n_values, inpainted_data_name) 
+    # Count the percentage of instances that kept the label values after inpainting
+    inpaint_detailed = compare_label_values_with_mask(x, mask, inpainted_data)
+    num_rows_differ, known_values, total_wrongly_changed_values = inpaint_detailed
     
-    plot_agreement_disagreement_transformation(y, y_after, inpainted_data_name)
+    # plot_agreement_disagreement_transformation(y, y_after, inpainted_data_name)
     
     print(f'Data size: {size}')
     print(f'Anomalies before inpainting / Total: {number_anomalies} / {size}')
@@ -261,6 +242,8 @@ def main_sum_categorical_data():
     print(f'Percentage change (-100% desired): {percentage_change:.2f}%')
     print(f'Correct changes (balance): {right_changes} ({number_anomalies - right_changes})')
     print(f'Wrong changes (balance): {wrong_changes} ({number_anomalies - wrong_changes})')
+    print(f'Number of rows wrongly modified: {num_rows_differ}({size})')
+    print(f'Number of known values wrongly modified: {total_wrongly_changed_values}({known_values})')
     
     # ?: perform element-wise inspection of the values representation to see if the inpainting 
     # only changed the values that were supposed to be changed

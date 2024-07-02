@@ -1,0 +1,44 @@
+Size of the dataset requested: 3000 samples
+Training dataset size with anomalies removed: 2482 samples
+Logits to train min value: -13.876419067382812
+Logits to train max value: 6.895377159118652
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 60 | Loss: 0.0518:  94%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▎          | 60/64 [00:27<00:01,  2.66it/s]
+Epoch: 64 | Loss: 0.0507: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:28<00:00,  2.21it/s]
+1it [00:00,  2.37it/s]
+Sampling...
+Sampling Finished
+Samples logits min value: -6.7138590812683105
+128it [00:00, 245.68it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 259, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 212, in main_sum_categorical_data
+    data_to_inpaint = dataset_generator.get_features_with_mask()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 88, in get_features_with_mask
+    mask = self._mask_one_feature_values()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 134, in _mask_one_feature_values
+    row_sums = np.sum(array, axis=1)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/numpy/_core/fromnumeric.py", line 2389, in sum
+    return _wrapreduction(
+           ^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/numpy/_core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy.exceptions.AxisError: axis 1 is out of bounds for array of dimension 0
