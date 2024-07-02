@@ -1,4 +1,6 @@
-from src.datasets import SumCategoricalDataset, GaussianDataset
+import numpy as np
+import pandas as pd
+from src.datasets import SumCategoricalDataset, GaussianDataset, DatabaseInterface
 
 
 def test_1():
@@ -24,5 +26,31 @@ def test_2():
     print(y.shape)
 
 
+def test_3():
+    file_path = '..\\datasets\\sample_data_preprocessed.csv'
+    df = pd.read_csv(file_path)
+
+    # round Annual_Premium and Age
+    df['Annual_Premium'] = df['Annual_Premium'].apply(lambda x: round(x))
+    df['Age'] = df['Age'].apply(lambda x: round(x, -1))
+
+    y = df.copy()['Response_1']
+
+    del df['Response_1']
+
+    data_x = DatabaseInterface(df)
+    data_y = DatabaseInterface(y)
+
+    print('\n Column values:')
+    for col in data_x.inverse_value_maps:
+        print(f'{col:>25}  {len(data_x.inverse_value_maps[col])}  {data_x.value_maps[col]}')
+
+    df_indices = data_x.convert_values_to_indices()
+
+    print('\n')
+    print(df_indices.head())
+    print(df_indices.head())
+
+
 if __name__ == '__main__':
-    test_2()
+    test_3()

@@ -1,7 +1,52 @@
 import numpy as np
 import torch
+import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
 from src.utils import Probabilities
+
+
+class DatabaseInterface:
+    """
+    This class is used to preprocess an actual dataset
+    to something that can be used by our algorithm.
+    """
+    NUMBER_VALUES_LIMIT = 100
+
+    def __init__(self, df: pd.DataFrame):
+        self.original_df = df
+        self.value_maps = None
+        self.inverse_value_maps = None
+        self._init_value_map()
+
+    def _init_value_map(self):
+        """Compute the value maps for each column in the dataframe"""
+        self.value_maps = dict()
+        for col in self.original_df.columns:
+            unique_values = self.original_df[col].unique()
+            value_map = {k: v for v, k in enumerate(unique_values)}
+            if len(value_map) > self.NUMBER_VALUES_LIMIT:
+                raise ValueError(f'Too many unique values in column {col} '
+                                 f'({len(value_map)} > {self.NUMBER_VALUES_LIMIT})')
+            self.value_maps[col] = (value_map)
+        self.inverse_value_maps = {col: {v: k for k, v in self.value_maps[col].items()} for col in self.value_maps}
+
+    def convert_values_to_indices(self):
+        """
+        Convert the original dataframe to a dataframe of indices.
+        """
+        df = self.original_df.copy()
+        for col in df.columns:
+            df[col] = df[col].map(self.value_maps[col])
+        return df
+
+    def convert_indices_to_values(self, df: pd.DataFrame):
+        """
+        Convert a dataframe of indices to a dataframe of values.
+        """
+        df = df.copy()
+        for col in df.columns:
+            df[col] = df[col].map(self.inverse_value_maps[col])
+        return df
 
 
 class BaseDataset:

@@ -5,64 +5,14 @@ import numpy as np
 import torch
 from src.utils import cprint, bcolors, Probabilities
 import matplotlib.pyplot as plt
-from scripts.inverse_gradient import InverseGradient
+from src.inverse_gradient import InverseGradient
 from src.datasets import SumCategoricalDataset
 
 
 DEFAULT_MODEL_NAME = f'model_{os.path.splitext(os.path.basename(__file__))[0]}.pkl'
 
 
-# def generate_data(size, n_values: list | tuple, threshold):
-#     """ Author: Omar
-#     Anomaly if sum of numbers is more than k
-#     """
-#     proba = Probabilities(n_values)
-#
-#     # raw data
-#     p = np.random.random(size=(size, sum(n_values)))
-#     p = proba.normalize(p)
-#
-#     x = proba.prob_to_onehot(p)
-#     values = proba.onehot_to_values(x)
-#     y = np.sum(values, axis=1) > threshold
-#     y = np.expand_dims(y, axis=1)
-#     p = proba.add_noise(x)
-#
-#     # convert to torch tensors
-#     p = torch.tensor(p, dtype=torch.float64)
-#     y = torch.tensor(y, dtype=torch.float64)
-#
-#     return p, y
-
-
-# class SumCapDataset:
-#     """ Author: Omar
-#     Class to generate the dataset for the Inverse Gradient method
-#     """
-#     def __init__(self):
-#         self.dataset = None
-#         self.labels = None
-#         self.dataloader = None
-#
-#     def generate_data(self, size, n_values: list | tuple, threshold):
-#         """
-#         Anomaly if sum of numbers is more than k
-#         """
-#         if self.dataset is not None:
-#             print('Data already generated')
-#             return self.dataset
-#         else:
-#             self.dataset = generate_data(size, n_values, threshold)
-#
-#     def get_dataset_shape(self):
-#         assert self.dataset is not None, 'Dataset not generated'
-#         return self.dataset.shape
-#
-#     def plot_data(self):
-#         raise NotImplementedError
-
-
-def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5,
+def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5, n_iter=100,
          critical_p=0.1, hidden=2, n_epochs=3000, lr=0.1,
          weight_decay=1e-4, momentum=0.9, n_data_examples=15,
          n_anomalies=3, model_name=DEFAULT_MODEL_NAME):
@@ -133,7 +83,7 @@ def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5,
             anomaly = x_positives[i:i+1]
 
             # run the inverse gradient algorithm
-            new_anomaly, loss = method.run(anomaly, n_values, threshold=critical_p)
+            new_anomaly, loss = method.run(anomaly, n_values, n_iter=n_iter, threshold=critical_p)
             corrected_anomaly = new_anomaly.detach().numpy()
             anomaly_probability = method.model(anomaly).item()
             new_anomaly_probability = method.model(new_anomaly).item()
