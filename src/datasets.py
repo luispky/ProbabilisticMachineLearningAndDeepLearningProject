@@ -30,13 +30,22 @@ class DatabaseInterface:
             self.value_maps[col] = (value_map)
         self.inverse_value_maps = {col: {v: k for k, v in self.value_maps[col].items()} for col in self.value_maps}
 
-    def convert_to_value_indices(self):
+    def convert_values_to_indices(self):
         """
         Convert the original dataframe to a dataframe of indices.
         """
         df = self.original_df.copy()
         for col in df.columns:
             df[col] = df[col].map(self.value_maps[col])
+        return df
+
+    def convert_indices_to_values(self, df: pd.DataFrame):
+        """
+        Convert a dataframe of indices to a dataframe of values.
+        """
+        df = df.copy()
+        for col in df.columns:
+            df[col] = df[col].map(self.inverse_value_maps[col])
         return df
 
 
