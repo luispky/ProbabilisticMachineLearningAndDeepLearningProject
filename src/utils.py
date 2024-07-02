@@ -79,20 +79,24 @@ class SumCategoricalDataset(BaseDataset):
 
         return self.dataset
 
-    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True):
+    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False):
         """Generate the dataset with the mask to inpaint."""
         
         dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
 
         if mask_anomaly_points:
             mask = self._mask_anomaly_points()
+            values_mask = mask.numpy() if label_values_mask else None
         elif mask_one_feature:
-            mask = self._mask_one_feature_values()
+            masks = self._mask_one_feature_values(label_values_mask)
         else:
-            mask = self._mask_features_values()
+            masks = self._mask_features_values(label_values_mask)
+        mask = masks[0]
+        values_mask = masks[1] if label_values_mask else None
 
         # add the mask to the dataset
         dataset['mask'] = mask
+        dataset['values_mask'] = values_mask
 
         dataset['label_values'] = self.label_values
 
@@ -108,7 +112,7 @@ class SumCategoricalDataset(BaseDataset):
 
         return mask.to(torch.bool)
         
-    def _mask_one_feature_values(self):
+    def _mask_one_feature_values(self, label_values_mask=False):
         """
         Identify which element(s) in the label values 2D array contribute the most to each row's sum exceeding a certain threshold.
         If there are multiple elements contributing equally to the sum, the one with the lowest index is selected.
@@ -146,10 +150,13 @@ class SumCategoricalDataset(BaseDataset):
 
         # Repeat each column according to the specified repetition counts
         repeated_result = np.repeat(result, self.n_values, axis=1)
+        repeated_result = torch.tensor(repeated_result, dtype=torch.bool) 
+        
+        if label_values_mask:
+            return [repeated_result, result]
+        return [repeated_result]
 
-        return torch.tensor(repeated_result, dtype=torch.bool)
-
-    def _mask_features_values(self):
+    def _mask_features_values(self, label_values_mask=False):
         """
         Identify which elements in the array contribute the most to each row's sum exceeding a certain threshold.
         If there are multiple elements contributing equally to the sum then both are selected.
@@ -184,7 +191,11 @@ class SumCategoricalDataset(BaseDataset):
 
         repeated_result = np.repeat(result, self.n_values, axis=1)
 
-        return torch.tensor(repeated_result, dtype=torch.bool)
+        repeated_result =  torch.tensor(repeated_result, dtype=torch.bool)
+        
+        if label_values_mask:
+            return [repeated_result, result]
+        return [repeated_result]
 
 
 class GaussianDataset(BaseDataset):
@@ -758,32 +769,33 @@ def plot_categories(label_values, n_values, filename, save_locally=False, path="
     # Save the plot to wandb
     wandb.log({filename: wandb.Image(plt)})
 
-def compare_label_values_with_mask(input_tensor, output_tensor, mask):
+def element_wise_label_values_comparison(input, output, mask):
     """
-    Compares the input tensor with the output tensor of the inpainting method
+    Compares the input array with the output array of the inpainting method
     using a mask to identify differences. It returns the number of rows with
     differences, the total number of values that should not have changed according
     to the mask, and the total number of values that were actually changed with respect
     to the mask.
     """
-    # Check if the mask is compatible with the tensors
-    if input_tensor.shape != output_tensor.shape or input_tensor.shape != mask.shape:
-        raise ValueError("Tensor shapes and mask shape must match.")
+    # Check if the mask is compatible with the arrays
+    if input.shape != output.shape or input.shape != mask.shape:
+        raise ValueError("Array shapes and mask shape must match.")
     
-    # Apply the mask to both tensors
-    masked_input = input_tensor[mask]
-    masked_output = output_tensor[mask]
+    # Apply the mask to both arrays
+    masked_input = input[mask]
+    masked_output = output[mask]
     
-    # Compare the masked tensors element-wise
+    # Compare the masked arrays element-wise
     element_wise_comparison = masked_input != masked_output
     
     # Calculate the total number of values wrongly changed
-    total_wrongly_changed_values = element_wise_comparison.sum().item()
+    total_wrongly_changed_values = np.sum(element_wise_comparison)
     
     # Calculate the total number of values that should not have changed according to the mask
-    known_values = mask.sum().item()
+    known_values = np.sum(mask)
     
     # Determine if any differences exist within the masked input
-    num_rows_differ = (element_wise_comparison.reshape(mask.sum())).any().sum().item()
+    reshaped_comparison = element_wise_comparison.reshape(-1, known_values)
+    num_rows_differ = np.any(reshaped_comparison, axis=1).sum()
     
     return num_rows_differ, known_values, total_wrongly_changed_values
