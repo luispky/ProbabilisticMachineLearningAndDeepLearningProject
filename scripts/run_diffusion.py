@@ -6,7 +6,7 @@ import numpy as np
 import argparse
 import wandb
 from src.utils import GaussianDataset, LinearNoiseScheduler, EMA, plot_generated_samples, plot_loss
-from src.utils import plot_data_to_inpaint, SumCategoricalDataset, compare_label_values_with_mask
+from src.utils import plot_data_to_inpaint, SumCategoricalDataset, element_wise_label_values_comparison
 from src.modules import NoisePredictor
 from src.denoising_diffusion_pm import DDPM
 from src.denoising_diffusion_pm import save_model_to_dir
@@ -203,8 +203,8 @@ def main_sum_categorical_data():
     # generate inpainting samples
     size = 1500
     dataset_generator = SumCategoricalDataset(size, n_values, threshold)
-    data_to_inpaint = dataset_generator.get_features_with_mask()
-    x, mask = data_to_inpaint['x'], data_to_inpaint['mask']    
+    data_to_inpaint = dataset_generator.get_features_with_mask(label_values_mask=True)
+    x, mask = data_to_inpaint['x'], data_to_inpaint['mask']   
     plot_categories(dataset_generator.label_values, n_values, data_to_inpaint_name)
     
     print(f'Size if the dataset to inpaint: {x.shape[0]} samples')
@@ -230,12 +230,14 @@ def main_sum_categorical_data():
     right_changes = (y & ~y_after).sum().item()
     wrong_changes = (~y & y_after).sum().item()
     
-    # Count the percentage of instances that kept the label values after inpainting
-    inpaint_detailed = compare_label_values_with_mask(x, mask, inpainted_data)
+    inpaint_detailed = element_wise_label_values_comparison(data_to_inpaint['label_values'], 
+                                                      inpainted_data, 
+                                                      data_to_inpaint['values_mask'])
     num_rows_differ, known_values, total_wrongly_changed_values = inpaint_detailed
     
     # plot_agreement_disagreement_transformation(y, y_after, inpainted_data_name)
     
+    # Summary of the inpainting process
     print(f'Data size: {size}')
     print(f'Anomalies before inpainting / Total: {number_anomalies} / {size}')
     print(f'Remaining anomalies / Total: {number_remaining_anomalies} / {size}')

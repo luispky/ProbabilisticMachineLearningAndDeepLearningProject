@@ -1,0 +1,40 @@
+Size of the dataset requested: 3000 samples
+Training dataset size without anomalies: 2448 samples
+Logits to train min value: -15.420577049255371
+Logits to train max value: 8.989053726196289
+Epoch: 3 | Loss: 0.0640:   5%|████████▏                                                                                                                                                                     | 3/64 [00:01<00:23,  2.55it/s]
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 64 | Loss: 0.0488: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:24<00:00,  2.65it/s]
+128it [00:00, 871.80it/s]
+Training Finished
+Sampling...
+Sampling Finished
+Samples logits min value: -6.818348407745361
+Samples logits max value: 4.541484355926514
+128it [00:01, 108.22it/s]
+Size if the dataset to inpaint: 1500 samples
+Logits to inpaint min value: -11.637993812561035
+Logits to inpaint max value: 8.0217924118042
+Inpainting...
+Inpainting Finished
+Logits inpainted min value: -11.637412071228027
+Logis inpainted max value: 8.021390914916992
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 255, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 234, in main_sum_categorical_data
+    inpaint_detailed = compare_label_values_with_mask(dataset_generator.label_values, inpainted_data, mask)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 771, in compare_label_values_with_mask
+    raise ValueError("Tensor shapes and mask shape must match.")
+ValueError: Tensor shapes and mask shape must match.
