@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from src.utils import cprint, bcolors, Probabilities
 import matplotlib.pyplot as plt
-from scripts.inverse_gradient import InverseGradient
+from src.inverse_gradient import InverseGradient
 from src.datasets import SumCategoricalDataset
 
 
