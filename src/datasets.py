@@ -50,6 +50,15 @@ class DatabaseInterface:
             df[col] = df[col].map(self.inverse_value_maps[col])
         return df
 
+    def get_value_maps(self):
+        return self.value_maps
+
+    def get_inverse_value_maps(self):
+        return self.inverse_value_maps
+
+    def get_data_structure(self):
+        return tuple([len(self.value_maps[col]) for col in self.value_maps])
+
 
 class BaseDataset:
     def __init__(self, size):
