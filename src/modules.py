@@ -50,6 +50,7 @@ class Architecture(nn.Module):
                   or  (batch_size, rows, columns) where rows and columns are x.shape[1] and x.shape[2]
         """
         # Time embedding
+        # t has shape (batch_size, time_dim)
         emb = self.emb_layer(t)  # emb has shape (batch_size, dataset_shape[1])
         # emb is of datatype float = torch.float32
         
@@ -72,6 +73,53 @@ class Architecture(nn.Module):
         
         return x
 
+# Define the neural network architecture (modified for concatenation)
+class Architecture2(nn.Module):
+    def __init__(self, time_dim=256, dataset_shape=None):
+        super().__init__()
+        self.dataset_shape = dataset_shape
+
+        # self.emb_layer = nn.Sequential(
+        #     nn.Linear(time_dim, time_dim),
+        #     nn.SiLU(),
+        #     nn.Linear(time_dim, dataset_shape[1]),
+        # )
+
+        out1 = 64
+        out2 = 32
+        out3 = 32
+
+        self.blocks = nn.Sequential(
+            nn.Linear(dataset_shape[1] + time_dim, out1),  # Input channels doubled for concatenation
+            nn.ReLU(),
+            nn.Linear(out1, out2),
+            nn.ReLU(),
+            nn.Linear(out2, out3),
+            nn.ReLU(),
+            nn.Linear(out3, dataset_shape[1] + time_dim),  # Output channels doubled for concatenation
+            nn.ReLU(), 
+            nn.Linear(dataset_shape[1] + time_dim, dataset_shape[1])
+        )
+
+    def forward(self, x_t, t):
+        # emb = self.emb_layer(t)
+        emb = t
+
+        if len(x_t.shape) == len(emb.shape):
+            pass
+        elif len(self.dataset_shape) == 3:
+            emb = emb.unsqueeze(-1).expand_as(x_t)
+        else:
+            raise NotImplementedError('The shape of x_t is not supported')
+
+        x_t = torch.cat((x_t, emb), dim=1)
+
+        x_t = x_t.to(torch.float32)
+        x = self.blocks(x_t)
+
+        return x
+
+
 class NoisePredictor(nn.Module):
     r"""
     Neural network for the noise predictor in DDPM.
@@ -80,7 +128,7 @@ class NoisePredictor(nn.Module):
     def __init__(self, dataset_shape=None, time_dim=256, num_classes=None):
         super().__init__()
         self.time_dim = time_dim
-        self.architecture = Architecture(time_dim, dataset_shape)
+        self.architecture = Architecture2(time_dim, dataset_shape)
         
         # Label embedding layer
         # It encode the labels into the time dimension

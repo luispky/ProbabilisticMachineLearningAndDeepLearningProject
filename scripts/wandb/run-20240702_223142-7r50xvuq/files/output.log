@@ -1,0 +1,44 @@
+Size of the dataset requested: 3000 samples
+Training dataset size without anomalies: 2444 samples
+Logits to train min value: -12.607522010803223
+Logits to train max value: 7.372255802154541
+Training...
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 58 | Loss: 0.0490:  91%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉                | 58/64 [00:23<00:02,  2.76it/s]
+Epoch: 64 | Loss: 0.0487: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:25<00:00,  2.52it/s]
+0it [00:00, ?it/s]
+Sampling...
+Sampling Finished
+Samples logits min value: -7.051726341247559
+Samples logits max value: 4.526644706726074
+Size if the dataset to inpaint: 1500 samples
+Logits to inpaint min value: -13.375272750854492
+Logits to inpaint max value: 6.969933986663818
+128it [00:00, 993.75it/s]
+47it [00:00, 112.67it/s]
+Inpainting Finished
+Logits inpainted min value: -13.374604225158691
+Logis inpainted max value: 6.969585418701172
+shape of label_values: (1500, 5)
+shape of inpainted_data: (1500, 5)
+shape of values_mask: (1500, 5)
+type of label_values: <class 'numpy.ndarray'>
+type of inpainted_data: <class 'numpy.ndarray'>
+type of values_mask: <class 'numpy.ndarray'>
+Data size: 1500
+Anomalies before inpainting / Total: 261 / 1500
+Remaining anomalies / Total: 112 / 1500
+Percentage change (-100% desired): -57.09%
+Correct changes (balance): 149 (112)
+
+128it [00:01, 113.42it/s]

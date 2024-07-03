@@ -1,0 +1,39 @@
+Size of the dataset requested: 3000 samples
+Training dataset size without anomalies: 2492 samples
+Logits to train min value: -11.53858757019043
+Logits to train max value: 8.302014350891113
+Training...
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 64 | Loss: 0.0532: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:28<00:00,  2.25it/s]
+128it [00:00, 1010.78it/s]
+Training Finished
+Sampling...
+Sampling Finished
+Samples logits min value: -7.710582733154297
+Samples logits max value: 4.988786220550537
+Size if the dataset to inpaint: 1500 samples
+Logits to inpaint min value: -11.462308883666992
+Logits to inpaint max value: 7.435056209564209
+Inpainting...
+128it [00:01, 88.52it/s]
+Inpainting Finished
+Logits inpainted min value: 0
+Logis inpainted max value: 10
+Data size: 1500
+Anomalies before inpainting / Total: 285 / 1500
+Remaining anomalies / Total: 96 / 1500
+Percentage change (-100% desired): -66.32%
+Correct changes (balance): 189 (96)
+Wrong changes (balance): 0 (285)

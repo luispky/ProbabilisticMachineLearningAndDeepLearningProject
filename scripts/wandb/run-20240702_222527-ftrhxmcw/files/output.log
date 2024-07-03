@@ -1,0 +1,43 @@
+Size of the dataset requested: 3000 samples
+Training dataset size without anomalies: 2446 samples
+Logits to train min value: -11.102630615234375
+Logits to train max value: 7.356801986694336
+Epoch: 3 | Loss: 0.0657:   5%|████████▏                                                                                                                                                                     | 3/64 [00:01<00:24,  2.52it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 64 | Loss: 0.0524: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:27<00:00,  2.35it/s]
+128it [00:00, 931.92it/s]
+Training Finished
+Sampling...
+Sampling Finished
+Samples logits min value: -7.78761625289917
+Samples logits max value: 4.32961893081665
+54it [00:00, 102.09it/s]
+Size if the dataset to inpaint: 1500 samples
+Logits to inpaint min value: -12.125532150268555
+Logits to inpaint max value: 7.341030120849609
+128it [00:01, 103.07it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 259, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 236, in main_sum_categorical_data
+    inpaint_detailed = compare_label_values_with_mask(data_to_inpaint['label_values'],
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 781, in compare_label_values_with_mask
+    if input.shape != output.shape or input.shape != mask.shape:
+                                                     ^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'shape'
+Inpainting Finished
+Logits inpainted min value: -12.12492561340332
+Logis inpainted max value: 7.340662956237793
+Mask shape: torch.Size([1500, 28])
