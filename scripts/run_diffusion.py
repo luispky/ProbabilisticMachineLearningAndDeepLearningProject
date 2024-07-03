@@ -11,6 +11,8 @@ from src.modules import NoisePredictor
 from src.denoising_diffusion_pm import DDPM
 from src.denoising_diffusion_pm import save_model_to_dir
 from src.utils import Probabilities, plot_agreement_disagreement_transformation, plot_categories
+from rich.console import Console
+from rich.table import Table
 
 def main_gaussian_data():
     # define the arguments
@@ -133,8 +135,8 @@ def main_sum_categorical_data():
     sampler_comment = 'ema_model'
     args.epochs = 64
     
-    experiment_number = '04'
-    architecture_comment = '4 layers, ins: 2, 32, 64, 32 | sum x and t'
+    experiment_number = '05'
+    architecture_comment = '5 layers, ins: 92, 64, 32, 92 | concat x and t'
     #  Hyperparameters that influence the model
     noise_time_steps = 128  # 128 good value, try 256
     time_dim_embedding = 64  # >=32 work well
@@ -238,14 +240,34 @@ def main_sum_categorical_data():
     # plot_agreement_disagreement_transformation(y, y_after, inpainted_data_name)
     
     # Summary of the inpainting process
-    print(f'Data size: {size}')
-    print(f'Anomalies before inpainting / Total: {number_anomalies} / {size}')
-    print(f'Remaining anomalies / Total: {number_remaining_anomalies} / {size}')
-    print(f'Percentage change (-100% desired): {percentage_change:.2f}%')
-    print(f'Correct changes (balance): {right_changes} ({number_anomalies - right_changes})')
-    print(f'Wrong changes (balance): {wrong_changes} ({number_anomalies - wrong_changes})')
-    print(f'Number of rows wrongly modified: {num_rows_differ}({size})')
-    print(f'Number of known values wrongly modified: {total_wrongly_changed_values}({known_values})')
+    console = Console()
+
+    # Create a table
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Metric", style="dim", width=40)
+    table.add_column("Value")
+    
+    # print(f'Summary of the inpainting process...')
+    # print(f'Data size: {size}')
+    # print(f'Anomalies before inpainting / Total: {number_anomalies} / {size}')
+    # print(f'Remaining anomalies / Total: {number_remaining_anomalies} / {size}')
+    # print(f'Percentage change (-100% desired): {percentage_change:.2f}%')
+    # print(f'Correct changes (balance): {right_changes} ({number_anomalies - right_changes})')
+    # print(f'Wrong changes (balance): {wrong_changes} ({number_anomalies - wrong_changes})')
+    # print(f'Number of rows wrongly modified: {num_rows_differ}({size})')
+    # print(f'Number of known values wrongly modified: {total_wrongly_changed_values}({known_values})')
+    
+    table.add_row("Data size:", str(size))
+    table.add_row("Anomalies before inpainting / Total:", f"{number_anomalies} / {size}")
+    table.add_row("Remaining anomalies / Total:", f"{number_remaining_anomalies} / {size}")
+    table.add_row("Percentage change (-100% desired):", f"{percentage_change:.2f}%")
+    table.add_row("Correct changes (balance):", f"{right_changes} ({number_anomalies - right_changes})")
+    table.add_row("Wrong changes (balance):", f"{wrong_changes} ({number_anomalies - wrong_changes})")
+    table.add_row("Number of rows wrongly modified:", f"{num_rows_differ}({size})")
+    table.add_row("Number of known values wrongly modified:", f"{total_wrongly_changed_values}({known_values})")
+
+    console.print("[bold green]Summary of the inpainting process...[/bold green]")
+    console.print(table)
     
     wandb.finish()
 
