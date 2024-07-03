@@ -247,9 +247,6 @@ def main_sum_categorical_data():
     print(f'Number of rows wrongly modified: {num_rows_differ}({size})')
     print(f'Number of known values wrongly modified: {total_wrongly_changed_values}({known_values})')
     
-    # ?: perform element-wise inspection of the values representation to see if the inpainting 
-    # only changed the values that were supposed to be changed
-    
     wandb.finish()
 
 if __name__ == '__main__':

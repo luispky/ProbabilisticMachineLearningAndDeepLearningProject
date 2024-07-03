@@ -781,21 +781,30 @@ def element_wise_label_values_comparison(input, output, mask):
     if input.shape != output.shape or input.shape != mask.shape:
         raise ValueError("Array shapes and mask shape must match.")
     
-    # Apply the mask to both arrays
-    masked_input = input[mask]
-    masked_output = output[mask]
+    num_rows_differ = 0
+    total_wrongly_changed_values = 0
+    known_values = 0
     
-    # Compare the masked arrays element-wise
-    element_wise_comparison = masked_input != masked_output
-    
-    # Calculate the total number of values wrongly changed
-    total_wrongly_changed_values = np.sum(element_wise_comparison)
-    
-    # Calculate the total number of values that should not have changed according to the mask
-    known_values = np.sum(mask)
-    
-    # Determine if any differences exist within the masked input
-    reshaped_comparison = element_wise_comparison.reshape(-1, known_values)
-    num_rows_differ = np.any(reshaped_comparison, axis=1).sum()
+    for row_input, row_output, row_mask in zip(input, output, mask):
+        # Apply the mask to the current row
+        masked_input = row_input[~row_mask]
+        masked_output = row_output[~row_mask]
+        
+        # Compare the masked arrays element-wise
+        element_wise_comparison = masked_input != masked_output
+        
+        # Calculate the total number of values wrongly changed for this row
+        row_wrongly_changed_values = np.sum(element_wise_comparison)
+        
+        # Update the total wrongly changed values
+        total_wrongly_changed_values += row_wrongly_changed_values
+        
+        # Update the total number of values that should not have changed according to the mask
+        row_known_values = np.sum(~row_mask)
+        known_values += row_known_values
+        
+        # Determine if there are differences within the masked input for this row
+        if np.any(element_wise_comparison):
+            num_rows_differ += 1
     
     return num_rows_differ, known_values, total_wrongly_changed_values
