@@ -1,0 +1,43 @@
+Size of the dataset requested: 3000 samples
+Training dataset size without anomalies: 2473 samples
+Logits to train min value: -12.396060943603516
+Logits to train max value: 7.743037223815918
+Training...
+  0%|                                                                                                                                                                                                               | 0/64 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 297, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 211, in main_sum_categorical_data
+    train_losses = diffusion.train(dataloader, ema)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/denoising_diffusion_pm.py", line 128, in train
+    predicted_noise = self.model(x_t, t, labels)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/modules.py", line 196, in forward
+    return self.architecture_kernel(x_t)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/modules.py", line 86, in forward
+    x = nn.Linear(x.shape[1], self.output_dim)(x) if self.concat_x_and_t else x
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/linear.py", line 116, in forward
+    return F.linear(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cpu and cuda:0! (when checking argument for argument mat1 in method wrapper_CUDA_addmm)

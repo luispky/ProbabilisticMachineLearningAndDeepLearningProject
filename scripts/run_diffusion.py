@@ -145,11 +145,18 @@ def main_sum_categorical_data():
     #  Hyperparameters that influence the model
     concat = True
     feed_forward_kernel = True
-    hidden_units = [184]
+    # hidden_units = [128, 256,  512, 256, 128]
+    # hidden_units = [64, 128, 64]
+    hidden_units = [92*2]
+    # concat = False
+    # feed_forward_kernel = False
+    # hidden_units = None
+    unet = False
     noise_time_steps = 128  # 128 good value, try 256
     time_dim_embedding = 64  # >=32 works well
-    experiment_number = '08'
+    experiment_number = '14'
     architecture_comment = f"hidden_units: {hidden_units} | concat(x, t): {concat}"
+    # architecture_comment = f"2 encoders and decoders | concat(x, t): {concat}"
     
     original_data_name = 'original_data_' + experiment_number
     sample_image_name = 'gen_samples_' + experiment_number
@@ -164,6 +171,7 @@ def main_sum_categorical_data():
     # Add all the hyperparameters to wandb
     wandb.config.update({"architecture": architecture_comment,
                          "feed_forward_kernel": feed_forward_kernel,
+                         "unet": unet,
                         'noise_time_steps': noise_time_steps,
                         'time_dim_embedding': time_dim_embedding,
                         'epochs': args.epochs,
@@ -186,7 +194,8 @@ def main_sum_categorical_data():
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     model = NoisePredictor(time_dim=time_dim_embedding, dataset_shape=dataset_shape,
                            concat_x_and_t=concat,
-                           feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units)
+                           feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units,
+                            unet=unet)
     prob_instance = Probabilities(n_values)
     
     print(f'Size of the dataset requested: {size} samples') 
@@ -214,6 +223,12 @@ def main_sum_categorical_data():
     
     # save the generated samples
     plot_categories(samples, n_values, sample_image_name)
+    
+    # compute the kullback-leibler divergence
+    # todo: I need to do the mapping back to the categorical values
+    # from scipy.special import kl_div
+    # P and Q from the frequencies of a pd.DataFrame with categorical values
+    # kl_divergence = kl_div(P, Q).sum()
     
     # generate inpainting samples
     size = 1500

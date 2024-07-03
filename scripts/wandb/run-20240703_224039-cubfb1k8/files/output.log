@@ -1,0 +1,33 @@
+Size of the dataset requested: 3000 samples
+Training dataset size without anomalies: 2452 samples
+Logits to train min value: -12.620219230651855
+Logits to train max value: 8.563810348510742
+  0%|                                                                                                                                                                                                               | 0/64 [00:00<?, ?it/s]/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/loss.py:535: UserWarning: Using a target size (torch.Size([14, 92])) that is different to the input size (torch.Size([14, 28])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.mse_loss(input, target, reduction=self.reduction)
+  0%|                                                                                                                                                                                                               | 0/64 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 297, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 211, in main_sum_categorical_data
+    train_losses = diffusion.train(dataloader, ema)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/denoising_diffusion_pm.py", line 131, in train
+    loss = criterion(noise, predicted_noise)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/loss.py", line 535, in forward
+    return F.mse_loss(input, target, reduction=self.reduction)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/functional.py", line 3365, in mse_loss
+    expanded_input, expanded_target = torch.broadcast_tensors(input, target)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/functional.py", line 76, in broadcast_tensors
+    return _VF.broadcast_tensors(tensors)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: The size of tensor a (28) must match the size of tensor b (92) at non-singleton dimension 1
+Training...
