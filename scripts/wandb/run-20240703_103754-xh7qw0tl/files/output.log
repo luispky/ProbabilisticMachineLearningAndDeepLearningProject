@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 279, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 179, in main_sum_categorical_data
+    model = NoisePredictor(architecture=architecture, time_dim=time_dim_embedding, num_classes=args.num_classes)
+                                                                                               ^^^^^^^^^^^^^^^^
+AttributeError: 'Namespace' object has no attribute 'num_classes'

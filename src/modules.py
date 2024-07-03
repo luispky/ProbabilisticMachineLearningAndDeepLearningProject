@@ -1,46 +1,107 @@
-"""
-! Observations:
-* I need to modify the Architecture class to solve the specific problem at hand
-* Encode the time steps better depending on the layers of the model
-"""
 import torch
 import torch.nn as nn
+from abc import ABC, abstractmethod
 
 
-class Architecture(nn.Module):
-    r"""
-    Neural network architecture for the noise predictor in DDPM.
-    """
-    def __init__(self, time_dim=256, dataset_shape=None):
+class BaseArchitectureKernel(nn.Module, ABC):
+    def __init__(self, input_dim, output_dim):
         super().__init__()
-        self.dataset_shape = dataset_shape
+        self.input_dim = input_dim
+        self.output_dim = output_dim
         
-        # Time embedding layer
-        # It ensures the time encoding is compatible with the noised samples
-        self.emb_layer = nn.Sequential(
-            nn.Linear(time_dim, time_dim),
-            nn.SiLU(),
-            nn.Linear(time_dim, dataset_shape[1]),
-        )
-        
-        # Maybe add an embedding layer for each linear layer
-        # todo: parameters should be passed as arguments
-        out1 = 32
-        out2 = 64
-        out3 = 32
-        
-        # # Sequential layers
-        self.blocks = nn.Sequential(
-            nn.Linear(dataset_shape[1], out1),
-            nn.ReLU(),
-            nn.Linear(out1, out2),
-            nn.ReLU(),
-            nn.Linear(out2, out3),
-            nn.ReLU(),
-            nn.Linear(out3, dataset_shape[1]),
-        )
+    @abstractmethod
+    def forward(self, x):
+        pass
 
-    def forward(self, x_t, t):
+
+class FeedForwardKernel(BaseArchitectureKernel):
+    def __init__(self, input_dim, output_dim, hidden_units: list):
+        super().__init__(input_dim, output_dim)
+        
+        layers = [] 
+        layers.append(nn.Linear(input_dim, hidden_units[0]))
+        for i in range(len(hidden_units)-1):
+            layers.append(nn.Linear(hidden_units[i], hidden_units[i+1]))
+            layers.append(nn.ReLU())
+        layers.append(nn.Linear(hidden_units[-1], output_dim))
+        
+        self.net = nn.Sequential(*layers)
+        
+    def forward(self, x):
+        return self.net(x)
+
+class NoisePredictor(nn.Module):
+    """
+    Neural network for the noise predictor in DDPM.
+    """
+    
+    def __init__(self, time_dim=128, dataset_shape=None, concat_x_and_t=False,
+                 num_classes=None, feed_forward_kernel=True, hidden_units: list | None=None):
+        super().__init__()
+        
+        if feed_forward_kernel:
+            assert hidden_units is not None, 'The hidden units must be provided'
+        else:
+            assert hidden_units is None, 'The hidden units must not be provided'
+        
+        assert dataset_shape is not None, 'The dataset shape must be provided'
+        self.time_dim = time_dim
+        assert len(dataset_shape) in [2, 3], 'The dataset shape is not supported'
+        self.dataset_shape = dataset_shape
+        self.concat_x_and_t = concat_x_and_t
+        
+        if not concat_x_and_t: 
+            # Time embedding layer
+            # It ensures the time encoding is compatible with the noised samples
+            self.time_emb_layer = nn.Sequential(
+                nn.Linear(time_dim, time_dim),
+                nn.SiLU(),
+                nn.Linear(time_dim, dataset_shape[1]),
+            )
+            input_dim = dataset_shape[1]
+        else: 
+            self.time_emb_layer = nn.Identity()
+            input_dim = dataset_shape[1] + time_dim  # time_dim is the time encoding
+        output_dim = dataset_shape[1]  # output_dim is the same as the input_dim
+        
+        if feed_forward_kernel:
+            self.architecture_kernel = FeedForwardKernel(input_dim, output_dim, hidden_units)
+        else:
+            raise NotImplementedError('The kernel is not implemented')
+        
+        # Label embedding layer
+        # It encode the labels into the time dimension
+        # It is used to condition the model
+        if num_classes is not None:
+            self.label_emb = nn.Embedding(num_classes, time_dim)  # label_emb(labels) has shape (batch_size, time_dim)
+            
+            
+    def positional_encoding(self, time_steps):
+        r"""
+        Sinusoidal positional encoding for the time steps.
+        The sinusoidal positional encoding is a way of encoding the
+        position of elements in a sequence using sinusoidal functions.
+        It is defined as:
+        PE(pos, 2i) = sin(pos / 10000^(2i/d_model))
+        PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+        where 
+            - pos is the position of the element in the sequence, 
+            - i is the dimension of the positional encoding, and 
+            - d_model is the dimension of the input
+        The sinusoidal positional encoding is used in the Transformer model
+        to encode the position of elements in the input sequence.
+        """
+        inv_freq = 1.0 / (
+            10000 ** (torch.arange(0, self.time_dim, 2).float() / self.time_dim)
+        ).to(time_steps.device)
+        pos_enc = torch.cat([
+                            torch.sin(time_steps * inv_freq),
+                            torch.cos(time_steps * inv_freq)
+                            ], dim=-1)
+        
+        return pos_enc
+
+    def forward(self, x_t, t, y=None):
         """
         The goal is to predict the noise for the diffusion model
         The architecture input is: x_{t} and t, which could be summed
@@ -49,137 +110,38 @@ class Architecture(nn.Module):
         for instance, (batch_size, columns) where columns is x.shape[1]
                   or  (batch_size, rows, columns) where rows and columns are x.shape[1] and x.shape[2]
         """
-        # Time embedding
-        # t has shape (batch_size, time_dim)
-        emb = self.emb_layer(t)  # emb has shape (batch_size, dataset_shape[1])
-        # emb is of datatype float = torch.float32
-        
-        # Cases for broadcasting emb to match x_t
-        if x_t.shape == emb.shape:
-            pass
-        elif len(self.dataset_shape) == 3:
-            emb = emb.unsqueeze(-1).expand_as(x_t)  # emb has shape (batch_size, dataset_shape[1], dataset_shape[2])
-            # emb = emb.unsqueezep[:, :, None].repeat(1, 1, x_t.shape[-1])
-            
-        else:
-            raise NotImplementedError('The shape of x_t is not supported')
-            # add more cases for different shapes of x_t
-        
-        # Application of transformation layers
-        # torch layers work better with float32
-        # thus we convert x_t to float32
-        x_t = x_t.to(torch.float32)
-        x = self.blocks(x_t + emb)
-        
-        return x
-
-# Define the neural network architecture (modified for concatenation)
-class Architecture2(nn.Module):
-    def __init__(self, time_dim=256, dataset_shape=None):
-        super().__init__()
-        self.dataset_shape = dataset_shape
-
-        # self.emb_layer = nn.Sequential(
-        #     nn.Linear(time_dim, time_dim),
-        #     nn.SiLU(),
-        #     nn.Linear(time_dim, dataset_shape[1]),
-        # )
-
-        out1 = 64
-        out2 = 32
-        out3 = 32
-
-        self.blocks = nn.Sequential(
-            nn.Linear(dataset_shape[1] + time_dim, out1),  # Input channels doubled for concatenation
-            nn.ReLU(),
-            nn.Linear(out1, out2),
-            nn.ReLU(),
-            nn.Linear(out2, out3),
-            nn.ReLU(),
-            nn.Linear(out3, dataset_shape[1] + time_dim),  # Output channels doubled for concatenation
-            nn.ReLU(), 
-            nn.Linear(dataset_shape[1] + time_dim, dataset_shape[1])
-        )
-
-    def forward(self, x_t, t):
-        # emb = self.emb_layer(t)
-        emb = t
-
-        if len(x_t.shape) == len(emb.shape):
-            pass
-        elif len(self.dataset_shape) == 3:
-            emb = emb.unsqueeze(-1).expand_as(x_t)
-        else:
-            raise NotImplementedError('The shape of x_t is not supported')
-
-        x_t = torch.cat((x_t, emb), dim=1)
-
-        x_t = x_t.to(torch.float32)
-        x = self.blocks(x_t)
-
-        return x
-
-
-class NoisePredictor(nn.Module):
-    r"""
-    Neural network for the noise predictor in DDPM.
-    """
-    
-    def __init__(self, dataset_shape=None, time_dim=256, num_classes=None):
-        super().__init__()
-        self.time_dim = time_dim
-        self.architecture = Architecture2(time_dim, dataset_shape)
-        
-        # Label embedding layer
-        # It encode the labels into the time dimension
-        # It is used to condition the model
-        if num_classes is not None:
-            self.label_emb = nn.Embedding(num_classes, time_dim)  # label_emb(labels) has shape (batch_size, time_dim)
-        
-    def forward(self, x_t, t, y=None):
         
         # Positional encoding for the time steps
-        t = t.unsqueeze(-1).type(torch.float)  # t has shape (batch_size,1)
-        # Now, t has shape (batch_size)
-        t = positional_encoding(t, self.time_dim) 
-        # t has shape (batch_size, time_dim)
+        # t.shape (batch_size,1) -> (batch_size) -> (batch_size, time_dim)
+        t = self.positional_encoding(t.unsqueeze(-1).float()) 
         
         # Label embedding
         if y is not None:
-            # y has shape (batch_size, 1)
-            y = y.squeeze(-1)
-            # y now has shape (batch_size)
-            if y.dtype != torch.long:
-                y = y.long()
+            # y has shape (batch_size, 1) 0 -> (batch_size)
+            y = y.squeeze(-1).long()
             t += self.label_emb(y)
             # label_emb(y) has shape (batch_size, time_dim)
             # the sum is element-wise
         
-        # Apply the architecture 
-        output = self.architecture(x_t, t)
-        return output
-
-
-def positional_encoding(time_steps, embedding_dim):
-    r"""
-    Sinusoidal positional encoding for the time steps.
-    The sinusoidal positional encoding is a way of encoding the
-    position of elements in a sequence using sinusoidal functions.
-    It is defined as:
-    PE(pos, 2i) = sin(pos / 10000^(2i/d_model))
-    PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
-    where 
-        - pos is the position of the element in the sequence, 
-        - i is the dimension of the positional encoding, and 
-        - d_model is the dimension of the input
-    The sinusoidal positional encoding is used in the Transformer model
-    to encode the position of elements in the input sequence.
-    """
-    inv_freq = 1.0 / (
-        10000
-        ** (torch.arange(0, embedding_dim, 2).float() / embedding_dim)
-    ).to(time_steps.device)
-    pos_enc_a = torch.sin(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
-    pos_enc_b = torch.cos(time_steps.repeat(1, embedding_dim // 2) * inv_freq)
-    pos_enc = torch.cat([pos_enc_a, pos_enc_b], dim=-1)
-    return pos_enc
+        # Time embedding
+        # t has shape (batch_size, time_dim)
+        emb = self.time_emb_layer(t)  # emb has shape (batch_size, ...) if concat_x_and_t is False
+        # emb is of datatype float = torch.float32
+        
+        # Cases for broadcasting emb to match x_t
+        if x_t.dim() == emb.dim():
+            pass
+        elif x_t.dim() == 3:
+            emb = emb.unsqueeze(-1).expand_as(x_t)  # emb has shape (batch_size, ...)
+            # emb = emb.unsqueezep[:, :, None].repeat(1, 1, x_t.shape[-1])
+        
+        # Application of transformation layers
+        # torch layers work better with float32
+        # thus we convert x_t to float32
+        x_t = x_t.float()
+        if self.concat_x_and_t:
+            x_t = torch.cat((x_t, emb), dim=1)
+        else: 
+            x_t = x_t + emb
+        
+        return self.architecture_kernel(x_t)
