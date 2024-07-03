@@ -13,6 +13,7 @@ from src.denoising_diffusion_pm import save_model_to_dir
 from src.utils import Probabilities, plot_agreement_disagreement_transformation, plot_categories
 from rich.console import Console
 from rich.table import Table
+import torch.nn as nn
 
 def main_gaussian_data():
     # define the arguments
@@ -21,7 +22,6 @@ def main_gaussian_data():
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Not required for the inpainting task
-    with_labels = False
     args.cfg_strength = 3.0
     args.num_classes = 2
 
@@ -31,14 +31,17 @@ def main_gaussian_data():
     args.lr = 1e-3
     sampler_comment = 'ema_model'
     args.epochs = 64
+    save_model = False
     
-    experiment_number = '30'
-    architecture_comment = '4 layers, ins: 2, 32, 64, 32 | sum x and t'
     #  Hyperparameters that influence the model
+    concat = False
+    feed_forward_kernel = True
+    hidden_units = [32, 64]
     noise_time_steps = 128  # 128 good value, try 256
     time_dim_embedding = 64  # >=32 works well
+    experiment_number = '30'
+    architecture_comment = f"hidden_units: {hidden_units} | concat(x, t): {concat}"
 
-    save_model = False
 
     sample_image_name = 'gen_samples_' + experiment_number
     model_name = 'ddpm_model_' + experiment_number
@@ -50,15 +53,16 @@ def main_gaussian_data():
 
     # Add all the hyperparameters to wandb
     wandb.config.update({"architecture": architecture_comment,
-                         "sampler": sampler_comment, 
+                         "feed_forward_kernel": feed_forward_kernel,
                         'noise_time_steps': noise_time_steps,
                         'time_dim_embedding': time_dim_embedding,
                         'epochs': args.epochs,
                         'scheduler': 'linear',
-                        'learning_rate': args.lr,
-                        'cfg_strength': args.cfg_strength,
-                        'beta_ema': beta_ema,
+                         "sampler": sampler_comment, 
                         'samples': args.samples,
+                        'learning_rate': args.lr,
+                        'beta_ema': beta_ema,
+                        'cfg_strength': args.cfg_strength,
                         'num_classes': args.num_classes,
     })
     
@@ -73,7 +77,9 @@ def main_gaussian_data():
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
     # scheduler = CosineNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
-    model = NoisePredictor(dataset_shape=dataset_shape, time_dim=time_dim_embedding, num_classes=args.num_classes)
+    model = NoisePredictor(time_dim=time_dim_embedding, dataset_shape=dataset_shape,
+                           concat_x_and_t=concat,
+                           feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units)
 
     # Instantiate the DDPM modelcd 
     diffusion = DDPM(scheduler, model, args)
@@ -134,13 +140,17 @@ def main_sum_categorical_data():
     args.lr = 1e-3
     sampler_comment = 'ema_model'
     args.epochs = 64
-    
-    experiment_number = '05'
-    architecture_comment = '5 layers, ins: 92, 64, 32, 92 | concat x and t'
-    #  Hyperparameters that influence the model
-    noise_time_steps = 128  # 128 good value, try 256
-    time_dim_embedding = 64  # >=32 work well
+    # save_model = False
 
+    #  Hyperparameters that influence the model
+    concat = True
+    feed_forward_kernel = True
+    hidden_units = [184]
+    noise_time_steps = 128  # 128 good value, try 256
+    time_dim_embedding = 64  # >=32 works well
+    experiment_number = '08'
+    architecture_comment = f"hidden_units: {hidden_units} | concat(x, t): {concat}"
+    
     original_data_name = 'original_data_' + experiment_number
     sample_image_name = 'gen_samples_' + experiment_number
     model_name = 'ddpm_model_' + experiment_number
@@ -153,14 +163,15 @@ def main_sum_categorical_data():
 
     # Add all the hyperparameters to wandb
     wandb.config.update({"architecture": architecture_comment,
-                         "sampler": sampler_comment, 
+                         "feed_forward_kernel": feed_forward_kernel,
                         'noise_time_steps': noise_time_steps,
                         'time_dim_embedding': time_dim_embedding,
                         'epochs': args.epochs,
                         'scheduler': 'linear',
+                         "sampler": sampler_comment, 
+                        'samples': args.samples,
                         'learning_rate': args.lr,
                         'beta_ema': beta_ema,
-                        'samples': args.samples,
     })
     
     # define the components of the DDPM model: dataset, scheduler, model, EMA class
@@ -173,7 +184,9 @@ def main_sum_categorical_data():
     dataloader = dataset_generator.get_dataloader(with_labels=False)
     dataset_shape = dataset_generator.get_dataset_shape()
     scheduler = LinearNoiseScheduler(noise_timesteps=noise_time_steps, dataset_shape=dataset_shape)
-    model = NoisePredictor(dataset_shape=dataset_shape, time_dim=time_dim_embedding)
+    model = NoisePredictor(time_dim=time_dim_embedding, dataset_shape=dataset_shape,
+                           concat_x_and_t=concat,
+                           feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units)
     prob_instance = Probabilities(n_values)
     
     print(f'Size of the dataset requested: {size} samples') 
@@ -248,7 +261,6 @@ def main_sum_categorical_data():
     table.add_column("Value")
     
     # print(f'Summary of the inpainting process...')
-    # print(f'Data size: {size}')
     # print(f'Anomalies before inpainting / Total: {number_anomalies} / {size}')
     # print(f'Remaining anomalies / Total: {number_remaining_anomalies} / {size}')
     # print(f'Percentage change (-100% desired): {percentage_change:.2f}%')
@@ -257,7 +269,6 @@ def main_sum_categorical_data():
     # print(f'Number of rows wrongly modified: {num_rows_differ}({size})')
     # print(f'Number of known values wrongly modified: {total_wrongly_changed_values}({known_values})')
     
-    table.add_row("Data size:", str(size))
     table.add_row("Anomalies before inpainting / Total:", f"{number_anomalies} / {size}")
     table.add_row("Remaining anomalies / Total:", f"{number_remaining_anomalies} / {size}")
     table.add_row("Percentage change (-100% desired):", f"{percentage_change:.2f}%")
