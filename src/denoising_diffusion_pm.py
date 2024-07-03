@@ -32,7 +32,7 @@ class DDPM:
         # send the scheduler attributes to the device
         self.scheduler.send_to_device(self.args.device) 
         
-    def load_model(self, model_params, architecture, filename, path="../models/"):
+    def load_model(self, model_params, filename, path="../models/"):
         r"""
         Load model parameters from a file using safetensors.
         """
