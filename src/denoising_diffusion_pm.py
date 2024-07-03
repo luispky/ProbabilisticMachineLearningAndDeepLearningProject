@@ -32,16 +32,20 @@ class DDPM:
         # send the scheduler attributes to the device
         self.scheduler.send_to_device(self.args.device) 
         
-    def load_model(self, model_params, filename, path="../models/"):
+    def load_model(self, model_params, architecture, filename, path="../models/"):
         r"""
         Load model parameters from a file using safetensors.
         """
-        dataset_shape = model_params['dataset_shape']
         time_dim = model_params['time_dim']
         num_classes = model_params['num_classes']
-        model = NoisePredictor(dataset_shape=dataset_shape, 
-                               time_dim=time_dim, 
-                               num_classes=num_classes).to(self.args.device)
+        concat_x_and_t = model_params['concat_x_and_t']
+        feed_forward_kernel = model_params['feed_forward_kernel']
+        hidden_units = model_params['hidden_units']
+        
+        
+        model = NoisePredictor(time_dim=time_dim, dataset_shape=self.scheduler.dataset_shape,
+                num_classes=num_classes, concat_x_and_t=concat_x_and_t,
+                feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units).to(self.args.device)
         
         print(f'Loading model...')
         
@@ -151,7 +155,7 @@ class DDPM:
     def sample(self, model, with_labels=False, cfg_strength=3):
         model.eval()
         model.to(self.args.device)
-        samples_shape = self.model.architecture.dataset_shape
+        samples_shape = self.model.dataset_shape
         
         if self.conditional_training:
             assert cfg_strength > 0, 'The strength of the Classifier-Free Guidance must be positive'

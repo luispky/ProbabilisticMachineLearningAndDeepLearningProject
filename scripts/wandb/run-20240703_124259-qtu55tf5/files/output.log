@@ -1,0 +1,31 @@
+Size of the dataset requested: 3000 samples
+Training dataset size without anomalies: 2471 samples
+Logits to train min value: -11.560599327087402
+Logits to train max value: 8.402868270874023
+Training...
+
+
+
+
+
+
+
+
+
+Epoch: 64 | Loss: 0.0540: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 64/64 [00:22<00:00,  2.85it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 288, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 210, in main_sum_categorical_data
+    samples_logits = diffusion.sample(diffusion.ema_model)[0]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/denoising_diffusion_pm.py", line 158, in sample
+    samples_shape = self.model.architecture.dataset_shape
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/miniconda3/envs/DL/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1709, in __getattr__
+    raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+AttributeError: 'NoisePredictor' object has no attribute 'architecture'
+Training Finished
