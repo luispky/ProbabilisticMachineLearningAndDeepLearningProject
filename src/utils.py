@@ -39,10 +39,10 @@ class BaseDataset(ABC):
 
 
 class SumCategoricalDataset(BaseDataset):
-    def __init__(self, size, n_values, threshold):
+    def __init__(self, size, structure, threshold):
         super().__init__()
         self.size = size
-        self.n_values = n_values
+        self.structure = structure
         self.threshold = threshold
         self.label_values = None
 
@@ -52,10 +52,10 @@ class SumCategoricalDataset(BaseDataset):
         The y labels are binary, True/Anomaly if the sum of the values in the array exceeds the threshold.
         """
 
-        proba = Probabilities(self.n_values)
+        proba = Probabilities(self.structure)
 
         # raw data
-        p = np.random.random(size=(self.size, sum(self.n_values)))
+        p = np.random.random(size=(self.size, sum(self.structure)))
         p = proba.normalize(p)
 
         x = proba.prob_to_onehot(p)
@@ -65,7 +65,7 @@ class SumCategoricalDataset(BaseDataset):
         if remove_anomalies:
             p = p[~y]
             self.label_values = self.label_values[~y]
-            y = y[~y]
+            y = y[~y]  # todo does bool define __getitem__?
 
         y = np.expand_dims(y, axis=1)
 
@@ -92,7 +92,7 @@ class SumCategoricalDataset(BaseDataset):
             masks = self._mask_one_feature_values(label_values_mask)
         else:
             masks = self._mask_features_values(label_values_mask)
-        mask = masks[0]
+        mask = masks[0]   # todo: assign before reference
         values_mask = masks[1] if label_values_mask else None
 
         # add the mask to the dataset
@@ -151,7 +151,7 @@ class SumCategoricalDataset(BaseDataset):
             result[exceeding_rows_indices, max_value_indices] = True
 
         # Repeat each column according to the specified repetition counts
-        repeated_result = np.repeat(result, self.n_values, axis=1)
+        repeated_result = np.repeat(result, self.structure, axis=1)
         repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
 
         if label_values_mask:
@@ -191,7 +191,7 @@ class SumCategoricalDataset(BaseDataset):
         # Combine the conditions: the sum exceeds the threshold and the element is the maximum
         result = np.logical_and(exceed_threshold[:, None], is_max)
 
-        repeated_result = np.repeat(result, self.n_values, axis=1)
+        repeated_result = np.repeat(result, self.structure, axis=1)
 
         repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
 
@@ -212,6 +212,8 @@ class GaussianDataset(BaseDataset):
     def _generate_samples(self, mean, cov, num_samples):
         """
         Generates samples using an alternative approach to handle non-positive definite covariance matrices.
+
+        # todo: method is static. In OO programming we usually assign values to the attributes of the class ;)
         """
         mean_tensor = torch.tensor(mean, dtype=torch.float32)
         cov_tensor = torch.tensor(cov, dtype=torch.float32)
@@ -240,6 +242,8 @@ class GaussianDataset(BaseDataset):
         
         Returns:
         - dict: Dictionary containing the dataset ('x') and the labels ('y') as torch tensors.
+
+        # todo: signature does not match the one in the abstract class
         """
 
         if labels is None:
@@ -268,6 +272,8 @@ class GaussianDataset(BaseDataset):
     def get_features_with_mask(self, means, covariances, num_samples_per_distribution, boolean_labels):
         """
         Generates the dataset with the mask to inpaint.
+
+        # todo: signature does not match the one in the abstract class
         """
 
         # inspect if the labels are boolean
@@ -556,10 +562,10 @@ class Probabilities:
     of features with different number of values
     """
 
-    def __init__(self, n_values: list | tuple):  # todo rename n_values -> structure
-        self.n_values = n_values
-        self.n = len(n_values)
-        self.length = sum(n_values)
+    def __init__(self, structure: list | tuple):  # todo rename n_values -> structure
+        self.structure = structure
+        self.n = len(structure)
+        self.length = sum(structure)
         self.mat = None
         self._set_mat()
 
@@ -567,9 +573,9 @@ class Probabilities:
         """Create binary masks that divide the various features"""
         self.mat = np.zeros((self.length, self.length), dtype=np.float64)
         for i in range(self.n):
-            start = sum(self.n_values[:i])
-            for j in range(self.n_values[i]):
-                self.mat[start:start + j + 1, start:start + self.n_values[i]] = 1
+            start = sum(self.structure[:i])
+            for j in range(self.structure[i]):
+                self.mat[start:start + j + 1, start:start + self.structure[i]] = 1
 
     def normalize(self, p: np.array):
         """Cap at 0, then normalize the probabilities for each feature"""
@@ -585,7 +591,7 @@ class Probabilities:
         assert len(x.shape) == 2, f'{len(x.shape)} != 2'
         assert x.shape[1] == self.n, f'{x.shape[1]} != {self.n}'
         # check that each value of x is less than the number of values for that feature
-        assert np.all(np.max(x, axis=0) < self.n_values), f'Values out of range'
+        assert np.all(np.max(x, axis=0) < self.structure), f'Values out of range'
         # check that values are positive
         assert np.all(x >= 0), f'Negative values'
 
@@ -593,7 +599,7 @@ class Probabilities:
         start = 0
         for i in range(self.n):
             x1[np.arange(x.shape[0]), x[:, i] + start] = 1
-            start += self.n_values[i]
+            start += self.structure[i]
         return x1
 
     def onehot_to_values(self, x: np.array):
@@ -603,8 +609,8 @@ class Probabilities:
         x1 = np.zeros((x.shape[0], self.n), dtype=np.int64)
         start = 0
         for i in range(self.n):
-            x1[:, i] = np.argmax(x[:, start:start + self.n_values[i]], axis=1)
-            start += self.n_values[i]
+            x1[:, i] = np.argmax(x[:, start:start + self.structure[i]], axis=1)
+            start += self.structure[i]
         return x1
 
     def prob_to_onehot(self, p: np.array):
@@ -614,8 +620,8 @@ class Probabilities:
         x = np.zeros((p.shape[0], self.n), dtype=np.int64)
         start = 0
         for i in range(self.n):
-            x[:, i] = np.argmax(p[:, start:start + self.n_values[i]], axis=1)
-            start += self.n_values[i]
+            x[:, i] = np.argmax(p[:, start:start + self.structure[i]], axis=1)
+            start += self.structure[i]
         return self.to_onehot(x)
 
     def add_noise(self, p: np.array, k=1.):

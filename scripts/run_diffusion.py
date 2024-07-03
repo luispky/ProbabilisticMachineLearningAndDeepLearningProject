@@ -178,8 +178,8 @@ def main_sum_categorical_data():
     ema = EMA(beta=beta_ema)
     size = 3000
     threshold = 15
-    n_values = [2, 3, 5, 7, 11]
-    dataset_generator = SumCategoricalDataset(size, n_values, threshold)
+    structure = [2, 3, 5, 7, 11]
+    dataset_generator = SumCategoricalDataset(size, structure, threshold)
     _ = dataset_generator.generate_dataset(remove_anomalies=True, logits=True)
     dataloader = dataset_generator.get_dataloader(with_labels=False)
     dataset_shape = dataset_generator.get_dataset_shape()
@@ -187,7 +187,7 @@ def main_sum_categorical_data():
     model = NoisePredictor(time_dim=time_dim_embedding, dataset_shape=dataset_shape,
                            concat_x_and_t=concat,
                            feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units)
-    prob_instance = Probabilities(n_values)
+    prob_instance = Probabilities(structure)
     
     print(f'Size of the dataset requested: {size} samples') 
     print(f'Training dataset size without anomalies: {len(dataloader.dataset)} samples')
@@ -195,7 +195,7 @@ def main_sum_categorical_data():
     print(f'Logits to train max value: {dataloader.dataset.tensors[0].max()}\n')
     
     # plot the train label encoded values
-    plot_categories(dataset_generator.label_values, n_values, original_data_name)
+    plot_categories(dataset_generator.label_values, structure, original_data_name)
     
     # Instantiate the DDPM model
     diffusion = DDPM(scheduler, model, args)
@@ -213,14 +213,14 @@ def main_sum_categorical_data():
     samples = prob_instance.logits_to_values(samples_logits.cpu().numpy())
     
     # save the generated samples
-    plot_categories(samples, n_values, sample_image_name)
+    plot_categories(samples, structure, sample_image_name)
     
     # generate inpainting samples
     size = 1500
-    dataset_generator = SumCategoricalDataset(size, n_values, threshold)
+    dataset_generator = SumCategoricalDataset(size, structure, threshold)
     data_to_inpaint = dataset_generator.get_features_with_mask(label_values_mask=True)
     x, mask = data_to_inpaint['x'], data_to_inpaint['mask']   
-    plot_categories(dataset_generator.label_values, n_values, data_to_inpaint_name)
+    plot_categories(dataset_generator.label_values, structure, data_to_inpaint_name)
     
     print(f'Size if the dataset to inpaint: {x.shape[0]} samples')
     print(f'Logits to inpaint min value: {x.min()}')
@@ -232,7 +232,7 @@ def main_sum_categorical_data():
     print(f'Logis inpainted max value: {inpainted_data.max()}\n') 
     
     inpainted_data = prob_instance.logits_to_values(inpainted_data.cpu().numpy())
-    plot_categories(inpainted_data, n_values, inpainted_data_name) 
+    plot_categories(inpainted_data, structure, inpainted_data_name)
     
     # Count the number of original anomalies
     y = data_to_inpaint['y'].numpy().squeeze()

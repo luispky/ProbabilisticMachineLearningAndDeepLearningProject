@@ -105,7 +105,7 @@ class InverseGradient:
         self._p_copy += dp
         self._p_copy = proba.normalize(self._p_copy)
 
-    def run(self, x, n_values, eta=0.01, n_iter=100, threshold=0.1):
+    def run(self, x, structure, eta=0.01, n_iter=100, threshold=0.1):
         """
         Given a classifier and a set of data points, modify the data points
         so that the classification changes from 1 to 0.
@@ -123,7 +123,7 @@ class InverseGradient:
         assert 0 < threshold < 1
 
         p = deepcopy(x)
-        proba = Probabilities(n_values)
+        proba = Probabilities(structure)
         v_old = proba.onehot_to_values(p)[0]
 
         # add gaussian noise to the input

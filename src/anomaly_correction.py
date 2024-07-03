@@ -45,7 +45,7 @@ class AnomalyCorrection:
 
         self.interface = DatabaseInterface(self.df_x)
         self.structure = self.interface.get_data_structure()
-        self.proba = Probabilities(n_values=self.structure)
+        self.proba = Probabilities(structure=self.structure)
 
         self.df_x_indices = None
         self.df_x_proba = None
@@ -55,9 +55,11 @@ class AnomalyCorrection:
         self._indices_to_noisy_proba()
 
     def _values_to_indices(self):
+        """Convert the values to indices"""
         self.df_x_indices = self.interface.convert_values_to_indices()
 
     def _indices_to_noisy_proba(self):
+        """Convert the indices to noisy probabilities"""
         self.df_x_proba = self.proba.to_onehot(self.df_x_indices.to_numpy())
         del self.df_x_indices
         self.df_x_proba = self.proba.add_noise(self.df_x_proba)
@@ -68,16 +70,20 @@ class AnomalyCorrection:
         return v_corrected, masks
 
     def _get_noisy_proba_data(self):
+        """Return the noisy probabilities and the anomaly labels"""
         return self.df_x_proba, self.y
 
     def _set_model(self, model):
+        """Set the model to be used for anomaly correction"""
         self.model = model
 
     def _diffusion(self, v_corrected, mask):
+        """Perform diffusion on the corrected anomalies"""
         v_corrected = ...
         return v_corrected
 
     def correct_anomaly(self, anomalies):
+        """Correct the anomalies in the dataset"""
         v_corrected, masks = self._inverse_gradient(anomalies)
         v_corrected = self._diffusion(v_corrected, masks)
         return v_corrected
@@ -94,10 +100,10 @@ def main(data_path='..\\datasets\\sample_data_preprocessed.csv',
     df_y = df_x.copy()['Response_1']
     del df_x['Response_1']
 
+    # train model
     anomaly_correction = AnomalyCorrection(df_x, df_y)
 
-
-
+    print(np.round(anomaly_correction.df_x_proba, 2))
 
 
 
