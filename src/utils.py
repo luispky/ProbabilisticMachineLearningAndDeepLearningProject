@@ -460,7 +460,7 @@ class BaseNoiseScheduler(ABC):
         return self.sqrt_alpha_bar[t] * x0 + self.sqrt_one_minus_alpha_bar[t] * noise
 
     def sample_prev_step(self, x_t, predicted_noise, t):
-        r""""
+        r"""
         Reverse sampling method for diffusion
         x_{t-1} ~ p_{\theta}(x_{t-1}|x_{t})
         """
@@ -476,7 +476,7 @@ class BaseNoiseScheduler(ABC):
         return mean + std * backward_noise
 
     def sample_current_state_inpainting(self, x_t_minus_one, t):
-        r""""
+        """
         Resampling method for inpainting
         """
 
@@ -488,7 +488,7 @@ class BaseNoiseScheduler(ABC):
 
 
 class LinearNoiseScheduler(BaseNoiseScheduler):
-    r"""" Author: Luis
+    r""" Author: Luis
     Class for the linear noise scheduler that is used in DDPM.
     The dimensions of the noise scheduler parameters are expanded to match the
     dimensions of the samples of the dataset. 
@@ -571,7 +571,7 @@ class Probabilities:
             for j in range(self.n_values[i]):
                 self.mat[start:start + j + 1, start:start + self.n_values[i]] = 1
 
-    def normalize(self, p):
+    def normalize(self, p: np.array):
         """Cap at 0, then normalize the probabilities for each feature"""
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
@@ -580,7 +580,7 @@ class Probabilities:
         assert np.all(s > 0), f'Zero sum: {s}'
         return p / s
 
-    def to_onehot(self, x):
+    def to_onehot(self, x: np.array):
         """Convert the original values to one-hot encoding"""
         assert len(x.shape) == 2, f'{len(x.shape)} != 2'
         assert x.shape[1] == self.n, f'{x.shape[1]} != {self.n}'
@@ -596,7 +596,7 @@ class Probabilities:
             start += self.n_values[i]
         return x1
 
-    def onehot_to_values(self, x):
+    def onehot_to_values(self, x: np.array):
         """Return the original values from the one-hot encoding"""
         assert len(x.shape) == 2, f'{len(x.shape)} != 2'
         assert x.shape[1] == self.length, f'{x.shape[1]} != {self.length}'
@@ -607,7 +607,7 @@ class Probabilities:
             start += self.n_values[i]
         return x1
 
-    def prob_to_onehot(self, p):
+    def prob_to_onehot(self, p: np.array):
         """Convert the probabilities to one-hot encoding"""
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
@@ -618,7 +618,7 @@ class Probabilities:
             start += self.n_values[i]
         return self.to_onehot(x)
 
-    def add_noise(self, p, k=1.):
+    def add_noise(self, p: np.array, k=1.):
         """Add noise to the probabilities"""
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'

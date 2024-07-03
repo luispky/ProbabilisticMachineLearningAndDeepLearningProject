@@ -23,8 +23,6 @@ def main(data_path='..\\datasets\\sample_data_preprocessed.csv',
 
     # train/load the model
 
-    if os.path.exists(model_path):
-        ac = AnomalyCorrection(model_name=DEFAULT_MODEL_NAME)
 
     """ 2/2)
     Then, your colleague passes you examples of data-points that
