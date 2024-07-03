@@ -142,7 +142,7 @@ class DDPM:
                 
             wandb.log({'loss': epoch_loss})
             
-        print('Training Finished')
+        print('Training Finished\n')
     
         return train_losses
 
@@ -169,7 +169,8 @@ class DDPM:
         x = torch.randn((self.args.samples, *samples_shape[1:])).to(self.args.device)
         ones = torch.ones(self.args.samples)
         # for t = T, T-1, ..., 1 (-1 in Python)
-        for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
+        pbar = tqdm(reversed(range(self.scheduler.noise_timesteps)))
+        for i in pbar:
             
             t = (ones * i).long().to(self.args.device)
             predicted_noise = model(x, t, labels)
@@ -188,7 +189,7 @@ class DDPM:
         
         model.train()
         
-        print('Sampling Finished')
+        print('Sampling Finished\n')
         
         if labels is not None:
             return [x, labels]
@@ -216,7 +217,8 @@ class DDPM:
         ones = torch.ones(x_t.shape[0])
         
         # for t = T, T-1, ..., 1 (-1 in Python)
-        for i in tqdm(reversed(range(self.scheduler.noise_timesteps)), position=0):
+        pbar = tqdm(reversed(range(self.scheduler.noise_timesteps)))
+        for i in pbar:
             
             for u in range(U):
                 t = (ones * i).long().to(self.args.device)
@@ -235,7 +237,7 @@ class DDPM:
                 
                 x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < U and i > 0) else x_t
 
-        print('Inpainting Finished')
+        print('Inpainting Finished\n')
         
         return x_t_minus_one
 
