@@ -23,11 +23,13 @@ class DatabaseInterface:
         self.value_maps = dict()
         for col in self.original_df.columns:
             unique_values = self.original_df[col].unique()
+            unique_values = list(unique_values)
+            unique_values.sort(key=lambda x: str(x))
             value_map = {k: v for v, k in enumerate(unique_values)}
             if len(value_map) > self.NUMBER_VALUES_LIMIT:
                 raise ValueError(f'Too many unique values in column {col} '
                                  f'({len(value_map)} > {self.NUMBER_VALUES_LIMIT})')
-            self.value_maps[col] = (value_map)
+            self.value_maps[col] = value_map
         self.inverse_value_maps = {col: {v: k for k, v in self.value_maps[col].items()} for col in self.value_maps}
 
     def convert_values_to_indices(self):
@@ -93,9 +95,9 @@ class SumCategoricalDataset(BaseDataset):
     """ Author Omar
     Anomaly if sum of numbers is more than threshold
     """
-    def __init__(self, size, n_values: tuple, threshold: float):
+    def __init__(self, size, structure: tuple, threshold: float):
         super().__init__(size)
-        self.n_values = n_values
+        self.structure = structure
         self.threshold = threshold
         self.label_values = None
 
@@ -104,10 +106,10 @@ class SumCategoricalDataset(BaseDataset):
         Generate a dataset in probability space that represents arrays of label encoded categories.
         The y labels are binary, True/Anomaly if the sum of the values in the array exceeds the threshold.
         """
-        proba = Probabilities(self.n_values)
+        proba = Probabilities(self.structure)
 
         # raw data
-        p = np.random.random(size=(self.size, sum(self.n_values)))
+        p = np.random.random(size=(self.size, sum(self.structure)))
         p = proba.normalize(p)
 
         x = proba.prob_to_onehot(p)

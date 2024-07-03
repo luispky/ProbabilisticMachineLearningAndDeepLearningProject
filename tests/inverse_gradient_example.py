@@ -12,7 +12,7 @@ from src.datasets import SumCategoricalDataset
 DEFAULT_MODEL_NAME = f'model_{os.path.splitext(os.path.basename(__file__))[0]}.pkl'
 
 
-def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5, n_iter=100,
+def main(n_data=1000, structure=(2, 3, 4), threshold=3.5, n_iter=100,
          critical_p=0.1, hidden=2, n_epochs=3000, lr=0.1,
          weight_decay=1e-4, momentum=0.9, n_data_examples=15,
          n_anomalies=3, model_name=DEFAULT_MODEL_NAME):
@@ -24,7 +24,7 @@ def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5, n_iter=100,
     torch.set_default_dtype(torch.float64)
 
     # generate data
-    dataset = SumCategoricalDataset(size=n_data, n_values=n_values, threshold=threshold)
+    dataset = SumCategoricalDataset(size=n_data, structure=structure, threshold=threshold)
     x = dataset.get_data()['x']
     y = dataset.get_data()['y']
     print(x.shape, y.shape)
@@ -72,7 +72,7 @@ def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5, n_iter=100,
     # plots: run the inverse gradient algorithm
     fig, ax = plt.subplots(n_anomalies, n_anomalies)
     plt.suptitle('Examples of Inverse Gradient Algorithm\nfor anomaly correction')
-    proba = Probabilities(n_values)
+    proba = Probabilities(structure)
     for row in range(n_anomalies):
         for col in range(n_anomalies):
             plt.sca(ax[row, col])
@@ -83,7 +83,7 @@ def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5, n_iter=100,
             anomaly = x_positives[i:i+1]
 
             # run the inverse gradient algorithm
-            new_anomaly, loss = method.run(anomaly, n_values, n_iter=n_iter, threshold=critical_p)
+            new_anomaly, loss = method.run(anomaly, structure, n_iter=n_iter, threshold=critical_p)
             corrected_anomaly = new_anomaly.detach().numpy()
             anomaly_probability = method.model(anomaly).item()
             new_anomaly_probability = method.model(new_anomaly).item()
@@ -109,15 +109,15 @@ def main(n_data=1000, n_values=(2, 3, 4), threshold=3.5, n_iter=100,
             plt.bar(range(len(x_new[0])), x_new[0], alpha=0.5, label='Corrected')
 
             sum_ = 0
-            for j_ in range(len(n_values)):
+            for j_ in range(len(structure)):
                 # plot rectangle
                 x0 = sum_ + v_new[0][j_]
                 y0 = x_new[0][sum_ + v_new[0][j_]] / 2
                 plt.scatter([x0], [y0], c='k', alpha=0.15)
-                plt.gca().add_patch(plt.Rectangle((sum_-0.5, -0.02), n_values[j_], 1.04,
+                plt.gca().add_patch(plt.Rectangle((sum_-0.5, -0.02), structure[j_], 1.04,
                                                   linewidth=2,
                                                   edgecolor='lightgray', facecolor='none'))
-                sum_ += n_values[j_]
+                sum_ += structure[j_]
 
             if row + col == 0:
                 plt.legend()

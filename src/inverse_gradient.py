@@ -66,10 +66,10 @@ class InverseGradient:
         print(f'Initial Loss {loss.item():.3f}')
 
         # training
-        self._training_loop(loss_fn, n_epochs, lr=lr,
-                            weight_decay=weight_decay, momentum=momentum, nesterov=nesterov)
-        self._training_loop(loss_fn, n_epochs, lr=lr/10,
-                            weight_decay=weight_decay, momentum=momentum, nesterov=nesterov)
+        self._training_loop(loss_fn, n_epochs, lr=lr, weight_decay=weight_decay,
+                            momentum=momentum, nesterov=nesterov)
+        self._training_loop(loss_fn, n_epochs, lr=lr/10, weight_decay=weight_decay,
+                            momentum=momentum, nesterov=nesterov)
 
         # test the model
         y_pred = self.model(self.x)
@@ -105,13 +105,22 @@ class InverseGradient:
         self._p_copy += dp
         self._p_copy = proba.normalize(self._p_copy)
 
-    def run(self, x, n_values, eta=0.01, n_iter=300, threshold=0.05):
+    def run(self, x, n_values, eta=0.01, n_iter=100, threshold=0.1):
         """
         Given a classifier and a set of data points, modify the data points
-        so that the classification changes from 1 to 0
+        so that the classification changes from 1 to 0.
+
+        params:
+        x: torch.tensor, the data point to modify
+        n_values: tuple, the number of values for each feature
+        eta: float, the step size for the gradient descent
+        n_iter: int, the maximum number of iterations
+        threshold: float, the threshold probability for the loss function
         """
         assert self.model is not None
         assert x.shape[0] == 1
+        assert 0 < eta < 1
+        assert 0 < threshold < 1
 
         p = deepcopy(x)
         proba = Probabilities(n_values)
