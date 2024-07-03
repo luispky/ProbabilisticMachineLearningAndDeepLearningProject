@@ -9,7 +9,7 @@ from src.inverse_gradient import InverseGradient
 from src.datasets import SumCategoricalDataset
 
 
-DEFAULT_MODEL_NAME = f'model_{os.path.splitext(os.path.basename(__file__))[0]}.pkl'
+DEFAULT_MODEL_NAME = f'../models/inverse_gradient_model.pkl'
 
 
 def main(n_data=1000, structure=(2, 3, 4), threshold=3.5, n_iter=100,
