@@ -8,6 +8,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import seaborn as sns
 import pandas as pd
 
+
 class BaseDataset(ABC):
     def __init__(self):
         self.dataset = None
@@ -20,12 +21,12 @@ class BaseDataset(ABC):
         """Generate a dataloader for the dataset."""
         if self.dataset is None:
             self.generate_dataset()
-        
+
         if with_labels:
             tensor_dataset = TensorDataset(self.dataset['x'], self.dataset['y'])
         else:
             tensor_dataset = TensorDataset(self.dataset['x'])
-        
+
         return DataLoader(tensor_dataset, batch_size=batch_size, shuffle=shuffle)
 
     def get_dataset_shape(self):
@@ -60,28 +61,28 @@ class SumCategoricalDataset(BaseDataset):
         x = proba.prob_to_onehot(p)
         self.label_values = proba.onehot_to_values(x)
         y = np.sum(self.label_values, axis=1) > self.threshold
-        
+
         if remove_anomalies:
             p = p[~y]
             self.label_values = self.label_values[~y]
             y = y[~y]
-        
+
         y = np.expand_dims(y, axis=1)
 
         # convert to torch tensors
         x = torch.tensor(p, dtype=torch.float32)
         y = torch.tensor(y, dtype=torch.bool)
-        
+
         if logits:
             x = torch.log(x / (1 - x))
-        
+
         self.dataset = {'x': x, 'y': y}
 
         return self.dataset
 
     def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False):
         """Generate the dataset with the mask to inpaint."""
-        
+
         dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
 
         if mask_anomaly_points:
@@ -111,10 +112,11 @@ class SumCategoricalDataset(BaseDataset):
         mask = dataset['y']
 
         return mask.to(torch.bool)
-        
+
     def _mask_one_feature_values(self, label_values_mask=False):
         """
-        Identify which element(s) in the label values 2D array contribute the most to each row's sum exceeding a certain threshold.
+        Identify which element(s) in the label values 2D array contribute the most to each row's sum exceeding a
+        certain threshold.
         If there are multiple elements contributing equally to the sum, the one with the lowest index is selected.
         Since we work with probability space coming from a one-hot encoding, the mask is repeated for each feature.
         
@@ -150,8 +152,8 @@ class SumCategoricalDataset(BaseDataset):
 
         # Repeat each column according to the specified repetition counts
         repeated_result = np.repeat(result, self.n_values, axis=1)
-        repeated_result = torch.tensor(repeated_result, dtype=torch.bool) 
-        
+        repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
+
         if label_values_mask:
             return [repeated_result, result]
         return [repeated_result]
@@ -191,8 +193,8 @@ class SumCategoricalDataset(BaseDataset):
 
         repeated_result = np.repeat(result, self.n_values, axis=1)
 
-        repeated_result =  torch.tensor(repeated_result, dtype=torch.bool)
-        
+        repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
+
         if label_values_mask:
             return [repeated_result, result]
         return [repeated_result]
@@ -245,7 +247,7 @@ class GaussianDataset(BaseDataset):
 
         assert len(means) == len(covariances) == len(num_samples_per_distribution) == len(labels), \
             "The lengths of means, covariances, num_samples_per_distribution, and labels must be the same."
-        
+
         samples = []
         labels_list = []
 
@@ -308,12 +310,12 @@ def plot_generated_samples(samples, filename, save_locally=False, path="../plots
     """
     if not os.path.exists(path) and save_locally:
         os.makedirs(path)
-    
+
     fig = plt.figure()
     if len(samples) == 1:
         x = samples[0].cpu().numpy()
-    else: 
-        x = samples.cpu().numpy() # plot inpainting samples
+    else:
+        x = samples.cpu().numpy()  # plot inpainting samples
     if len(samples) == 2:
         y = samples[1].cpu().numpy()
         mask = y == 1
@@ -325,7 +327,7 @@ def plot_generated_samples(samples, filename, save_locally=False, path="../plots
     plt.title('Generated Samples')
     plt.xlabel('X')
     plt.ylabel('Y')
-    
+
     if save_locally:
         plt.savefig(path + filename + '.png')
 
@@ -408,7 +410,7 @@ def plot_loss(losses, filename, save_locally=False, save_wandb=False, path="../p
     plt.title('Training Loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
-    
+
     if save_locally:
         plt.savefig(path + filename + '.png')
 
@@ -554,7 +556,7 @@ class Probabilities:
     of features with different number of values
     """
 
-    def __init__(self, n_values: list | tuple):
+    def __init__(self, n_values: list | tuple):  # todo rename n_values -> structure
         self.n_values = n_values
         self.n = len(n_values)
         self.length = sum(n_values)
@@ -627,12 +629,13 @@ class Probabilities:
         assert isinstance(logits, np.ndarray), 'logits must be a numpy array'
         p = 1 / (1 + np.exp(-logits))
         return self.normalize(p)
-    
+
     def logits_to_values(self, logits):
         """Convert logits to values"""
         assert isinstance(logits, np.ndarray), 'logits must be a numpy array'
         p = self.logits_to_normalized_probs(logits)
         return self.onehot_to_values(self.prob_to_onehot(p))
+
 
 class bcolors:
     """ Author: Omar
@@ -728,11 +731,10 @@ def plot_agreement_disagreement_transformation(array1, array2, filename, save_lo
 
 
 def plot_categories(label_values, n_values, filename, save_locally=False, path="../plots/"):
-    
     assert isinstance(label_values, np.ndarray), 'label_values must be a numpy array'
-    
+
     data = pd.DataFrame(label_values, columns=[f'Category {i}' for i in range(len(n_values))])
-    
+
     # Melt the dataframe to have a long format suitable for seaborn
     melted_data = data.melt(var_name='Category', value_name='Value')
 
@@ -769,6 +771,7 @@ def plot_categories(label_values, n_values, filename, save_locally=False, path="
     # Save the plot to wandb
     wandb.log({filename: wandb.Image(plt)})
 
+
 def element_wise_label_values_comparison(input, output, mask):
     """
     Compares the input array with the output array of the inpainting method
@@ -780,31 +783,31 @@ def element_wise_label_values_comparison(input, output, mask):
     # Check if the mask is compatible with the arrays
     if input.shape != output.shape or input.shape != mask.shape:
         raise ValueError("Array shapes and mask shape must match.")
-    
+
     num_rows_differ = 0
     total_wrongly_changed_values = 0
     known_values = 0
-    
+
     for row_input, row_output, row_mask in zip(input, output, mask):
         # Apply the mask to the current row
         masked_input = row_input[~row_mask]
         masked_output = row_output[~row_mask]
-        
+
         # Compare the masked arrays element-wise
         element_wise_comparison = masked_input != masked_output
-        
+
         # Calculate the total number of values wrongly changed for this row
         row_wrongly_changed_values = np.sum(element_wise_comparison)
-        
+
         # Update the total wrongly changed values
         total_wrongly_changed_values += row_wrongly_changed_values
-        
+
         # Update the total number of values that should not have changed according to the mask
         row_known_values = np.sum(~row_mask)
         known_values += row_known_values
-        
+
         # Determine if there are differences within the masked input for this row
         if np.any(element_wise_comparison):
             num_rows_differ += 1
-    
+
     return num_rows_differ, known_values, total_wrongly_changed_values
