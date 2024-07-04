@@ -31,7 +31,7 @@ class FeedForwardKernel(BaseArchitectureKernel):
         return self.net(x)
     
     
-class UNet1D(nn.Module):
+class UNet1Channel(nn.Module):
     def __init__(self, input_dim, output_dim, concat_x_and_t):
         super().__init__()
         self.input_dim = input_dim
@@ -129,7 +129,7 @@ class NoisePredictor(nn.Module):
         if feed_forward_kernel:
             self.architecture_kernel = FeedForwardKernel(input_dim, dataset_shape[1], hidden_units)
         elif unet:
-            self.architecture_kernel = UNet1D(input_dim, dataset_shape[1], concat_x_and_t)
+            self.architecture_kernel = UNet1Channel(input_dim, dataset_shape[1], concat_x_and_t)
         else:
             raise NotImplementedError('The kernel is not implemented')
         
