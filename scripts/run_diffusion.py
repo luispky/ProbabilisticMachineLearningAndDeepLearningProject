@@ -13,7 +13,6 @@ from src.denoising_diffusion_pm import save_model_to_dir
 from src.utils import Probabilities, plot_agreement_disagreement_transformation, plot_categories
 from rich.console import Console
 from rich.table import Table
-import torch.nn as nn
 
 def main_gaussian_data():
     # define the arguments
@@ -158,12 +157,12 @@ def main_sum_categorical_data():
     architecture_comment = f"hidden_units: {hidden_units} | concat(x, t): {concat}"
     # architecture_comment = f"2 encoders and decoders | concat(x, t): {concat}"
     
-    original_data_name = 'original_data_' + experiment_number
-    sample_image_name = 'gen_samples_' + experiment_number
     model_name = 'ddpm_model_' + experiment_number
     loss_name = 'loss_' + experiment_number
-    inpainted_data_name = 'inpainted_data_' + experiment_number
+    original_data_name = 'original_data_' + experiment_number
+    sample_image_name = 'gen_samples_' + experiment_number
     data_to_inpaint_name = 'data_to_inpaint_' + experiment_number
+    inpainted_data_name = 'inpainted_data_' + experiment_number
 
     # Initialize a new wandb run
     wandb.init(project="DiffusionModelSumCategorical", name=experiment_number)
@@ -216,13 +215,13 @@ def main_sum_categorical_data():
     plot_loss(train_losses, loss_name)
     
     # generate samples
-    samples_logits = diffusion.sample(diffusion.ema_model)[0]
-    print(f'Samples logits min value: {samples_logits.min()}')
-    print(f'Samples logits max value: {samples_logits.max()}\n')
-    samples = prob_instance.logits_to_values(samples_logits.cpu().numpy())
+    sampled_logits = diffusion.sample(diffusion.ema_model)[0]
+    print(f'Samples logits min value: {sampled_logits.min()}')
+    print(f'Samples logits max value: {sampled_logits.max()}\n')
+    sampled_data = prob_instance.logits_to_values(sampled_logits.cpu().numpy())
     
     # save the generated samples
-    plot_categories(samples, structure, sample_image_name)
+    plot_categories(sampled_data, structure, sample_image_name)
     
     # compute the kullback-leibler divergence
     # todo: I need to do the mapping back to the categorical values

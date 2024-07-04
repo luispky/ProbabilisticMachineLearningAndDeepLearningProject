@@ -93,6 +93,7 @@ class CustomDataset(BaseDataset):
         self.dataframe_path = dataframe_path
         self.categorical_encoder = None
         self.proba = None
+        self.label_values = None
     
     def generate_dataset(self, remove_anomalies=False, logits=False, only_anomalies=False):
         """
@@ -114,20 +115,21 @@ class CustomDataset(BaseDataset):
         self.proba = Probabilities(structure)
         x = self.categorical_encoder.encoded_data()
         x = self.proba.to_onehot(x)
+        self.label_values = self.categorical_encoder.encoded_data()
         
         # Remove anomalies if needed for DDPM training
         if remove_anomalies:
-            p = p[~y]
+            x = x[~y]
             y = y[~y]
         # Get only anomalies if needed for anomaly detection
         if only_anomalies:
-            p = p[y]
+            x = x[y]
             y = y[y]
 
         y = np.expand_dims(y, axis=1)
 
         # convert to torch tensors
-        x = torch.tensor(p, dtype=torch.float32)
+        x = torch.tensor(x, dtype=torch.float32)
         y = torch.tensor(y, dtype=torch.bool)
 
         # convert to logits if needed for DDPM 
@@ -884,7 +886,7 @@ def plot_agreement_disagreement_transformation(array1, array2, filename, save_lo
     wandb.log({filename: wandb.Image(plt)})
 
 
-def plot_categories(label_values, n_values, filename, save_locally=False, path="../plots/"):
+def plot_categories(label_values, n_values, filename, save_locally=False, save_wandb=False, path="../plots/"):
     assert isinstance(label_values, np.ndarray), 'label_values must be a numpy array'
 
     data = pd.DataFrame(label_values, columns=[f'Category {i}' for i in range(len(n_values))])
@@ -923,7 +925,8 @@ def plot_categories(label_values, n_values, filename, save_locally=False, path="
         plt.savefig(path + filename + '.png')
 
     # Save the plot to wandb
-    wandb.log({filename: wandb.Image(plt)})
+    if save_wandb:
+        wandb.log({filename: wandb.Image(plt)})
 
 
 def element_wise_label_values_comparison(input, output, mask):
