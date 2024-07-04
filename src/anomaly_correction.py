@@ -7,6 +7,11 @@ from src.utils import cprint, bcolors, Probabilities
 from copy import deepcopy
 
 
+# set default type to avoid problems with gradient
+DEFAULT_TYPE = torch.float64
+torch.set_default_dtype(DEFAULT_TYPE)
+
+
 class NewInverseGradient:
     """ Author: Omar
     Bare-bones inverse gradient method
@@ -21,6 +26,8 @@ class NewInverseGradient:
         self._p_copy = p.detach().clone()
         dp = -p.grad
         self._module = np.linalg.norm(dp.numpy().flatten())
+        if self._module == 0:
+            raise ZeroDivisionError
         dp = dp / self._module * eta
         self._p_copy += dp
         self._p_copy = proba.normalize(self._p_copy)
@@ -47,6 +54,9 @@ class NewInverseGradient:
         p_ = deepcopy(p)
         proba = Probabilities(structure)
         v_old = proba.onehot_to_values(p_)[0]
+        v_new = v_old.copy()
+        mask = v_new == v_new
+        loss_value = None
         success = True
 
         # add gaussian noise to the input
@@ -58,6 +68,7 @@ class NewInverseGradient:
 
             # Make the prediction
             y = self.model(p_)
+            p_anomaly = y[0][0]
 
             # Compute the loss
             loss = torch.nn.BCELoss()(y, torch.zeros_like(y))
@@ -66,7 +77,13 @@ class NewInverseGradient:
             loss.backward()
 
             # Create a copy of x and update the copy
-            self._compute_p_copy(p_, proba, eta)
+            try:
+                self._compute_p_copy(p_, proba, eta)
+            except ZeroDivisionError:
+                # check if the gradient is zero
+                cprint('Warning: Gradient is zero', bcolors.WARNING)
+                success = False
+                break
 
             # Update the original x with the modified copy
             p_.data = self._p_copy
@@ -80,26 +97,19 @@ class NewInverseGradient:
             changed = np.any(mask)
 
             # check if the loss is below the threshold
-            loss_value = loss.item()
-            print(f'\rIteration {i+1}, Loss {loss_value:.3f}', end=' ')
-            if loss_value < threshold_p:
+            print(f'\rIteration {i+1}, pred {p_anomaly:.1%}', end=' ')
+            if p_anomaly < threshold_p:
                 if changed:
-                    cprint(f'\rIteration {i}) loss is {loss_value:.3f} < {threshold_p}', bcolors.OKGREEN)
+                    cprint(f'\rIteration {i}) loss is {p_anomaly:.1%} < {threshold_p:.1%}', bcolors.OKGREEN)
                     break
-
-            # check if the gradient is zero
-            if self._module == 0:
-                cprint('Warning: Gradient is zero', bcolors.WARNING)
-                success = False
-                break
 
             # check if the maximum number of iterations is reached
             if i == n_iter:
-                cprint('Warning: Maximum iterations reached', bcolors.WARNING)
+                cprint(f'Warning: Maximum iterations reached ({p_anomaly:.1%})', bcolors.WARNING)
                 success = False
                 break
 
-        return {"values": v_new, "mask": mask, "proba": p_, "anomaly_p": loss_value, "success": success}
+        return {"values": v_new, "mask": mask, "proba": p_, "anomaly_p": p_anomaly, "success": success}
 
 
 class AnomalyCorrection:
@@ -135,13 +145,15 @@ class AnomalyCorrection:
 
     ================================================================
     """
-    def __init__(self, df_x: pd.DataFrame, y: pd.Series):
+    def __init__(self, df_x: pd.DataFrame, y: pd.Series, noise=0.):
         self.df_x_data = df_x       # values df
+        self.y = y
+
+        self.noise = noise
+
         self.v_data = None          # indices
         self.p_data = None          # probabilities
         self.p_data_noisy = None    # noisy probabilities
-
-        self.y = y
 
         self.p_anomaly = None       # probabilities
 
@@ -182,16 +194,16 @@ class AnomalyCorrection:
         self.p_data = self.proba.to_onehot(self.v_data.to_numpy())
         del self.v_data
 
-    def _anomaly_to_proba(self, df):
+    def _anomaly_to_proba(self, df, dtype=DEFAULT_TYPE):
         v = self.interface.convert_values_to_indices(df)
         p = self.proba.to_onehot(v.to_numpy())
-        return torch.tensor(p)
+        return torch.tensor(p, dtype=dtype)
 
     def _compute_noisy_proba(self):
         """add noise to probabilities"""
         self.p_data_noisy = self.proba.add_noise(self.p_data)
 
-    def get_classification_dataset(self, dtype=torch.float32):
+    def get_classification_dataset(self, dtype=DEFAULT_TYPE):
         """Return the noisy probabilities and the anomaly labels"""
         x = self.p_data_noisy
         y = self.y.to_numpy().reshape(-1 ,1).astype(float)
@@ -208,9 +220,10 @@ class AnomalyCorrection:
         masks = []
         new_values = []
         for _ in range(n):
-            results = self.inv_grad.run(p, self.structure)
+            p_ = self.proba.add_noise(p, k=self.noise)
+            results = self.inv_grad.run(p_, self.structure)
             masks.append(results["mask"])
-            masks.append(results["values"])
+            new_values.append(results["values"])
         return masks, new_values
 
     def _set_model(self, model):
@@ -229,31 +242,116 @@ class AnomalyCorrection:
         assert self.classification_model is not None, 'Please set the classification model'
         # assert self.diffusion_model is not None, 'Please set the diffusion model'
 
-
         p = self._anomaly_to_proba(anomaly)
         masks, new_values = self._inverse_gradient(p, n)
+
         # self._diffusion()
+
         return new_values
 
 
-def main(data_path='..\\datasets\\sample_data_preprocessed.csv',
+class ClassificationModel:
+    def __init__(self):
+        self.model = None
+
+    def load_from_file(self, model_path):
+        if os.path.exists(model_path):
+            try:
+                cprint(f'Loading model from {model_path}', bcolors.WARNING)
+                self.model = torch.load(model_path)
+                cprint('Model loaded', bcolors.OKGREEN)
+            except FileNotFoundError:
+                cprint('Model not found', bcolors.FAIL)
+
+    def __call__(self, *args, **kwargs):
+        return self.model(*args, **kwargs)
+
+    def reset(self, input_size, hidden):
+        """ Create the model """
+        print(f'Input size: {input_size}')
+        cprint('Creating model', bcolors.WARNING)
+        self.model = torch.nn.Sequential(
+            torch.nn.Linear(input_size, hidden),
+            torch.nn.Softplus(),
+            torch.nn.Linear(hidden, 1),
+            torch.nn.Sigmoid()
+        )
+
+    def _training_loop(self, num_samples, optimizer, n_epochs, batch_size, x, y, loss_fn):
+
+        for epoch in range(n_epochs):
+            total_loss = 0.0
+            for i in range(0, num_samples, batch_size):
+                batch_x = x[i:i + batch_size]
+                batch_y = y[i:i + batch_size]
+
+                y_pred = self.model(batch_x)
+                loss = loss_fn(y_pred, batch_y)
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                total_loss += loss.item()
+
+            avg_loss = total_loss / (num_samples / batch_size)
+            print(f'\rEpoch {epoch + 1}, Loss {avg_loss:.6f}', end=' ')
+        print()
+
+    def train(self, x, y, model_path, loss_fn, n_epochs=200, lr=0.1, weight_decay=1e-4,
+              momentum=0.9, nesterov=True, batch_size=100):
+        # optimizer
+        optimizer = torch.optim.SGD(self.model.parameters(), lr=lr,
+                                    weight_decay=weight_decay, momentum=momentum,
+                                    nesterov=nesterov)
+
+        # Training loop
+        num_samples = x.shape[0]
+        self._training_loop(num_samples, optimizer, n_epochs, batch_size, x, y, loss_fn)
+
+        # test the model
+        y_pred = self.model(x)
+        loss = loss_fn(y_pred, y)
+        print(f'Final Loss {loss.item():.6f}')
+
+        # performance metrics
+        y_class = (y_pred > 0.5).float()
+        accuracy = np.array(y_class == y).astype(float).mean()
+        dummy_acc = max(y.mean().item(), 1 - y.mean().item())
+        acc = accuracy.item()
+        usefulness = max([0, (acc - dummy_acc) / (1 - dummy_acc)])
+        if usefulness > 0.75:
+            color = bcolors.OKGREEN
+        elif usefulness > 0.25:
+            color = bcolors.WARNING
+        else:
+            color = bcolors.FAIL
+        print(f'Dummy accuracy = {dummy_acc:.1%}')
+        print(f'Accuracy on test data = {acc:.1%}')
+        cprint(f'usefulness = {usefulness:.1%}', color)
+        rmse = torch.sqrt(torch.mean((y_pred - y) ** 2))
+        print(f'RMSE on test data {rmse.item():.3f}')
+
+        # save the model
+        torch.save(self.model, model_path)
+        cprint('Model saved', bcolors.OKGREEN)
+
+
+def main(data_path='..\\datasets\\sum_limit_problem.csv',
          model_path='..\\models\\anomaly_correction_model.pkl',
-         hidden=10, loss_fn=torch.nn.BCELoss(), n_epochs=2000,
-         lr=0.1, weight_decay=1e-3, momentum=0.9, nesterov=True):
+         hidden=10, loss_fn=torch.nn.MSELoss(), n_epochs=250):
     np.random.seed(42)
 
     # ================================================================================
     # get data
     df_x = pd.read_csv(data_path)
     df_x = df_x.sample(frac=1).reset_index(drop=True)
-    df_x['Annual_Premium'] = df_x['Annual_Premium'].apply(lambda x: round(x))
-    df_x['Age'] = df_x['Age'].apply(lambda x: round(x, -1))
-    df_y = df_x.copy()['Response_1']
-    del df_x['Response_1']
+    df_y = df_x.copy()['anomaly']
+    del df_x['anomaly']
 
     # ================================================================================
     # anomaly_correction
-    anomaly_correction = AnomalyCorrection(df_x, df_y)
+    anomaly_correction = AnomalyCorrection(df_x, df_y, noise=1.)
     print('\nNoisy probabilities:')
     print(np.round(anomaly_correction.p_data_noisy, 2))
     print('\nValue maps:')
@@ -261,51 +359,16 @@ def main(data_path='..\\datasets\\sample_data_preprocessed.csv',
         print(f'{key}: {anomaly_correction.get_value_maps()[key]}')
 
     # ================================================================================
-    # train the model
-    data_p_noisy, data_y = anomaly_correction.get_classification_dataset()
+    # The classification model
+    data_x, data_y = anomaly_correction.get_classification_dataset()
 
-    classification_model = None
+    classification_model = ClassificationModel()
+    classification_model.load_from_file(model_path)
 
-    if os.path.exists(model_path):
-        try:
-            cprint(f'Loading model from {model_path}', bcolors.WARNING)
-            classification_model = torch.load(model_path)
-            cprint('Model loaded', bcolors.OKGREEN)
-        except FileNotFoundError:
-            cprint('Model not found', bcolors.FAIL)
-
-    if classification_model is None:
-        input_size = data_p_noisy.shape[1]
-        print(f'Input size: {input_size}')
-
-        # create the model
-        cprint('Creating model', bcolors.WARNING)
-        classification_model = torch.nn.Sequential(
-            torch.nn.Linear(input_size, hidden),
-            torch.nn.Softplus(),
-            torch.nn.Linear(hidden, 1),
-            torch.nn.Sigmoid()
-        )
-
-        # optimizer
-        optimizer = torch.optim.SGD(classification_model.parameters(), lr=lr,
-                                    weight_decay=weight_decay, momentum=momentum,
-                                    nesterov=nesterov)
-
-        # training loop
-        cprint('Training model', bcolors.WARNING)
-        for epoch in range(n_epochs):
-            y_pred = classification_model(data_p_noisy)
-            loss = loss_fn(y_pred, data_y)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            print(f'\rlr={lr}, Epoch {epoch+1}, Loss {loss.item():.6f}', end=' ')
-        print()
-
-        # save the model
-        torch.save(classification_model, model_path)
-        cprint('Model saved', bcolors.OKGREEN)
+    if classification_model.model is None:
+        classification_model.reset(input_size=data_x.shape[1], hidden=hidden)
+        classification_model.train(data_x, data_y,
+                                   model_path, loss_fn, n_epochs=n_epochs)
 
     anomaly_correction.set_classification_model(classification_model)
 
@@ -317,9 +380,10 @@ def main(data_path='..\\datasets\\sample_data_preprocessed.csv',
 
     # ================================================================================
     # run the anomaly-correction algorithm
-    corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=5)
+    corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10)
     print('\nCorrected anomaly:')
-    print(corrected_anomaly)
+    for v_ in corrected_anomaly:
+        print(v_)
 
 
 if __name__ == "__main__":
