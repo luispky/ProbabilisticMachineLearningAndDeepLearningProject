@@ -38,7 +38,147 @@ class BaseDataset(ABC):
         pass
 
 
+class CategoricalEncoder:
+    """Class for encoding and decoding categorical values in a DataFrame."""
+    def __init__(self, data):
+        self.structure = []
+        self.map_categories_to_indices = {}
+        self.map_indices_to_categories = {}
+        self.columns_names = []
+        self.data = data
+        
+        self._encode_dataset()
+
+    def _encode_dataset(self):
+        """Encode a DataFrame of categorical values."""
+        for i, column in enumerate(self.data.columns):
+            self.columns_names.append(column)
+            unique_values = self.data[column].unique().tolist()
+            self.structure.append(len(unique_values))
+            unique_values.sort()
+            indices_encoding = {val: idx for idx, val in enumerate(unique_values)}
+            self.map_categories_to_indices[i] = indices_encoding
+            self.map_indices_to_categories[i] = {idx: val for val, idx in indices_encoding.items()}
+
+    def _decode_index(self, i, index):
+        """Decode an individual index back to its value."""
+        return self.map_indices_to_categories[i][index]
+  
+    def decode_indices(self, indices):
+        """Decode a 2D array of numerical labels to their original values for each category."""
+        vectorized_decode = np.vectorize(self._decode_index, excluded=['i'])
+        decoded_values = np.empty_like(indices, dtype=object)
+        for i in range(indices.shape[1]):
+            decoded_values[:, i] = vectorized_decode(i=i, index=indices[:, i])
+        return decoded_values       
+
+    def indices_to_dataframe(self, indices):
+        """Decode a 2D array of numerical labels to a DataFrame with the original values."""
+        decoded_values = self.decode_indices(indices)
+        decoded_df = pd.DataFrame(decoded_values, columns=self.columns_names)
+        return decoded_df
+    
+    def encoded_data(self):
+        """Return the encoded data."""
+        encoded_data = self.data.copy()
+        for i, column in enumerate(self.data.columns):
+            encoded_data[column] = self.data[column].map(self.map_categories_to_indices[i])
+        return encoded_data.to_numpy()
+
+
+class CustomDataset(BaseDataset):
+    """Class for generating a dataset to perform anomaly correction."""
+    def __init__(self, dataframe_path = None):
+        super().__init__()
+        self.dataframe_path = dataframe_path
+        self.categorical_encoder = None
+        self.proba = None
+    
+    def generate_dataset(self, remove_anomalies=False, logits=False, only_anomalies=False):
+        """
+        Generate the dataset for the model starting from a dataframe.
+        """
+        
+        # Read the dataframe
+        dataframe = pd.read_csv(self.dataframe_path)
+        
+        # Split the data into features and target
+        x = dataframe.drop(columns=['target'])
+        y = dataframe['target'].to_numpy().astype(bool)
+        
+        # Extract the structure of the data with a categorical encoder
+        self.categorical_encoder = CategoricalEncoder(x)
+        structure = self.categorical_encoder.structure
+        
+        # Transform the data to probabilities representation
+        self.proba = Probabilities(structure)
+        x = self.categorical_encoder.encoded_data()
+        x = self.proba.to_onehot(x)
+        
+        # Remove anomalies if needed for DDPM training
+        if remove_anomalies:
+            p = p[~y]
+            y = y[~y]
+        # Get only anomalies if needed for anomaly detection
+        if only_anomalies:
+            p = p[y]
+            y = y[y]
+
+        y = np.expand_dims(y, axis=1)
+
+        # convert to torch tensors
+        x = torch.tensor(p, dtype=torch.float32)
+        y = torch.tensor(y, dtype=torch.bool)
+
+        # convert to logits if needed for DDPM 
+        if logits:
+            x = torch.log(x / (1 - x))
+
+        self.dataset = {'x': x, 'y': y}
+
+        return self.dataset
+
+    def get_features_with_mask(self, label_values_mask=False):
+        """Generate the dataset with the mask to inpaint."""
+
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
+
+        # add the mask to the dataset
+        tmp = self._mask_anomaly_points() 
+        dataset['mask'] = tmp
+        dataset['label_values'] = tmp.numpy() if label_values_mask else None
+
+        return dataset
+
+    def _mask_anomaly_points(self):
+        """
+        Identify the anomaly points in the dataset.
+        """
+
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
+        mask = dataset['y']
+
+        return mask.to(torch.bool)
+
+    def modified_dataset(self, transformed_data, in_probs=True):
+        """Returns the transformed data in the original format."""
+        assert self.proba is not None, 'Dataset not generated'
+        
+        # check if transformed data is a numpy array or a torch tensor
+        # else transform it to a numpy array
+        if isinstance(transformed_data, torch.Tensor):
+            transformed_data = transformed_data.numpy()
+        
+        if in_probs:
+            transformed_data = self.proba.prob_to_values(transformed_data)
+        else:
+            transformed_data = self.proba.logits_to_values(transformed_data)
+        
+        return self.categorical_encoder.indices_to_dataframe(transformed_data)
+    
+    
 class SumCategoricalDataset(BaseDataset):
+    """Class to generate a toy dataset for anomaly correction."""
     def __init__(self, size, structure, threshold):
         super().__init__()
         self.size = size
@@ -86,13 +226,14 @@ class SumCategoricalDataset(BaseDataset):
         dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
 
         if mask_anomaly_points:
-            mask = self._mask_anomaly_points()
-            values_mask = mask.numpy() if label_values_mask else None
+            tmp = self._mask_anomaly_points()
+            masks.append(tmp)
+            masks.append(tmp.numpy() if label_values_mask else None)
         elif mask_one_feature:
             masks = self._mask_one_feature_values(label_values_mask)
         else:
             masks = self._mask_features_values(label_values_mask)
-        mask = masks[0]   # todo: assign before reference
+        mask = masks[0]   
         values_mask = masks[1] if label_values_mask else None
 
         # add the mask to the dataset
@@ -623,23 +764,30 @@ class Probabilities:
             x[:, i] = np.argmax(p[:, start:start + self.structure[i]], axis=1)
             start += self.structure[i]
         return self.to_onehot(x)
-
+    
     def add_noise(self, p: np.array, k=1.):
         """Add noise to the probabilities"""
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
         return self.normalize(p + np.random.random(p.shape) * k)
 
-    def logits_to_normalized_probs(self, logits):
+    def _logits_to_normalized_probs(self, logits):
         """Convert logits to normalized probabilities"""
         assert isinstance(logits, np.ndarray), 'logits must be a numpy array'
         p = 1 / (1 + np.exp(-logits))
         return self.normalize(p)
+    
+    def prob_to_values(self, p):
+        """Convert probabilities to values"""
+        if isinstance(transformed_data, torch.Tensor):
+            transformed_data = transformed_data.numpy()
+        return self.onehot_to_values(self.prob_to_onehot(self.normalize(p)))
 
     def logits_to_values(self, logits):
         """Convert logits to values"""
-        assert isinstance(logits, np.ndarray), 'logits must be a numpy array'
-        p = self.logits_to_normalized_probs(logits)
+        if isinstance(logits, torch.Tensor):
+            logits = logits.numpy()
+        p = self._logits_to_normalized_probs(logits)
         return self.onehot_to_values(self.prob_to_onehot(p))
 
 
