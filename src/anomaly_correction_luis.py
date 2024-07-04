@@ -89,7 +89,7 @@ class AnomalyCorrection:
                 masks): # list of masks
     """Super Sequential Pipe waiting for the data_to_inpaint and masks"""
     
-    #!MISSING COMPONENTS---------------------------------------------------------------
+    #!WORKAROUND DATASET CLASS----------------------------------------------------------
     # Dataset for training the DDPM model
     dataset_generator = CustomDataset(self.dataframe_path)
     _ = dataset_generator.generate_dataset(remove_anomalies=True, logits=True)
