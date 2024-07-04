@@ -7,10 +7,10 @@ import pandas as pd
 import numpy as np
 from src.utils import LinearNoiseScheduler, EMA
 from src.utils import element_wise_label_values_comparison
+from src.utils import Probabilities, plot_categories, plot_loss
+from src.utils import CustomDataset
 from src.modules import NoisePredictor
 from src.denoising_diffusion_pm import DDPM
-from src.utils import Probabilities, plot_agreement_disagreement_transformation, plot_categories
-from src.utils import CustomDataset
 from rich.console import Console
 from rich.table import Table
 
@@ -35,10 +35,11 @@ class AnomalyCorrection:
               ddpm_original_data_name = 'original_data',
               ddpm_sample_image_name = 'gen_samples',
               ddpm_data_to_inpaint_name = 'data_to_inpaint',
-              ddpm_inpainted_data_name = 'inpainted_data'
+              ddpm_inpainted_data_name = 'inpainted_data', 
+              ddpm_loss_name = 'ddpm_loss'
               ):
     
-    #!COMMON_PARAMS--------to a --------------------------------------------------------------
+    #!COMMON_PARAMS----------------------------------------------------------------------
     self.dataframe_path = dataframe_path
     self.structure = None
     self.proba = Probabilities(self.structure)
@@ -98,7 +99,8 @@ class AnomalyCorrection:
     
     # Plot the original distribution
     # Later we plot the generated samples to see compare if the distribution is similar
-    plot_categories(dataset_generator.label_values, self.structure, self.original_data_name)
+    plot_categories(dataset_generator.label_values, self.structure, self.original_data_name, 
+                    save_locally=True)
     
     #!--------------------------------------------------------------------------------
     # define the components of the DDPM model: scheduler, model, EMA class
@@ -115,14 +117,16 @@ class AnomalyCorrection:
     # DDPM model
     diffusion = DDPM(scheduler, model, self.args_ddpm)
     # DDPM training
-    _ = diffusion.train(dataloader, ema)
+    loss = diffusion.train(dataloader, ema)
+    plot_loss(loss, self.ddpm_loss_name, save_locally=True)
     
     # DDPM sampling
     sampled_logits = diffusion.sample(diffusion.ema_model)[0]
     sampled_data = self.proba.logits_to_values(sampled_logits.cpu().numpy())
 
     # Plot the sampled distribution
-    plot_categories(sampled_data, self.structure, self.sampled_data_name)
+    plot_categories(sampled_data, self.structure, self.sampled_data_name, 
+                    save_locally=True)
     
     #!DATA_TO_INPAINT------------------------------------------------------------------
     # Either read or generate the data to inpaint from the dataset_generator
@@ -145,8 +149,10 @@ class AnomalyCorrection:
     # A picture is worth a thousand words
     # Take one instance of the inpainted data and plot it
     data_to_inpaint_values = self.proba.prob_to_values(x)
-    plot_categories(data_to_inpaint_values, self.structure, self.data_to_inpaint_name)
-    plot_categories(inpainted_data_values[0], self.structure, self.inpainted_data_name)
+    plot_categories(data_to_inpaint_values, self.structure, self.data_to_inpaint_name, 
+                    save_locally=True)
+    plot_categories(inpainted_data_values[0], self.structure, self.inpainted_data_name, 
+                    save_locally=True)
     
     # Take one instance of the inpainted data and convert it to the original dataframe representation
     corrected_dataframe = dataset_generator.categorical_encoder.indices_to_dataframe(inpainted_data_values[0])

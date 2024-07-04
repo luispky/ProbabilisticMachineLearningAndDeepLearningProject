@@ -453,7 +453,7 @@ class GaussianDataset(BaseDataset):
         plt.show()
 
 
-def plot_generated_samples(samples, filename, save_locally=False, path="../plots/"):
+def plot_generated_samples(samples, filename, save_locally=False, save_wandb=True, path="../plots/"):
     """ Author: Luis
     Save the plot of the generated samples in the plots folder and in the wandb dashboard.
     """
@@ -479,11 +479,11 @@ def plot_generated_samples(samples, filename, save_locally=False, path="../plots
 
     if save_locally:
         plt.savefig(path + filename + '.png')
+    if save_wandb:
+        wandb.log({filename: wandb.Image(fig)})
 
-    wandb.log({filename: wandb.Image(fig)})
 
-
-def plot_data_to_inpaint(x, mask):
+def plot_data_to_inpaint(x, mask, save_wandb=True):
     """ Author: Luis
     Plot the dataset to inpaint with the mask applied.
     It saves the plot in the wandb dashboard.
@@ -501,7 +501,8 @@ def plot_data_to_inpaint(x, mask):
     plt.ylabel('Y')
     plt.legend()
 
-    wandb.log({'Dataset with Mask': wandb.Image(fig)})
+    if save_wandb:
+        wandb.log({'Dataset with Mask': wandb.Image(fig)})
 
 
 class EMA:
