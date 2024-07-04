@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.abspath('..'))
 import argparse
 import torch
+import pandas as pd
 import numpy as np
 from src.utils import LinearNoiseScheduler, EMA
 from src.utils import element_wise_label_values_comparison
@@ -15,7 +16,7 @@ from rich.table import Table
 
 
 class AnomalyCorrection:
-  def __init__(self, fuck_you_bro, # lez do this againi
+  def __init__(self, fuck_you_bro, # just kidding, lez do this again nano desu!
               # Reasonably common parameters
               dataframe_path = None,
               #  Omaru-sensei 🤓 hyperparameters
@@ -37,7 +38,7 @@ class AnomalyCorrection:
               ddpm_inpainted_data_name = 'inpainted_data'
               ):
     
-    #!COMMON_PARAMS----------------------------------------------------------------------
+    #!COMMON_PARAMS--------to a --------------------------------------------------------------
     self.dataframe_path = dataframe_path
     self.structure = None
     self.proba = Probabilities(self.structure)
@@ -147,6 +148,9 @@ class AnomalyCorrection:
     plot_categories(data_to_inpaint_values, self.structure, self.data_to_inpaint_name)
     plot_categories(inpainted_data_values[0], self.structure, self.inpainted_data_name)
     
+    # Take one instance of the inpainted data and convert it to the original dataframe representation
+    corrected_dataframe = dataset_generator.categorical_encoder.indices_to_dataframe(inpainted_data_values[0])
+    
     #Inpainting finished, yei!
     
     #!METRICS--------------------------------------------------------------------------
@@ -185,7 +189,9 @@ class AnomalyCorrection:
     console.print("[bold green]Summary of the inpainting process...[/bold green]")
     console.print(table)
     
-    return inpainted_data_values
+    corrected_dataframe['target'] = pd.Series(y_after)
+    
+    return inpainted_data_values, corrected_dataframe
   
   def inverse_gradient(self):
     """Easy peasy lemon squeezy. Omar sensei 🤓 complicated"""
