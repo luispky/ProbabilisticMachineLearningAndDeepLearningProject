@@ -17,7 +17,7 @@ class AnomalyCorrection:
 
     ================================================================
 
-    Forward Steps:
+    Steps at Initialization:
 
     values -> indices + structure
     indices -> one-hot
@@ -25,72 +25,103 @@ class AnomalyCorrection:
 
     ================================================================
 
-    Sideways Steps:
+    Training:
 
     noisy_probabilities + y (anomaly labels) -> classifier
-    classifier + x (anomaly) -> corrected anomaly x* (probabilities)
+    genuine datapoint -> diffusion model
 
     ================================================================
 
-    Backward Steps:
-    x* (probabilities) -> x* (one-hot)   # diffusion!
-    x* (one-hot) -> x* (indices)
-    x* (indices) -> x* (values)
+    Steps at Correction:
+
+    x_anomaly -> p_anomaly (onehot)
+    Inverse gradient: classifier + p_anomaly -> corrected p_anomaly*
+    Diffusion: p_anomaly* -> p_anomaly**
+    p_anomaly** (probabilities) -> p_anomaly** (one-hot)
+    p_anomaly** (one-hot) -> v_anomaly** (indices)
+    v_anomaly** (indices) -> x_anomaly** (values)
 
     ================================================================
     """
     def __init__(self, df_x: pd.DataFrame, y: pd.Series):
-        self.df_x = df_x
+        self.df_x_data = df_x   # values df
+        self.v_data = None      # indices
+        self.p_data = None      # probabilities
+        self.l_data = None      # logits
+
         self.y = y
 
-        self.interface = DatabaseInterface(self.df_x)
+        self.df_x_anomaly = None    # values
+        self.v_anomaly = None       # indices
+        self.p_anomaly = None       # probabilities
+        self.l_anomaly = None       # logits
+
+        self.interface = DatabaseInterface(self.df_x_data)
         self.structure = self.interface.get_data_structure()
         self.proba = Probabilities(structure=self.structure)
 
-        self.df_x_indices = None
-        self.df_x_proba = None
-        self.model = None
+        # models
+        self.classification_model = None
+        self.diffusion_model = None
 
         self._values_to_indices()
         self._indices_to_noisy_proba()
 
+    def get_value_maps(self):
+        return self.interface.get_value_maps()
+
+    def get_inverse_value_maps(self):
+        return self.interface.get_inverse_value_maps()
+
     def _values_to_indices(self):
         """Convert the values to indices"""
-        self.df_x_indices = self.interface.convert_values_to_indices()
+        self.v_data = self.interface.convert_values_to_indices()
 
     def _indices_to_noisy_proba(self):
         """Convert the indices to noisy probabilities"""
-        self.df_x_proba = self.proba.to_onehot(self.df_x_indices.to_numpy())
-        del self.df_x_indices
-        self.df_x_proba = self.proba.add_noise(self.df_x_proba)
+        self.p_data = self.proba.to_onehot(self.v_data.to_numpy())
+        del self.v_data
+        self.p_data = self.proba.add_noise(self.p_data)
 
-    def _inverse_gradient(self, anomalies):
+    def get_probability_dataset(self):
+        """Return the noisy probabilities and the anomaly labels"""
+        return self.p_data, self.y
+
+    def _inverse_gradient(self):
+        """modify p_anomaly one-by-one using the inverse gradient method"""
         v_corrected = ...
         masks = ...
-        return v_corrected, masks
 
     def _get_noisy_proba_data(self):
         """Return the noisy probabilities and the anomaly labels"""
-        return self.df_x_proba, self.y
+        return self.p_data, self.y
 
     def _set_model(self, model):
         """Set the model to be used for anomaly correction"""
         self.model = model
 
-    def _diffusion(self, v_corrected, mask):
-        """Perform diffusion on the corrected anomalies"""
+    def _diffusion(self):
+        """Perform diffusion on the corrected anomalies by using the masks
+        self.df_x_anomaly, self.mask -> self.df_x_anomaly_corrected
+        """
         v_corrected = ...
-        return v_corrected
 
     def correct_anomaly(self, anomalies):
         """Correct the anomalies in the dataset"""
-        v_corrected, masks = self._inverse_gradient(anomalies)
-        v_corrected = self._diffusion(v_corrected, masks)
-        return v_corrected
+        assert type(anomalies) is pd.DataFrame
+        # assert self.classification_model is not None
+        # assert self.diffusion_model is not None
+
+        self.df_x_anomaly = anomalies
+        # self._inverse_gradient()
+        # self._diffusion()
+        return self.df_x_anomaly
 
 
 def main(data_path='..\\datasets\\sample_data_preprocessed.csv',
-         model_path='..\\models\\anomaly_correction_model.pkl'):
+         model_path='..\\models\\anomaly_correction_model.pkl',
+         n_examples=5):
+    np.random.seed(42)
 
     # get data
     df_x = pd.read_csv(data_path)
@@ -102,9 +133,21 @@ def main(data_path='..\\datasets\\sample_data_preprocessed.csv',
 
     # train model
     anomaly_correction = AnomalyCorrection(df_x, df_y)
+    print('\nNoisy probabilities:')
+    print(np.round(anomaly_correction.p_data, 2))
+    print('\nValue maps:')
+    for key in anomaly_correction.get_value_maps():
+        print(f'{key}: {anomaly_correction.get_value_maps()[key]}')
 
-    print(np.round(anomaly_correction.df_x_proba, 2))
+    # pick some anomalies
+    anomalies = df_x[df_y == 1].sample(n_examples)
+    print('\nAnomalies:')
+    print(anomalies)
 
+    # run the anomaly-correction algorithm
+    corrected_anomalies = anomaly_correction.correct_anomaly(anomalies)
+    print('\nCorrected anomalies:')
+    print(corrected_anomalies)
 
 
 if __name__ == "__main__":
