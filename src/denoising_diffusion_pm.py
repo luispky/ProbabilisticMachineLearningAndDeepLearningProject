@@ -1,17 +1,21 @@
 import sys 
 import os
 sys.path.append(os.path.abspath('..'))
-import torch
 import numpy as np
-import torch.nn as nn
-from tqdm import tqdm
-from torch import optim
+import pandas as pd
 import copy
+import wandb
+from tqdm import tqdm
+import torch
+import torch.nn as nn
+from torch import optim
+from torch.utils.data import TensorDataset, DataLoader
 from safetensors.torch import save_model as safe_save_model
 from safetensors.torch import load_model as safe_load_model
-import wandb
 
 from .modules import NoisePredictor
+from .utils import LinearNoiseScheduler, EMA
+from .utils import plot_categories, plot_loss
 
 
 class DDPM:
@@ -22,21 +26,47 @@ class DDPM:
     It also includes additional components to allow conditional sampling according to the labels.
     From the CFDG papers the changes are minimal. 
     """
-    def __init__(self, scheduler, model=None):
-        self.scheduler = scheduler
-        self.model = model
-        self.ema_model = None
-        self.conditional_training = False
+    def __init__(self,
+                dataset_shape, 
+                noise_time_steps,
+                ):
+        
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+        self.scheduler = LinearNoiseScheduler(noise_time_steps=noise_time_steps,
+                                              dataset_shape=dataset_shape)
+        
         # send the scheduler attributes to the device
         self.scheduler.send_to_device(self.device) 
+        self.dataset_shape = dataset_shape
+        self.model = None        
+        self.ema_model = None
+        self.conditional_training = False
+
+    def set_model(self, time_dim_emb=128,
+                 num_classes=None,
+                 feed_forward_kernel=True,
+                 hidden_units: list | None=None, 
+                 concat_x_and_t=False,
+                 unet=False 
+                 ):
+        """Create a new noise predictor model with the provided parameters."""
+        print('Creating a new model...')
+        self.model = NoisePredictor(dataset_shape=self.dataset_shape,
+                            time_dim_emb=time_dim_emb,
+                            num_classes=num_classes,
+                            feed_forward_kernel=feed_forward_kernel,
+                            hidden_units=hidden_units,
+                            concat_x_and_t=concat_x_and_t,
+                            unet=unet)
         
-    def train(self, dataloader, learning_rate=1e-3, epochs = 64, ema=None):
-        """Training method according to the DDPM paper."""
-        assert self.model is not None, 'Model not provided'
+    def train(self, dataloader, learning_rate=1e-3, epochs=64, beta_ema=0.999, wandb_track=False):
+        # Instantiate the Exponential Moving Average (EMA) class
+        ema = EMA(beta_ema)
+        
         # load the data
         assert dataloader is not None, 'Dataloader not provided'
+        assert self.model is not None, 'Model not provided'
+        assert isinstance(self.model, NoisePredictor), 'Model must be an instance of NoisePredictor'
         
         if ema is not None:
             # copy the model and set it to evaluation mode
@@ -83,7 +113,7 @@ class DDPM:
                 batch_samples = batch_samples.to(self.device)
                 
                 # t ~ U(1, T)
-                t = torch.randint(0, self.scheduler.noise_timesteps, (batch_samples.shape[0],)).to(self.device)
+                t = torch.randint(0, self.scheduler.noise_time_steps, (batch_samples.shape[0],)).to(self.device)
                 # batch_samples.shape[0] is the batch size
                 
                 # noise = N(0, 1)
@@ -124,20 +154,23 @@ class DDPM:
             train_losses.append(epoch_loss)
             
             pbar.set_description(f'Epoch: {epoch+1} | Loss: {epoch_loss:.4f}')
-                
-            # wandb.log({'loss': epoch_loss})
+            
+            if wandb_track:
+                wandb.log({'loss': epoch_loss})
             
         print('Training Finished\n')
     
         return train_losses
 
     @torch.no_grad()
-    def sample(self, model, samples, with_labels=False, num_classes=None, cfg_strength=3):
+    def sample(self, samples, with_labels=False, num_classes=None, cfg_strength=3):
         """Sampling method according to the DDPM paper."""
-        assert isinstance(model, NoisePredictor), 'Model must be an instance of NoisePredictor'
-        model.eval()
-        model.to(self.device)
-        samples_shape = self.model.dataset_shape
+        
+        assert self.model is not None, 'Model not provided'
+        assert isinstance(self.model, NoisePredictor), 'Model must be an instance of NoisePredictor'
+        
+        self.model.eval()
+        self.model.to(self.device)
         
         if self.conditional_training:
             assert with_labels and num_classes is not None, 'The number of classes in the labels must be specified'
@@ -151,20 +184,20 @@ class DDPM:
         print('Sampling...')
         
         # x_{T} ~ N(0, I)
-        x = torch.randn((samples, *samples_shape[1:])).to(self.device)
+        x = torch.randn((samples, *self.dataset_shape[1:])).to(self.device)
         ones = torch.ones(samples)
         # for t = T, T-1, ..., 1 (-1 in Python)
-        pbar = tqdm(reversed(range(self.scheduler.noise_timesteps)))
+        pbar = tqdm(reversed(range(self.scheduler.noise_time_steps)))
         for i in pbar:
             
             t = (ones * i).long().to(self.device)
-            predicted_noise = model(x, t, labels)
+            predicted_noise = self.model(x, t, labels)
             
             # Classifier-Free Guidance Sampling
             # The C-FG paper uses a conditional model to sample the noise
             if self.conditional_training:
                 if labels is not None:
-                    uncond_predicted_noise = model(x, t, None)
+                    uncond_predicted_noise = self.model(x, t, None)
                     # interpolate between conditional and unconditional noise
                     # C-FG paper formula:
                     predicted_noise = (1 + cfg_strength) * predicted_noise - cfg_strength * uncond_predicted_noise
@@ -172,7 +205,7 @@ class DDPM:
             # x_{t-1} ~ p_{\theta}(x_{t-1}|x_{t})
             x = self.scheduler.sample_prev_step(x, predicted_noise, t)
         
-        model.train()
+        self.model.train()
         
         print('Sampling Finished\n')
         
@@ -181,16 +214,18 @@ class DDPM:
         return [x]
 
     @torch.no_grad()
-    def inpaint(self, model, original, mask, resampling_steps=10):
+    def inpaint(self, original, mask, resampling_steps=10):
         """Inpainting method according to the RePaint paper."""
-        assert isinstance(model, NoisePredictor), 'Model must be an instance of NoisePredictor'
+        # ?: implement
+        
+        assert self.model is not None, 'Model not provided'
+        assert isinstance(self.model, NoisePredictor), 'Model must be an instance of NoisePredictor'
+        
         # !The Repaint paper uses an unconditionally trained model to inpaint the image
-        # todo: review the inpainting method to properly implement it
-        # the parameters U is not totally clear
         assert not self.conditional_training, 'Model must be unconditionally trained'
         
-        model.eval()
-        model.to(self.device)
+        self.model.eval()
+        self.model.to(self.device)
         
         original = original.to(self.device)
         mask = mask.to(self.device)
@@ -203,7 +238,7 @@ class DDPM:
         ones = torch.ones(x_t.shape[0])
         
         # for t = T, T-1, ..., 1 (-1 in Python)
-        pbar = tqdm(reversed(range(self.scheduler.noise_timesteps)))
+        pbar = tqdm(reversed(range(self.scheduler.noise_time_steps)))
         for i in pbar:
             
             for u in range(resampling_steps):
@@ -215,7 +250,7 @@ class DDPM:
                 # differs from the algorithm in the paper but doesn't matter because of stochasticity
                 x_known = self.scheduler.add_noise(original, forward_noise, t)
                 
-                predicted_noise = model(x_t, t)
+                predicted_noise = self.model(x_t, t)
                 x_unknown = self.scheduler.sample_prev_step(x_t, predicted_noise, t)
                 
                 # The mask is the opposite of the paper, they changed their notation and was published like that
@@ -224,6 +259,8 @@ class DDPM:
                 x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < resampling_steps and i > 0) else x_t
 
         print('Inpainting Finished\n')
+        
+        self.model.train()
         
         return x_t_minus_one
     
@@ -237,31 +274,34 @@ class DDPM:
         """
         Load model parameters from a file using safetensors.
         """
+        print(f'Loading model...')
         try:
-            self.model = NoisePredictor(time_dim=time_dim,
-                                    dataset_shape=self.scheduler.dataset_shape,
+            self.model = NoisePredictor(
+                                    dataset_shape=self.dataset_shape,
+                                    time_dim=time_dim,
                                     num_classes=num_classes,
                                     feed_forward_kernel=feed_forward_kernel, 
                                     hidden_units=hidden_units,
                                     concat_x_and_t=concat_x_and_t,
                                     unet=unet).to(self.device)
         
-            print(f'Loading model...')
-            
             filename = path + filename + '.safetensors'
-            return safe_load_model(self.model, filename)
+            self.model = safe_load_model(self.model, filename)
         except FileNotFoundError:
             print('Model not found')
-            return None
+            self.model = None
     
     def load_model_pickle(self, filename, path="../models/"):
         """Load model parameters from a file using pickle."""
+        print(f'Loading model...')
         try:
             filename = path + filename + '.pkl'
-            self.model = torch.load(filename)
+            model = torch.load(filename)
+            assert isinstance(model, NoisePredictor), 'Model must be an instance of NoisePredictor'
+            self.model = model
         except FileNotFoundError:
             print('Model not found')
-            return None
+            self.model = None
         
     def save_model_safetensors(self, filename, ema_model=True, path="../models/"):
         """
@@ -288,3 +328,81 @@ class DDPM:
             torch.save(self.ema_model, filename)
         elif self.model is not None:
             torch.save(self.model, filename)
+
+
+class DDPMAnomalyCorrection(DDPM):
+    """
+    Class for the Denoising Diffusion Probabilistic Model for Anomaly Correction.
+    It particularizes the DDPM class for anomaly correction problem with end to end indices data.
+    """
+    def __init__(self, dataset_shape, noise_time_steps):
+        super().__init__(dataset_shape, noise_time_steps)
+    
+    def train(self, dataset,
+              batch_size=16, 
+              learning_rate=1e-3,
+              epochs=64,
+              beta_ema=0.999,
+              plot_data=False,
+              structure=None,
+              original_data_name='ddpm_original_data',
+              save_loss=True,
+              loss_name='ddpm_loss',
+              wandb_track=False):
+        
+        assert isinstance(dataset, pd.DataFrame), 'The dataset must be a pandas DataFrame'
+        x_indices = dataset.values
+        
+        if plot_data:
+            assert structure is not None, 'The structure must be provided'
+            plot_categories(x_indices, structure, original_data_name, save_locally=plot_data) 
+        
+        x_indices_tensor = torch.tensor(x_indices, dtype=torch.float32)
+        tensor_dataset =  TensorDataset(x_indices_tensor)
+        dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=True)
+        
+        loss = super().train(dataloader=dataloader,
+                             learning_rate=learning_rate,
+                             epochs=epochs,
+                             beta_ema=beta_ema,
+                             wandb_track=wandb_track)
+        
+        plot_loss(loss, loss_name, save_locally=save_loss)
+        
+    def sample(self, num_samples=1000, 
+               plot_data=False,
+               proba=None,
+               sampled_data_name='ddpm_sampled_data',
+               ):
+        
+        sampled_logits = super().sample(samples=num_samples)[0]
+        
+        if plot_data and proba is not None:
+            x_indices_sampled = proba.logits_to_values(sampled_logits.cpu().numpy())
+        
+        plot_categories(x_indices_sampled, sampled_data_name, save_locally=plot_data)
+        
+        return x_indices_sampled
+    
+    def inpaint(self, x_indices_to_inpaint,
+                masks,
+                resampling_steps=10, 
+                proba=None,
+                ):
+        
+        assert proba is not None, 'The probabilities object must be provided'
+        
+        # Convert the list indices to a numpy array
+        x_indices = np.array(x_indices_to_inpaint)
+        
+        # Convert the indices data to logits
+        x_logits = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float32)
+
+        inpainted_indices = []
+        for mask in masks:
+            x_inpainted_logits = super().inpaint(original=x_logits,
+                                                mask=mask,
+                                                resampling_steps=resampling_steps)
+            inpainted_indices.append(proba.logits_to_values(x_inpainted_logits.cpu().numpy()))
+        
+        return np.array(inpainted_indices)

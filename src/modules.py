@@ -99,7 +99,7 @@ class NoisePredictor(nn.Module):
     """
     
     def __init__(self, dataset_shape=None,
-                 time_dim=128,
+                 time_dim_emb=128,
                  num_classes=None,
                  feed_forward_kernel=True,
                  hidden_units: list | None=None, 
@@ -114,20 +114,20 @@ class NoisePredictor(nn.Module):
         assert dataset_shape is not None, 'The dataset shape must be provided'
         assert len(dataset_shape) in [2, 3], 'The dataset shape is not supported'
         
-        self.time_dim = time_dim
+        self.time_dim_emb = time_dim_emb
         self.dataset_shape = dataset_shape
         self.concat_x_and_t = concat_x_and_t
         
         input_dim = dataset_shape[1]
         if concat_x_and_t:
-            input_dim += time_dim
+            input_dim += time_dim_emb
 
         # Time embedding layer
         # It ensures the time encoding is compatible with the noised samples
         self.time_emb_layer = nn.Sequential(
-            nn.Linear(time_dim, time_dim),
+            nn.Linear(time_dim_emb, time_dim_emb),
             nn.SiLU(),
-            nn.Linear(time_dim, dataset_shape[1]),
+            nn.Linear(time_dim_emb, dataset_shape[1]),
         ) if not concat_x_and_t else nn.Identity()
         
         if feed_forward_kernel:
@@ -142,7 +142,7 @@ class NoisePredictor(nn.Module):
         # It is used to condition the model
         self.num_classes = num_classes
         if num_classes is not None:
-            self.label_emb = nn.Embedding(num_classes, time_dim)  # label_emb(labels) has shape (batch_size, time_dim)
+            self.label_emb = nn.Embedding(num_classes, time_dim_emb)  # label_emb(labels) has shape (batch_size, time_dim_emb)
             
     def positional_encoding(self, time_steps):
         r"""
@@ -159,7 +159,7 @@ class NoisePredictor(nn.Module):
         The sinusoidal positional encoding is used in the Transformer model
         to encode the position of elements in the input sequence.
         """
-        inv_freq = 1.0 / (10000 ** (torch.arange(0, self.time_dim, 2).float() / self.time_dim)).to(time_steps.device)
+        inv_freq = 1.0 / (10000 ** (torch.arange(0, self.time_dim_emb, 2).float() / self.time_dim_emb)).to(time_steps.device)
         pos_enc = torch.cat([torch.sin(time_steps * inv_freq), torch.cos(time_steps * inv_freq)], dim=-1)
         return pos_enc
 
@@ -174,7 +174,7 @@ class NoisePredictor(nn.Module):
         """
         
         # Positional encoding for the time steps
-        # t.shape (batch_size,1) -> (batch_size) -> (batch_size, time_dim)
+        # t.shape (batch_size,1) -> (batch_size) -> (batch_size, time_dim_emb)
         t = self.positional_encoding(t.unsqueeze(-1).float()) 
         
         # Label embedding
@@ -183,11 +183,11 @@ class NoisePredictor(nn.Module):
             # y has shape (batch_size, 1) 0 -> (batch_size)
             y = y.squeeze(-1).long()
             t += self.label_emb(y)
-            # label_emb(y) has shape (batch_size, time_dim)
+            # label_emb(y) has shape (batch_size, time_dim_emb)
             # the sum is element-wise
         
         # Time embedding
-        # t has shape (batch_size, time_dim)
+        # t has shape (batch_size, time_dim_emb)
         emb = self.time_emb_layer(t)  # emb has shape (batch_size, ...) if concat_x_and_t is False
         # emb is of datatype float = torch.float32
         

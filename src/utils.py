@@ -575,8 +575,8 @@ class BaseNoiseScheduler(ABC):
     It is an abstract class that defines the methods that the noise scheduler should implement.
     """
 
-    def __init__(self, noise_timesteps, dataset_shape):
-        self.noise_timesteps = noise_timesteps
+    def __init__(self, noise_time_steps, dataset_shape):
+        self.noise_time_steps = noise_time_steps
         num_dims_to_add = len(dataset_shape) - 1
         self.num_dims_to_add = num_dims_to_add
         self.betas = None
@@ -647,14 +647,14 @@ class LinearNoiseScheduler(BaseNoiseScheduler):
     This change is only added to the betas attribute and is propagated to the other attributes.
     """
 
-    def __init__(self, noise_timesteps, dataset_shape, beta_start=1e-4, beta_end=2e-2):
-        super().__init__(noise_timesteps, dataset_shape)
+    def __init__(self, noise_time_steps, dataset_shape, beta_start=1e-4, beta_end=2e-2):
+        super().__init__(noise_time_steps, dataset_shape)
         self.beta_start = beta_start
         self.beta_end = beta_end
         self._initialize_schedule()
 
     def _initialize_schedule(self):
-        linspace = torch.linspace(self.beta_start, self.beta_end, self.noise_timesteps)  # note: Omar split this line
+        linspace = torch.linspace(self.beta_start, self.beta_end, self.noise_time_steps)  # note: Omar split this line
         self.betas = linspace.view(*([-1] + [1] * self.num_dims_to_add))  # because it was too long
         self.alphas = 1. - self.betas
         self.alpha_bar = torch.cumprod(self.alphas, dim=0)
@@ -669,8 +669,8 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
     # todo: needs improvement with offset parameter. Check papers for more details.
     """
 
-    def __init__(self, noise_timesteps: int, s: float = 0.008, dataset_shape: tuple = None):
-        super().__init__(noise_timesteps, dataset_shape)
+    def __init__(self, noise_time_steps: int, dataset_shape: tuple = None, s: float = 0.008):
+        super().__init__(noise_time_steps, dataset_shape)
         self.s = torch.tensor(s, dtype=torch.float32)
         self._initialize_schedule()
 
@@ -678,13 +678,13 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
         """
         Computes the cosine schedule function.
         """
-        return torch.cos((t / self.noise_timesteps + self.s) / (1 + self.s) * torch.pi / 2) ** 2
+        return torch.cos((t / self.noise_time_steps + self.s) / (1 + self.s) * torch.pi / 2) ** 2
 
     def _initialize_schedule(self):
         """
         Initializes the schedule for alpha and beta values based on the cosine schedule.
         """
-        t = torch.linspace(0, self.noise_timesteps, self.noise_timesteps, dtype=torch.float32)
+        t = torch.linspace(0, self.noise_time_steps, self.noise_time_steps, dtype=torch.float32)
         self.alpha_bar = self._cosine_schedule(t) / self._cosine_schedule(torch.tensor(0.0, dtype=torch.float32))
 
         self.alphas = torch.ones_like(self.alpha_bar)
