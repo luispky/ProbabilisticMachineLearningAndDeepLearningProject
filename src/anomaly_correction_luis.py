@@ -112,7 +112,8 @@ class AnomalyCorrection:
       - Plot of the sampled data
       """
       assert self.diffusion is not None, 'The diffusion model must be set'
-      sampled_logits = self.diffusion.sample(self.diffusion.ema_model, num_samples)
+      sampled_logits = self.diffusion.sample(model=self.diffusion.model,
+                                             samples=num_samples)
       x_indices_sampled = self.proba.logits_to_values(sampled_logits.cpu().numpy())
       plot_categories(x_indices_sampled, self.structure, sampled_data_name, 
                     save_locally=True)
@@ -153,10 +154,10 @@ class AnomalyCorrection:
       # move mask to logits space
       mask = np.repeat(mask, self.structure, axis=1)
       # inpaint the data using the EMA model
-      inpainted_instance_logits = self.diffusion.inpaint(self.diffusion.ema_model,
-                                             x_logits,
-                                             mask, 
-                                             resampling_steps=resampling_steps)
+      inpainted_instance_logits = self.diffusion.inpaint(model=self.diffusion.model,
+                                                        original=x_logits,
+                                                        mask=mask, 
+                                                        resampling_steps=resampling_steps)
       inpainted_data_values.append(self.proba.logits_to_values(inpainted_instance_logits))
     
     return inpainted_data_values

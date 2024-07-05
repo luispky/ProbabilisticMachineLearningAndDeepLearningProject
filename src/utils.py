@@ -453,7 +453,7 @@ class GaussianDataset(BaseDataset):
         plt.show()
 
 
-def plot_generated_samples(samples, filename, save_locally=False, save_wandb=True, path="../plots/"):
+def plot_generated_samples(samples, filename, save_locally=False, save_wandb=False, path="../plots/"):
     """ Author: Luis
     Save the plot of the generated samples in the plots folder and in the wandb dashboard.
     """
@@ -483,7 +483,7 @@ def plot_generated_samples(samples, filename, save_locally=False, save_wandb=Tru
         wandb.log({filename: wandb.Image(fig)})
 
 
-def plot_data_to_inpaint(x, mask, save_wandb=True):
+def plot_data_to_inpaint(x, mask, save_wandb=False):
     """ Author: Luis
     Plot the dataset to inpaint with the mask applied.
     It saves the plot in the wandb dashboard.

@@ -125,7 +125,7 @@ class DDPM:
             
             pbar.set_description(f'Epoch: {epoch+1} | Loss: {epoch_loss:.4f}')
                 
-            wandb.log({'loss': epoch_loss})
+            # wandb.log({'loss': epoch_loss})
             
         print('Training Finished\n')
     
@@ -134,7 +134,7 @@ class DDPM:
     @torch.no_grad()
     def sample(self, model, samples, with_labels=False, num_classes=None, cfg_strength=3):
         """Sampling method according to the DDPM paper."""
-        assert self.model is not None, 'Model not provided'
+        assert isinstance(model, NoisePredictor), 'Model must be an instance of NoisePredictor'
         model.eval()
         model.to(self.device)
         samples_shape = self.model.dataset_shape
@@ -183,7 +183,7 @@ class DDPM:
     @torch.no_grad()
     def inpaint(self, model, original, mask, resampling_steps=10):
         """Inpainting method according to the RePaint paper."""
-        assert self.model is not None, 'Model not provided'
+        assert isinstance(model, NoisePredictor), 'Model must be an instance of NoisePredictor'
         # !The Repaint paper uses an unconditionally trained model to inpaint the image
         # todo: review the inpainting method to properly implement it
         # the parameters U is not totally clear
@@ -221,7 +221,7 @@ class DDPM:
                 # The mask is the opposite of the paper, they changed their notation and was published like that
                 x_t_minus_one = mask * x_unknown + x_known * (~mask)
                 
-                x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < U and i > 0) else x_t
+                x_t = self.scheduler.sample_current_state_inpainting(x_t_minus_one, t) if (u < resampling_steps and i > 0) else x_t
 
         print('Inpainting Finished\n')
         
