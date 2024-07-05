@@ -176,7 +176,7 @@ class NoisePredictor(nn.Module):
         
         # Positional encoding for the time steps
         # t.shape (batch_size,1) -> (batch_size) -> (batch_size, time_dim_emb)
-        t = self.positional_encoding(t.unsqueeze(-1).float()) 
+        t = self.positional_encoding(t.unsqueeze(-1).float()).float()
         
         # Label embedding
         if y is not None:
@@ -205,5 +205,9 @@ class NoisePredictor(nn.Module):
         # thus we convert x_t to float32
         x_t = x_t.float()
         x_t = torch.cat((x_t, emb), dim=1) if self.concat_x_and_t else x_t + emb
-        
+        x_t = x_t.float()
+
+        print(f'\nx_t {x_t.shape}')
+        # print(x_t)
+
         return self.architecture_kernel(x_t)

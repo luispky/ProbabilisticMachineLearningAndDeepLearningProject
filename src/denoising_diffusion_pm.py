@@ -120,7 +120,7 @@ class DDPM:
                 
                 # x_{t-1} ~ q(x_{t-1}|x_{t}, x_{0})
                 # the scheduler is different from the C-FG paper
-                x_t = self.scheduler.add_noise(batch_samples, noise, t) 
+                x_t = self.scheduler.add_noise(batch_samples, noise, t)
                 
                 # Classifier Free Guidance Training
                 # If the labels are not provided, use them with a probability of 0.1
@@ -135,6 +135,10 @@ class DDPM:
                 # with x_{t} = \sqrt{\alpha_bar_{t}}x_{t} + \sqrt{1-\alpha_bar_{t}}*noise
                 #      t used for positional encoding
                 # and  labels for conditional model
+
+                # x_t = x_t.float()
+                # t = t.int()
+
                 predicted_noise = self.model(x_t, t, labels)
                 
                 # compare the noise and predicted noise with loss metric
@@ -248,7 +252,7 @@ class DDPM:
                 
                 # differs from the algorithm in the paper but doesn't matter because of stochasticity
                 x_known = self.scheduler.add_noise(original, forward_noise, t)
-                
+
                 predicted_noise = self.model(x_t, t)
                 x_unknown = self.scheduler.sample_prev_step(x_t, predicted_noise, t)
                 
@@ -347,11 +351,11 @@ class DDPMAnomalyCorrection(DDPM):
               original_data_name='ddpm_original_data',
               wandb_track=False):
         
+        assert proba is not None, 'The structure must be provided'
         assert isinstance(dataset, pd.DataFrame), 'The dataset must be a pandas DataFrame'
         x_indices = dataset.values
         
         if plot_data:
-            assert proba is not None, 'The structure must be provided'
             plot_categories(x_indices, proba.structure, original_data_name, save_locally=plot_data) 
         x_logits_tensor = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float32)
         tensor_dataset =  TensorDataset(x_logits_tensor)
@@ -382,25 +386,24 @@ class DDPMAnomalyCorrection(DDPM):
         
         return x_indices_sampled
     
-    def inpaint(self, x_indices_to_inpaint,
+    def inpaint(self, anomaly_indices,
                 masks,
                 proba=None,
-                resampling_steps=10, 
+                resampling_steps=10,
                 ):
         
         assert proba is not None, 'The probabilities object must be provided'
-        
-        # Convert the list indices to a numpy array
-        x_indices = np.array(x_indices_to_inpaint)
-        
+
         # Convert the indices data to logits
-        x_logits = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float32)
+        x_logits = torch.tensor(proba.values_to_logits(anomaly_indices), dtype=torch.float32)
 
         inpainted_indices = []
         for mask in masks:
+            mask = np.repeat(mask, np.array(proba.structure), axis=0)
+            mask = torch.tensor(mask)
             x_inpainted_logits = super().inpaint(original=x_logits,
-                                                mask=mask,
-                                                resampling_steps=resampling_steps)
+                                                 mask=mask,
+                                                 resampling_steps=resampling_steps)
             inpainted_indices.append(proba.logits_to_values(x_inpainted_logits.cpu().numpy()))
         
         return np.array(inpainted_indices)

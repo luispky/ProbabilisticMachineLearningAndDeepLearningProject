@@ -10,9 +10,8 @@ from copy import deepcopy
 from denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
 from utils import plot_categories, plot_loss
 
-
 # set default type to avoid problems with gradient
-DEFAULT_TYPE = torch.float64
+DEFAULT_TYPE = torch.float32
 torch.set_default_dtype(DEFAULT_TYPE)
 
 
@@ -196,9 +195,10 @@ class AnomalyCorrection:
         self.p_data = self.proba.to_onehot(self.v_data.to_numpy())
 
     def _anomaly_to_proba(self, df, dtype=DEFAULT_TYPE):
-        v = self.interface.convert_values_to_indices(df)
-        p = self.proba.to_onehot(v.to_numpy())
-        return torch.tensor(p, dtype=dtype)
+        self.anomaly_indices = self.interface.convert_values_to_indices(df).to_numpy()
+        self.anomaly_p = self.proba.to_onehot(self.anomaly_indices)
+        self.anomaly_p = torch.tensor(self.anomaly_p , dtype=dtype)
+        return self.anomaly_p
 
     def _compute_noisy_proba(self):
         """add noise to probabilities"""
@@ -207,7 +207,7 @@ class AnomalyCorrection:
     def get_classification_dataset(self, dtype=DEFAULT_TYPE):
         """Return the noisy probabilities and the anomaly labels"""
         x = self.p_data_noisy
-        y = self.y.to_numpy().reshape(-1 ,1).astype(float)
+        y = self.y.to_numpy().reshape(-1, 1).astype(float)
         return torch.tensor(x, dtype=dtype), torch.tensor(y, dtype=dtype)
 
     def get_diffusion_dataset(self):
@@ -236,11 +236,27 @@ class AnomalyCorrection:
         # assert self.diffusion is not None, 'Please set the diffusion model'
 
         p = self._anomaly_to_proba(anomaly)
-        masks, new_values = self._inverse_gradient(p, n)
+        masks, new_indices = self._inverse_gradient(p, n)
 
-        new_values = self.diffusion(x_indices_to_inpaint=new_values,
-                                    masks=masks)
-        
+        print('\nanomaly_indices')
+        print(self.anomaly_indices)
+
+        print('\nmasks')
+        for mask in masks:
+            print(f'{mask}  ({len(mask)})')
+        print(len(masks))
+
+        print('\nstructure')
+        print(self.proba.structure)
+
+        print('\nindices before diffusion')
+
+        new_indices = self.diffusion.inpaint(anomaly_indices=self.anomaly_indices, masks=masks, proba=self.proba)
+
+        print('\nindices after diffusion')
+        new_values = self.interface.convert_indices_to_values(new_indices)
+        print('\nvalues after diffusion')
+
         return new_values
 
 
@@ -338,10 +354,8 @@ class ClassificationModel:
         cprint('Model saved', bcolors.OKGREEN)
 
 
-
-
-def main(data_path='..\\datasets\\sum_limit_problem.csv',
-         model_path='..\\models\\anomaly_correction_model.pkl',
+def main(data_path='../datasets/sum_limit_problem.csv',
+         model_path='../models/anomaly_correction_model.pkl',
          hidden=10, loss_fn=torch.nn.MSELoss(), n_epochs=250):
     np.random.seed(42)
 
@@ -382,6 +396,7 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
     dataset_shape = [1, sum(anomaly_correction.structure)]
     
     # in index space
+    print(f'\ndata_diff_x {data_diff_x.shape}')
     print(data_diff_x)
 
     # This class takes as input the anomaly and the masks, and returns the modified anomalies
@@ -415,6 +430,9 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
         plot_loss(train_losses, loss_name, save_locally=True)
         diffusion.save_model_pickle(filename=ddpm_model_name, 
                                     ema_model=True)
+
+    print(f'\ndiffusion.model')
+    print(diffusion.model)
 
     anomaly_correction.set_diffusion(diffusion)
 
