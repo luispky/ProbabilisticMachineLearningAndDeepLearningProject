@@ -794,6 +794,11 @@ class Probabilities:
             logits = logits.numpy()
         p = self._logits_to_normalized_probs(logits)
         return self.onehot_to_values(self.prob_to_onehot(p))
+    
+    def values_to_logits(self, values):
+        """Convert values to logits"""
+        p = self.to_onehot(values)
+        return np.log(p / (1 - p))
 
 
 class bcolors:

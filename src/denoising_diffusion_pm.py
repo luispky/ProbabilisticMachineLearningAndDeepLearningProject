@@ -22,38 +22,19 @@ class DDPM:
     It also includes additional components to allow conditional sampling according to the labels.
     From the CFDG papers the changes are minimal. 
     """
-    def __init__(self, scheduler, model, device):
+    def __init__(self, scheduler, model=None):
         self.scheduler = scheduler
         self.model = model
-        self.device = device
         self.ema_model = None
         self.conditional_training = False
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # send the scheduler attributes to the device
-        self.scheduler.send_to_device(device) 
+        self.scheduler.send_to_device(self.device) 
         
-    def load_model(self, model_params, filename, path="../models/"):
-        r"""
-        Load model parameters from a file using safetensors.
-        """
-        time_dim = model_params['time_dim']
-        num_classes = model_params['num_classes']
-        concat_x_and_t = model_params['concat_x_and_t']
-        feed_forward_kernel = model_params['feed_forward_kernel']
-        hidden_units = model_params['hidden_units']
-        
-        
-        model = NoisePredictor(time_dim=time_dim, dataset_shape=self.scheduler.dataset_shape,
-                num_classes=num_classes, concat_x_and_t=concat_x_and_t,
-                feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units).to(self.device)
-        
-        print(f'Loading model...')
-        
-        filename = path + filename + '.safetensors'
-        return safe_load_model(model, filename)
-    
-    # Training method according to the DDPM paper
     def train(self, dataloader, learning_rate=1e-3, epochs = 64, ema=None):
+        """Training method according to the DDPM paper."""
+        assert self.model is not None, 'Model not provided'
         # load the data
         assert dataloader is not None, 'Dataloader not provided'
         
@@ -150,9 +131,10 @@ class DDPM:
     
         return train_losses
 
-    # Sampling method according to the DDPM paper
     @torch.no_grad()
     def sample(self, model, samples, with_labels=False, num_classes=None, cfg_strength=3):
+        """Sampling method according to the DDPM paper."""
+        assert self.model is not None, 'Model not provided'
         model.eval()
         model.to(self.device)
         samples_shape = self.model.dataset_shape
@@ -198,9 +180,10 @@ class DDPM:
             return [x, labels]
         return [x]
 
-    # Inpainting method according to the RePaint paper
     @torch.no_grad()
     def inpaint(self, model, original, mask, U=10):
+        """Inpainting method according to the RePaint paper."""
+        assert self.model is not None, 'Model not provided'
         # !The Repaint paper uses an unconditionally trained model to inpaint the image
         # todo: review the inpainting method to properly implement it
         # the parameters U is not totally clear
@@ -243,17 +226,65 @@ class DDPM:
         print('Inpainting Finished\n')
         
         return x_t_minus_one
+    
+    def load_model_safe_tensors(self, time_dim,
+                                num_classes,
+                                concat_x_and_t,
+                                feed_forward_kernel,
+                                hidden_units,
+                                unet, 
+                                filename, path="../models/"):
+        """
+        Load model parameters from a file using safetensors.
+        """
+        try:
+            self.model = NoisePredictor(time_dim=time_dim,
+                                    dataset_shape=self.scheduler.dataset_shape,
+                                    num_classes=num_classes,
+                                    feed_forward_kernel=feed_forward_kernel, 
+                                    hidden_units=hidden_units,
+                                    concat_x_and_t=concat_x_and_t,
+                                    unet=unet).to(self.device)
+        
+            print(f'Loading model...')
+            
+            filename = path + filename + '.safetensors'
+            return safe_load_model(self.model, filename)
+        except FileNotFoundError:
+            print('Model not found')
+            return None
+    
+    def load_model_pickle(self, filename, path="../models/"):
+        """Load model parameters from a file using pickle."""
+        try:
+            filename = path + filename + '.pkl'
+            self.model = torch.load(filename)
+        except FileNotFoundError:
+            print('Model not found')
+            return None
+        
+    def save_model_safetensors(self, filename, ema_model=True, path="../models/"):
+        """
+        Save the model using safetensors.
+        """
+        if not os.path.exists(path):
+            os.makedirs(path)
+        
+        filename = path + filename + '.safetensors'
+        
+        if ema_model and self.ema_model is not None:
+            safe_save_model(self.ema_model, filename + '.safetensors')
+        elif self.model is not None:
+            safe_save_model(self.model, filename + '.safetensors')
+        
+        print(f'Model saved in {filename}')
 
-
-def save_model_to_dir(model, filename, path = "../models/"):
-    """
-    Save the model using safetensors.
-    """
-    if not os.path.exists(path):
-        os.makedirs(path)
-    
-    filename = path + filename + '.safetensors'
-    
-    safe_save_model(model, filename + '.safetensors')
-    
-    print(f'Model saved in {filename}')
+    def save_model_pickle(self, filename, ema_model=True, path="../models/"):
+        """Save the model using pickle."""
+        if not os.path.exists(path):
+            os.makedirs(path)
+        filename = path + filename + '.pkl'
+        if ema_model and self.ema_model is not None:
+            torch.save(self.ema_model, filename)
+        elif self.model is not None:
+            torch.save(self.model, filename)

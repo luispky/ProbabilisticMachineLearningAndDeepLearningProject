@@ -98,8 +98,12 @@ class NoisePredictor(nn.Module):
     Neural network for the noise predictor in DDPM.
     """
     
-    def __init__(self, time_dim=128, dataset_shape=None, concat_x_and_t=False,
-                 num_classes=None, feed_forward_kernel=True, hidden_units: list | None=None, 
+    def __init__(self, dataset_shape=None,
+                 time_dim=128,
+                 num_classes=None,
+                 feed_forward_kernel=True,
+                 hidden_units: list | None=None, 
+                 concat_x_and_t=False,
                  unet=False):
         super().__init__()
         
