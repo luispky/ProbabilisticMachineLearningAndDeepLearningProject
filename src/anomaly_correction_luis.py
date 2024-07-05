@@ -102,8 +102,7 @@ class AnomalyCorrection:
     plot_categories(dataset_generator.label_values, self.structure, self.original_data_name, 
                     save_locally=True)
     
-    #!--------------------------------------------------------------------------------
-    # define the components of the DDPM model: scheduler, model, EMA class
+    #!DDPM COMPONENTS: SCHEDULER, MODEL, EMA--------------------------------------------- 
     ema = EMA(self.beta_ema)
     scheduler = LinearNoiseScheduler(noise_timesteps=self.noise_time_steps,
                                      dataset_shape=dataset_shape)
@@ -114,6 +113,7 @@ class AnomalyCorrection:
                            hidden_units=self.hidden_units,
                            unet=self.unet)
     
+    #!DDPM: TRAINING AND SAMPLING-------------------------------------------------------
     # DDPM model
     diffusion = DDPM(scheduler, model, self.args_ddpm)
     # DDPM training
@@ -128,11 +128,14 @@ class AnomalyCorrection:
     plot_categories(sampled_data, self.structure, self.sampled_data_name, 
                     save_locally=True)
     
-    #!DATA_TO_INPAINT------------------------------------------------------------------
+    #!INPAINTING------------------------------------------------------------------
     # Either read or generate the data to inpaint from the dataset_generator
     data_to_inpaint = None
     x, y = data_to_inpaint['x'], data_to_inpaint['y']
     masks = None # or masks
+    
+    # Convert the data (in probability space) to inpaint to logits
+    x = ... # todo: clarify this
     
     # inpaint the data (in logit space) for as many masks as desired
     inpainted_data_values = []
@@ -146,6 +149,7 @@ class AnomalyCorrection:
       #!you can do it your way if you want 
       inpainted_data_values.append(self.proba.logits_to_values(inpainted_instance_logits))
 
+    # Distribution of the data to inpaint and the inpainted data
     # A picture is worth a thousand words
     # Take one instance of the inpainted data and plot it
     data_to_inpaint_values = self.proba.prob_to_values(x)
@@ -182,8 +186,9 @@ class AnomalyCorrection:
     #!SUMMARY--------------------------------------------------------------------------
     console = Console()
     table = Table(show_header=True, header_style="bold magenta")
-    
     table.add_column("Metric", style="dim", width=40)
+    table.add_column("Value")
+    
     table.add_row("Anomalies before inpainting / Total:", f"{number_anomalies} / {size}")
     table.add_row("Remaining anomalies / Total:", f"{number_anomalies_after} / {size}")
     table.add_row("Percentage change (-100% desired):", f"{percentage_change:.2f}%")

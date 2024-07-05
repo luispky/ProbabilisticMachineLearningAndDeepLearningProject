@@ -136,6 +136,7 @@ class NoisePredictor(nn.Module):
         # Label embedding layer
         # It encode the labels into the time dimension
         # It is used to condition the model
+        self.num_classes = num_classes
         if num_classes is not None:
             self.label_emb = nn.Embedding(num_classes, time_dim)  # label_emb(labels) has shape (batch_size, time_dim)
             
@@ -174,6 +175,7 @@ class NoisePredictor(nn.Module):
         
         # Label embedding
         if y is not None:
+            assert self.num_classes is not None, 'The number of classes must be provided'
             # y has shape (batch_size, 1) 0 -> (batch_size)
             y = y.squeeze(-1).long()
             t += self.label_emb(y)

@@ -152,16 +152,15 @@ class DDPM:
 
     # Sampling method according to the DDPM paper
     @torch.no_grad()
-    def sample(self, model, with_labels=False, cfg_strength=3):
+    def sample(self, model, with_labels=False, num_classes=None, cfg_strength=3):
         model.eval()
         model.to(self.args.device)
         samples_shape = self.model.dataset_shape
         
         if self.conditional_training:
+            assert with_labels and num_classes is not None, 'The number of classes in the labels must be specified'
             assert cfg_strength > 0, 'The strength of the Classifier-Free Guidance must be positive'
-            assert hasattr(self.args, 'num_classes'), 'The number of classes in the labels must be specified'
-            labels = torch.randint(0, self.args.num_classes, (self.args.samples,)) if with_labels else None
-            labels = labels.to(self.args.device)
+            labels = torch.randint(0, num_classes, (self.args.samples,)).to(self.args.device)
         else:
             if with_labels:
                 print('Model was not trained with labels. Labels not sampled.')
