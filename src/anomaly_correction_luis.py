@@ -119,7 +119,8 @@ class AnomalyCorrection:
       return x_indices_sampled
   
   def inpaiting_diffusion_model(self, x_indices_to_inpaint,
-                                masks, 
+                                masks,
+                                resampling_steps=10, 
                                 x_indices_to_inpaint_name='data_to_inpaint'):
     """
     Modifies the features of the anomalous data to be more similar to the normal data.
@@ -154,7 +155,8 @@ class AnomalyCorrection:
       # inpaint the data using the EMA model
       inpainted_instance_logits = self.diffusion.inpaint(self.diffusion.ema_model,
                                              x_logits,
-                                             mask)
+                                             mask, 
+                                             resampling_steps=resampling_steps)
       inpainted_data_values.append(self.proba.logits_to_values(inpainted_instance_logits))
     
     return inpainted_data_values

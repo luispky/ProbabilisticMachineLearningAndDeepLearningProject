@@ -181,7 +181,7 @@ class DDPM:
         return [x]
 
     @torch.no_grad()
-    def inpaint(self, model, original, mask, U=10):
+    def inpaint(self, model, original, mask, resampling_steps=10):
         """Inpainting method according to the RePaint paper."""
         assert self.model is not None, 'Model not provided'
         # !The Repaint paper uses an unconditionally trained model to inpaint the image
@@ -206,7 +206,7 @@ class DDPM:
         pbar = tqdm(reversed(range(self.scheduler.noise_timesteps)))
         for i in pbar:
             
-            for u in range(U):
+            for u in range(resampling_steps):
                 t = (ones * i).long().to(self.device)
                 
                 # epsilon = N(0, I) if t > 1 else 0
