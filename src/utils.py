@@ -515,6 +515,7 @@ class EMA:
     def __init__(self, beta):
         super().__init__()
         self.beta = beta
+        assert beta < 1 and beta > 0, 'The beta EMA must in the range (0, 1)'
         self.step = 0
 
     def update_model_average(self, ma_model, current_model):

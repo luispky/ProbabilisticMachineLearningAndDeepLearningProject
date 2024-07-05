@@ -141,7 +141,7 @@ def main_sum_categorical_data():
 
     # Hyperparameters that don't influence the model too much
     beta_ema = 0.999
-    args.samples = 1000
+    args.samples = 1000 #! NOW THIS PARAMETER WAS REMOVED FROM THE DDPM CLASS
     args.lr = 1e-3
     sampler_comment = 'ema_model'
     args.epochs = 64

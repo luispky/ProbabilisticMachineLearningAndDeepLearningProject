@@ -22,15 +22,15 @@ class DDPM:
     It also includes additional components to allow conditional sampling according to the labels.
     From the CFDG papers the changes are minimal. 
     """
-    def __init__(self, scheduler, model, args):
+    def __init__(self, scheduler, model, device):
         self.scheduler = scheduler
         self.model = model
-        self.args = args
+        self.device = device
         self.ema_model = None
         self.conditional_training = False
 
         # send the scheduler attributes to the device
-        self.scheduler.send_to_device(self.args.device) 
+        self.scheduler.send_to_device(device) 
         
     def load_model(self, model_params, filename, path="../models/"):
         r"""
@@ -45,7 +45,7 @@ class DDPM:
         
         model = NoisePredictor(time_dim=time_dim, dataset_shape=self.scheduler.dataset_shape,
                 num_classes=num_classes, concat_x_and_t=concat_x_and_t,
-                feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units).to(self.args.device)
+                feed_forward_kernel=feed_forward_kernel, hidden_units=hidden_units).to(self.device)
         
         print(f'Loading model...')
         
@@ -53,21 +53,21 @@ class DDPM:
         return safe_load_model(model, filename)
     
     # Training method according to the DDPM paper
-    def train(self, dataloader, ema=None):
+    def train(self, dataloader, learning_rate=1e-3, epochs = 64, ema=None):
         # load the data
         assert dataloader is not None, 'Dataloader not provided'
         
         if ema is not None:
             # copy the model and set it to evaluation mode
-            self.ema_model = copy.deepcopy(self.model).eval().requires_grad_(False).to(self.args.device)         
+            self.ema_model = copy.deepcopy(self.model).eval().requires_grad_(False).to(self.device)         
         
         # use the AdamW optimizer
-        optimizer = optim.AdamW(self.model.parameters(), lr=self.args.lr)
+        optimizer = optim.AdamW(self.model.parameters(), lr=learning_rate)
         # use the Mean Squared Error loss
         criterion = nn.MSELoss()
         
         # send the model to the device
-        self.model.to(self.args.device)
+        self.model.to(self.device)
         
         # set the model to training mode
         self.model.train()
@@ -81,7 +81,7 @@ class DDPM:
         self.conditional_training = True if len(dataloader.dataset[0]) == 2 else False
         
         # run the training loop
-        pbar = tqdm(range(self.args.epochs))
+        pbar = tqdm(range(epochs))
         for epoch in pbar:
             
             running_loss = 0.0
@@ -94,19 +94,19 @@ class DDPM:
                 
                 if self.conditional_training:
                     batch_samples, labels = batch_data
-                    labels = labels.to(self.args.device)
+                    labels = labels.to(self.device)
                 else:
                     batch_samples = batch_data[0]
                     labels = None
                     
-                batch_samples = batch_samples.to(self.args.device)
+                batch_samples = batch_samples.to(self.device)
                 
                 # t ~ U(1, T)
-                t = torch.randint(0, self.scheduler.noise_timesteps, (batch_samples.shape[0],)).to(self.args.device)
+                t = torch.randint(0, self.scheduler.noise_timesteps, (batch_samples.shape[0],)).to(self.device)
                 # batch_samples.shape[0] is the batch size
                 
                 # noise = N(0, 1)
-                noise = torch.randn_like(batch_samples).to(self.args.device)
+                noise = torch.randn_like(batch_samples).to(self.device)
                 
                 # x_{t-1} ~ q(x_{t-1}|x_{t}, x_{0})
                 # the scheduler is different from the C-FG paper
@@ -152,15 +152,15 @@ class DDPM:
 
     # Sampling method according to the DDPM paper
     @torch.no_grad()
-    def sample(self, model, with_labels=False, num_classes=None, cfg_strength=3):
+    def sample(self, model, samples, with_labels=False, num_classes=None, cfg_strength=3):
         model.eval()
-        model.to(self.args.device)
+        model.to(self.device)
         samples_shape = self.model.dataset_shape
         
         if self.conditional_training:
             assert with_labels and num_classes is not None, 'The number of classes in the labels must be specified'
             assert cfg_strength > 0, 'The strength of the Classifier-Free Guidance must be positive'
-            labels = torch.randint(0, num_classes, (self.args.samples,)).to(self.args.device)
+            labels = torch.randint(0, num_classes, (samples,)).to(self.device)
         else:
             if with_labels:
                 print('Model was not trained with labels. Labels not sampled.')
@@ -169,13 +169,13 @@ class DDPM:
         print('Sampling...')
         
         # x_{T} ~ N(0, I)
-        x = torch.randn((self.args.samples, *samples_shape[1:])).to(self.args.device)
-        ones = torch.ones(self.args.samples)
+        x = torch.randn((samples, *samples_shape[1:])).to(self.device)
+        ones = torch.ones(samples)
         # for t = T, T-1, ..., 1 (-1 in Python)
         pbar = tqdm(reversed(range(self.scheduler.noise_timesteps)))
         for i in pbar:
             
-            t = (ones * i).long().to(self.args.device)
+            t = (ones * i).long().to(self.device)
             predicted_noise = model(x, t, labels)
             
             # Classifier-Free Guidance Sampling
@@ -207,15 +207,15 @@ class DDPM:
         assert not self.conditional_training, 'Model must be unconditionally trained'
         
         model.eval()
-        model.to(self.args.device)
+        model.to(self.device)
         
-        original = original.to(self.args.device)
-        mask = mask.to(self.args.device)
+        original = original.to(self.device)
+        mask = mask.to(self.device)
         
         print('Inpainting...')
         
         # x_{T} ~ N(0, I)
-        x_t = torch.randn_like(original).to(self.args.device)
+        x_t = torch.randn_like(original).to(self.device)
         x_t_minus_one = torch.randn_like(x_t)
         ones = torch.ones(x_t.shape[0])
         
@@ -224,7 +224,7 @@ class DDPM:
         for i in pbar:
             
             for u in range(U):
-                t = (ones * i).long().to(self.args.device)
+                t = (ones * i).long().to(self.device)
                 
                 # epsilon = N(0, I) if t > 1 else 0
                 forward_noise = torch.randn_like(x_t) if t[0] > 0 else torch.zeros_like(x_t)
