@@ -113,7 +113,7 @@ class NewInverseGradient:
 
 
 class AnomalyCorrection:
-    """
+    r"""
     Take as input a dataset, train a model, and
     perform anomaly correction.
 
@@ -210,8 +210,12 @@ class AnomalyCorrection:
         return torch.tensor(x, dtype=dtype), torch.tensor(y, dtype=dtype)
 
     def get_diffusion_dataset(self):
-        """Return the dataset for the diffusion phase"""
-        return self.p_data[self.y]
+        """Return the dataset for the diffusion phase
+
+        Dataset without anomalies in index space
+
+        """
+        return self.v_data[self.y]
 
     def _inverse_gradient(self, p, n):
         """
@@ -230,11 +234,17 @@ class AnomalyCorrection:
         """Set the model to be used for anomaly correction"""
         self.model = model
 
-    def _diffusion(self):
+    def _inpainting(self, anomaly: pd.DataFrame, masks: list) -> list:
         """Perform diffusion on the corrected anomalies by using the masks
-        self.df_x_anomaly, self.mask -> self.df_x_anomaly_corrected
+
+        Inputs:
+        anomaly df, mask list (value space)
+
+        Outputs:
+        list of corrected anomalies (value space) (one for each mask)
         """
         v_corrected = ...
+        return v_corrected
 
     def correct_anomaly(self, anomaly: pd.DataFrame, n):
         """Correct the anomalies in the dataset"""
@@ -245,7 +255,9 @@ class AnomalyCorrection:
         p = self._anomaly_to_proba(anomaly)
         masks, new_values = self._inverse_gradient(p, n)
 
-        # self._diffusion()
+        v_new = self._inpainting(anomaly, masks)
+
+        new_values = ...
 
         return new_values
 
