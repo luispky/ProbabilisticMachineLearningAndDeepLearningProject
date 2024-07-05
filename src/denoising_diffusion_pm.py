@@ -1,6 +1,5 @@
 import sys 
 import os
-sys.path.append(os.path.abspath('..'))
 import numpy as np
 import pandas as pd
 import copy
@@ -344,7 +343,7 @@ class DDPMAnomalyCorrection(DDPM):
               epochs=64,
               beta_ema=0.999,
               plot_data=False,
-              structure=None,
+              proba=None,
               original_data_name='ddpm_original_data',
               wandb_track=False):
         
@@ -352,11 +351,10 @@ class DDPMAnomalyCorrection(DDPM):
         x_indices = dataset.values
         
         if plot_data:
-            assert structure is not None, 'The structure must be provided'
-            plot_categories(x_indices, structure, original_data_name, save_locally=plot_data) 
-        
-        x_indices_tensor = torch.tensor(x_indices, dtype=torch.float32)
-        tensor_dataset =  TensorDataset(x_indices_tensor)
+            assert proba is not None, 'The structure must be provided'
+            plot_categories(x_indices, proba.structure, original_data_name, save_locally=plot_data) 
+        x_logits_tensor = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float32)
+        tensor_dataset =  TensorDataset(x_logits_tensor)
         dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=True)
         
         loss = super().train(dataloader=dataloader,
@@ -373,12 +371,14 @@ class DDPMAnomalyCorrection(DDPM):
                sampled_data_name='ddpm_sampled_data',
                ):
         
+        assert proba is not None, 'The probabilities object must be provided'
+        
         sampled_logits = super().sample(samples=num_samples)[0]
         
-        if plot_data and proba is not None:
-            x_indices_sampled = proba.logits_to_values(sampled_logits.cpu().numpy())
-        
-        plot_categories(x_indices_sampled, sampled_data_name, save_locally=plot_data)
+        x_indices_sampled = proba.logits_to_values(sampled_logits.cpu().numpy())
+            
+        if plot_data:
+            plot_categories(x_indices_sampled, sampled_data_name, save_locally=plot_data)
         
         return x_indices_sampled
     

@@ -183,6 +183,8 @@ def main_sum_categorical_data():
     dataloader = dataset_generator.get_dataloader(with_labels=False)
     dataset_shape = dataset_generator.get_dataset_shape() 
 
+    print(dataset_shape)
+    
     # Plot the original distribution
     # Later we plot the generated samples to see compare if the distribution is similar
     plot_categories(dataset_generator.label_values, structure, original_data_name, 
@@ -229,6 +231,7 @@ def main_sum_categorical_data():
     dataset_generator = SumCategoricalDataset(size, structure, threshold)
     data_to_inpaint = dataset_generator.get_features_with_mask(label_values_mask=True)
     dataset_shape = dataset_generator.get_dataset_shape()
+    print(dataset_shape)
     x, mask = data_to_inpaint['x'], data_to_inpaint['mask']
 
     #!INPAINTING------------------------------------------------------------------

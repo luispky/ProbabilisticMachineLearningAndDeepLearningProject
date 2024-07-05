@@ -1,13 +1,14 @@
 import os
+import sys
 import torch
 import pandas as pd
 import numpy as np
-from src.datasets import DatabaseInterface
+from datasets import DatabaseInterface
 from utils import cprint, bcolors, Probabilities
 from copy import deepcopy
 
-from .denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
-from .utils import plot_categories, plot_loss
+from denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
+from utils import plot_categories, plot_loss
 
 
 # set default type to avoid problems with gradient
@@ -340,8 +341,8 @@ class ClassificationModel:
 
 
 
-def main(data_path='..\\datasets\\sum_limit_problem.csv',
-         model_path='..\\models\\anomaly_correction_model.pkl',
+def main(data_path='../datasets/sum_limit_problem.csv',
+         model_path='../models/anomaly_correction_model.pkl',
          hidden=10, loss_fn=torch.nn.MSELoss(), n_epochs=250):
     np.random.seed(42)
 
@@ -379,7 +380,7 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
     # The diffusion model
     # self.ddpm_scheduler = None
     data_diff_x = anomaly_correction.get_diffusion_dataset()
-    dataset_shape = data_diff_x.shape
+    dataset_shape = [1, sum(anomaly_correction.structure)]
     
     # in index space
     print(data_diff_x)
@@ -405,10 +406,10 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
         train_losses = diffusion.train(data_diff_x, 
                                        batch_size=16,
                                        learning_rate=1e-3,
-                                       n_epochs=100,
+                                       epochs=100,
                                        beta_ema=0.999,
                                        plot_data=True,
-                                       structure=anomaly.structure, 
+                                       proba=anomaly_correction.proba, 
                                        original_data_name='ddpm_original_data')
         loss_name = 'ddpm_loss'
         
