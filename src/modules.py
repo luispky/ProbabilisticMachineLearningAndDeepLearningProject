@@ -28,6 +28,7 @@ class FeedForwardKernel(BaseArchitectureKernel):
         self.net = nn.Sequential(*layers)
         
     def forward(self, x):
+        x = x.float()
         return self.net(x)
     
     
