@@ -706,16 +706,17 @@ class Probabilities:
     of features with different number of values
     """
 
-    def __init__(self, structure: list | tuple):  # todo rename n_values -> structure
+    def __init__(self, structure: list | tuple, dtype=np.float32):  # todo rename n_values -> structure
         self.structure = structure
         self.n = len(structure)
         self.length = sum(structure)
+        self.dtype = dtype
         self.mat = None
         self._set_mat()
 
     def _set_mat(self):
         """Create binary masks that divide the various features"""
-        self.mat = np.zeros((self.length, self.length), dtype=np.float64)
+        self.mat = np.zeros((self.length, self.length), dtype=self.dtype)
         for i in range(self.n):
             start = sum(self.structure[:i])
             for j in range(self.structure[i]):
@@ -727,7 +728,7 @@ class Probabilities:
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
         p = np.maximum(0, p)
         s = np.dot(p, self.mat)
-        assert np.all(s > 0), f'Zero sum: {s}'
+        assert np.all(s > 0), f'Zero sum: p={p}, s={s}'
         return p / s
 
     def to_onehot(self, x: np.array):
@@ -739,7 +740,7 @@ class Probabilities:
         # check that values are positive
         assert np.all(x >= 0), f'Negative values'
 
-        x1 = np.zeros((x.shape[0], self.length), dtype=np.float64)
+        x1 = np.zeros((x.shape[0], self.length), dtype=np.float32)
         start = 0
         for i in range(self.n):
             x1[np.arange(x.shape[0]), x[:, i] + start] = 1
