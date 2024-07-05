@@ -1,13 +1,19 @@
 import os
+import sys
 import torch
 import pandas as pd
 import numpy as np
-from src.datasets import DatabaseInterface
+from datasets import DatabaseInterface
 from utils import cprint, bcolors, Probabilities
 from copy import deepcopy
 
+<<<<<<< HEAD
 from src.denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
 from utils import plot_loss
+=======
+from denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
+from utils import plot_categories, plot_loss
+>>>>>>> b7be686ba906371ac2f59a8be1aab07d190e6876
 
 
 # set default type to avoid problems with gradient
@@ -354,8 +360,16 @@ class ClassificationModel:
         cprint('Model saved', bcolors.OKGREEN)
 
 
+<<<<<<< HEAD
 def main(data_path='..\\datasets\\sum_limit_problem.csv',
          model_path='..\\models\\anomaly_correction_model.pkl',
+=======
+
+
+
+def main(data_path='../datasets/sum_limit_problem.csv',
+         model_path='../models/anomaly_correction_model.pkl',
+>>>>>>> b7be686ba906371ac2f59a8be1aab07d190e6876
          hidden=10, loss_fn=torch.nn.MSELoss(), n_epochs=250):
     np.random.seed(42)
 
@@ -393,7 +407,7 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
     # The diffusion model
     # self.ddpm_scheduler = None
     data_diff_x = anomaly_correction.get_diffusion_dataset()
-    dataset_shape = data_diff_x.shape
+    dataset_shape = [1, sum(anomaly_correction.structure)]
     
     # in index space
     print(f'\ndata_diff_x {data_diff_x.shape}')
@@ -423,7 +437,11 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
                                        epochs=100,
                                        beta_ema=0.999,
                                        plot_data=True,
+<<<<<<< HEAD
                                        structure=anomaly_correction.structure,
+=======
+                                       proba=anomaly_correction.proba, 
+>>>>>>> b7be686ba906371ac2f59a8be1aab07d190e6876
                                        original_data_name='ddpm_original_data')
         loss_name = 'ddpm_loss'
         
