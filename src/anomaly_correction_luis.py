@@ -79,9 +79,8 @@ class AnomalyCorrection:
       Train the diffusion model with the given parameters.
       
       Outputs: 
-      - The loss of the training
       - The model is saved as a pickle file
-      - 
+      - Plots of the original data and the loss
       """
       assert self.diffusion is not None, 'The diffusion model must be set'
       x_indices = self.get_diffusion_dataset()
@@ -107,6 +106,10 @@ class AnomalyCorrection:
                              sampled_data_name='sampled_data'):
       """
       Sample the diffusion model with the EMA model.
+      
+      Outputs:
+      - The sampled data in indices space
+      - Plot of the sampled data
       """
       assert self.diffusion is not None, 'The diffusion model must be set'
       sampled_logits = self.diffusion.sample(self.diffusion.ema_model, num_samples)
@@ -128,6 +131,7 @@ class AnomalyCorrection:
     
     Outputs:
     - inpainted_data_values: list of numpy arrays, the inpainted data for each mask
+    - Plot of the data to inpaint
     """
     
     assert self.diffusion is not None, 'The diffusion model must be set'
