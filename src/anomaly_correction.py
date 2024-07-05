@@ -340,9 +340,8 @@ class ClassificationModel:
 
 
 
-
-def main(data_path='../datasets/sum_limit_problem.csv',
-         model_path='../models/anomaly_correction_model.pkl',
+def main(data_path='..\\datasets\\sum_limit_problem.csv',
+         model_path='..\\models\\anomaly_correction_model.pkl',
          hidden=10, loss_fn=torch.nn.MSELoss(), n_epochs=250):
     np.random.seed(42)
 
