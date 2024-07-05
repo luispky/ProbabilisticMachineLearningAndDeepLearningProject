@@ -1,12 +1,10 @@
 import os
-import torch
-import pandas as pd
 import numpy as np
+import pandas as pd
+import torch
 from src.datasets import DatabaseInterface
-from utils import cprint, bcolors, Probabilities
+from src.utils import cprint, bcolors, Probabilities
 from copy import deepcopy
-
-from src.denoising_diffusion_pm import DDPM
 
 
 # set default type to avoid problems with gradient
@@ -58,6 +56,7 @@ class NewInverseGradient:
         v_old = proba.onehot_to_values(p_)[0]
         v_new = v_old.copy()
         mask = v_new == v_new
+        loss_value = None
         success = True
 
         # add gaussian noise to the input
@@ -177,8 +176,8 @@ class AnomalyCorrection:
         self.classification_model = model
         self.inv_grad = NewInverseGradient(model)
 
-    def set_diffusion(self, model):
-        self.diffusion = model
+    def set_diffusion_model(self, model):
+        self.diffusion_model = model
 
     def get_value_maps(self):
         return self.interface.get_value_maps()
@@ -193,6 +192,7 @@ class AnomalyCorrection:
     def _indices_to_proba(self):
         """Convert the indices to noisy probabilities"""
         self.p_data = self.proba.to_onehot(self.v_data.to_numpy())
+        del self.v_data
 
     def _anomaly_to_proba(self, df, dtype=DEFAULT_TYPE):
         v = self.interface.convert_values_to_indices(df)
@@ -210,10 +210,8 @@ class AnomalyCorrection:
         return torch.tensor(x, dtype=dtype), torch.tensor(y, dtype=dtype)
 
     def get_diffusion_dataset(self):
-        """Return the dataset for the diffusion phase
-        returns: Dataset without anomalies in index space
-        """
-        return self.v_data[~self.y]
+        """Return the dataset for the diffusion phase"""
+        return self.p_data[self.y]
 
     def _inverse_gradient(self, p, n):
         """
@@ -228,45 +226,35 @@ class AnomalyCorrection:
             new_values.append(results["values"])
         return masks, new_values
 
-    def _inpainting(self, anomaly: pd.DataFrame, masks: list) -> list:
+    def _set_model(self, model):
+        """Set the model to be used for anomaly correction"""
+        self.model = model
+
+    def _diffusion(self):
         """Perform diffusion on the corrected anomalies by using the masks
-
-        Inputs:
-        anomaly df, mask list (value space)
-
-        Outputs:
-        list of corrected anomalies (value space) (one for each mask)
-
+        self.df_x_anomaly, self.mask -> self.df_x_anomaly_corrected
         """
-        v_corrected = self.diffusion.inpainting(anomaly, masks)
-        return v_corrected
+        v_corrected = ...
 
     def correct_anomaly(self, anomaly: pd.DataFrame, n):
         """Correct the anomalies in the dataset"""
         assert type(anomaly) is pd.DataFrame
         assert self.classification_model is not None, 'Please set the classification model'
-        # assert self.diffusion is not None, 'Please set the diffusion model'
+        # assert self.diffusion_model is not None, 'Please set the diffusion model'
 
         p = self._anomaly_to_proba(anomaly)
         masks, new_values = self._inverse_gradient(p, n)
 
-        new_values = self._inpainting(anomaly, masks)
+        # self._diffusion()
 
         return new_values
 
 
 class ClassificationModel:
-    """
-    Example classifier
-    """
     def __init__(self):
         self.model = None
 
     def load_from_file(self, model_path):
-        """
-        Set the model if the pkl file is found.
-        If a file is not found, then the model remains None
-        """
         if os.path.exists(model_path):
             try:
                 cprint(f'Loading model from {model_path}', bcolors.WARNING)
@@ -349,9 +337,6 @@ class ClassificationModel:
         cprint('Model saved', bcolors.OKGREEN)
 
 
-
-
-
 def main(data_path='..\\datasets\\sum_limit_problem.csv',
          model_path='..\\models\\anomaly_correction_model.pkl',
          hidden=10, loss_fn=torch.nn.MSELoss(), n_epochs=250):
@@ -386,25 +371,6 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
                                    model_path, loss_fn, n_epochs=n_epochs)
 
     anomaly_correction.set_classification_model(classification_model)
-
-    # ================================================================================
-    # The diffusion model
-    # self.ddpm_scheduler = None
-    data_diff_x = anomaly_correction.get_diffusion_dataset()
-
-    # in index space
-    print(data_diff_x)
-
-    # This class takes as input the anomaly and the masks, and returns the modified anomalies
-    diffusion = Diffusion(...)
-    diffusion.load_from_file(model_path)
-
-    if diffusion.model is None:
-        diffusion.reset(input_size=data_x.shape[1], hidden=hidden)
-        diffusion.train(data_x, data_y,
-                              model_path, loss_fn, n_epochs=n_epochs)
-
-    anomaly_correction.set_diffusion(diffusion)
 
     # ================================================================================
     # pick some anomalies
