@@ -6,7 +6,8 @@ from src.datasets import DatabaseInterface
 from utils import cprint, bcolors, Probabilities
 from copy import deepcopy
 
-from src.denoising_diffusion_pm import DDPM
+from .denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
+from .utils import plot_categories, plot_loss
 
 
 # set default type to avoid problems with gradient
@@ -164,9 +165,8 @@ class AnomalyCorrection:
         self.proba = Probabilities(structure=self.structure)
         self.inv_grad = None
 
-        # models
+        # model
         self.classification_model = None
-        self.diffusion_model = None
 
         # steps at initialization
         self._values_to_indices()
@@ -177,8 +177,8 @@ class AnomalyCorrection:
         self.classification_model = model
         self.inv_grad = NewInverseGradient(model)
 
-    def set_diffusion(self, model):
-        self.diffusion = model
+    def set_diffusion(self, diffusion):
+        self.diffusion = diffusion
 
     def get_value_maps(self):
         return self.interface.get_value_maps()
@@ -228,19 +228,6 @@ class AnomalyCorrection:
             new_values.append(results["values"])
         return masks, new_values
 
-    def _inpainting(self, anomaly: pd.DataFrame, masks: list) -> list:
-        """Perform diffusion on the corrected anomalies by using the masks
-
-        Inputs:
-        anomaly df, mask list (value space)
-
-        Outputs:
-        list of corrected anomalies (value space) (one for each mask)
-
-        """
-        v_corrected = self.diffusion.inpainting(anomaly, masks)
-        return v_corrected
-
     def correct_anomaly(self, anomaly: pd.DataFrame, n):
         """Correct the anomalies in the dataset"""
         assert type(anomaly) is pd.DataFrame
@@ -250,8 +237,9 @@ class AnomalyCorrection:
         p = self._anomaly_to_proba(anomaly)
         masks, new_values = self._inverse_gradient(p, n)
 
-        new_values = self._inpainting(anomaly, masks)
-
+        new_values = self.diffusion(x_indices_to_inpaint=new_values,
+                                    masks=masks)
+        
         return new_values
 
 
@@ -391,18 +379,42 @@ def main(data_path='..\\datasets\\sum_limit_problem.csv',
     # The diffusion model
     # self.ddpm_scheduler = None
     data_diff_x = anomaly_correction.get_diffusion_dataset()
-
+    dataset_shape = data_diff_x.shape
+    
     # in index space
     print(data_diff_x)
 
     # This class takes as input the anomaly and the masks, and returns the modified anomalies
-    diffusion = Diffusion(...)
-    diffusion.load_from_file(model_path)
+    diffusion = Diffusion(dataset_shape=dataset_shape, 
+                          noise_time_steps=128)
+    
+    ddpm_model_name = 'ddpm_model'
+    
+    diffusion.load_model_pickle(ddpm_model_name) #!name, NOT PATH
 
     if diffusion.model is None:
-        diffusion.reset(input_size=data_x.shape[1], hidden=hidden)
-        diffusion.train(data_x, data_y,
-                              model_path, loss_fn, n_epochs=n_epochs)
+        diffusion.set_model(time_dim_emb=64,
+                            concat_x_and_t=True,
+                            feed_forward_kernel=True,
+                            hidden_units=[2*dataset_shape[1],
+                                          3*dataset_shape[1], 
+                                          2*dataset_shape[1] 
+                                          ],
+                            unet=False)  
+        # DDPM training
+        train_losses = diffusion.train(data_diff_x, 
+                                       batch_size=16,
+                                       learning_rate=1e-3,
+                                       n_epochs=100,
+                                       beta_ema=0.999,
+                                       plot_data=True,
+                                       structure=anomaly.structure, 
+                                       original_data_name='ddpm_original_data')
+        loss_name = 'ddpm_loss'
+        
+        plot_loss(train_losses, loss_name, save_locally=True)
+        diffusion.save_model_pickle(filename=ddpm_model_name, 
+                                    ema_model=True)
 
     anomaly_correction.set_diffusion(diffusion)
 

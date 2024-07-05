@@ -346,8 +346,6 @@ class DDPMAnomalyCorrection(DDPM):
               plot_data=False,
               structure=None,
               original_data_name='ddpm_original_data',
-              save_loss=True,
-              loss_name='ddpm_loss',
               wandb_track=False):
         
         assert isinstance(dataset, pd.DataFrame), 'The dataset must be a pandas DataFrame'
@@ -367,7 +365,7 @@ class DDPMAnomalyCorrection(DDPM):
                              beta_ema=beta_ema,
                              wandb_track=wandb_track)
         
-        plot_loss(loss, loss_name, save_locally=save_loss)
+        return loss
         
     def sample(self, num_samples=1000, 
                plot_data=False,
@@ -386,8 +384,8 @@ class DDPMAnomalyCorrection(DDPM):
     
     def inpaint(self, x_indices_to_inpaint,
                 masks,
-                resampling_steps=10, 
                 proba=None,
+                resampling_steps=10, 
                 ):
         
         assert proba is not None, 'The probabilities object must be provided'
