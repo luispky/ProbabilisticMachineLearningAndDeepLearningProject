@@ -77,8 +77,8 @@ class InverseGradient:
         print(f'Final Loss {loss.item():.6f}')
 
         # performance metrics
-        y_class = (y_pred > 0.5).float()
-        accuracy = (y_class == self.y).float().mean()
+        y_class = (y_pred > 0.5)
+        accuracy = (y_class == self.y).mean()
         dummy_acc = max(self.y.mean().item(), 1 - self.y.mean().item())
         acc = accuracy.item()
         usefulness = max([0, (acc - dummy_acc) / (1 - dummy_acc)])

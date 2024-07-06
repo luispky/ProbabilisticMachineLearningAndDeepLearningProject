@@ -28,7 +28,6 @@ class FeedForwardKernel(BaseArchitectureKernel):
         self.net = nn.Sequential(*layers)
         
     def forward(self, x):
-        x = x.float()
         return self.net(x)
     
     
@@ -163,9 +162,9 @@ class NoisePredictor(nn.Module):
         The sinusoidal positional encoding is used in the Transformer model
         to encode the position of elements in the input sequence.
         """
-        inv_freq = 1.0 / (10000 ** (torch.arange(0, self.time_dim_emb, 2).float() / self.time_dim_emb)).to(time_steps.device)
+        inv_freq = 1.0 / (10000 ** (torch.arange(0, self.time_dim_emb, 2) / self.time_dim_emb)).to(time_steps.device)
         pos_enc = torch.cat([torch.sin(time_steps * inv_freq), torch.cos(time_steps * inv_freq)], dim=-1)
-        return pos_enc
+        return pos_enc.to(torch.float64)
 
     def forward(self, x_t, t, y=None):
         """
@@ -179,7 +178,7 @@ class NoisePredictor(nn.Module):
         
         # Positional encoding for the time steps
         # t.shape (batch_size,1) -> (batch_size) -> (batch_size, time_dim_emb)
-        t = self.positional_encoding(t.unsqueeze(-1).float()).float()
+        t = self.positional_encoding(t.unsqueeze(-1).to(torch.float64))
         
         # Label embedding
         if y is not None:
@@ -192,7 +191,7 @@ class NoisePredictor(nn.Module):
         
         # Time embedding
         # t has shape (batch_size, time_dim_emb)
-        emb = self.time_emb_layer(t)  # emb has shape (batch_size, ...) if concat_x_and_t is False
+        emb = self.time_emb_layer(t).to(torch.float64)  # emb has shape (batch_size, ...) if concat_x_and_t is False
         # emb is of datatype float = torch.float32
         
         # Cases for broadcasting emb to match x_t
@@ -206,8 +205,6 @@ class NoisePredictor(nn.Module):
         # Application of transformation layers
         # torch layers work better with float32
         # thus we convert x_t to float32
-        x_t = x_t.float()
         x_t = torch.cat((x_t, emb), dim=1) if self.concat_x_and_t else x_t + emb
-        x_t = x_t.float()
 
         return self.architecture_kernel(x_t)
