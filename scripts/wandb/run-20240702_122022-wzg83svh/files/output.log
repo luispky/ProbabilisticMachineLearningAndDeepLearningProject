@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 259, in <module>
-    main_sum_categorical_data()
-  File "/home/l11/Documents/ProbabilisticMachineLearningProject/scripts/run_diffusion.py", line 183, in main_sum_categorical_data
-    print(f'Size of the dataset requested: {len(size)} samples')
-                                           ^^^^^^^^^
-TypeError: object of type 'int' has no len()
