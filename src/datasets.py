@@ -42,14 +42,15 @@ class DatabaseInterface:
             df[col] = df[col].map(self.value_maps[col])
         return df
 
-    def convert_indices_to_values(self, df: pd.DataFrame):
+    def convert_indices_to_values(self, mat: np.array):
         """
         Convert a dataframe of indices to a dataframe of values.
         """
-        df = df.copy()
+        df = pd.DataFrame(mat, columns=self.original_df.columns)
         for col in df.columns:
             df[col] = df[col].map(self.inverse_value_maps[col])
         return df
+
 
     def get_value_maps(self):
         return self.value_maps

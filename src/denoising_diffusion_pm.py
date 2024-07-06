@@ -382,7 +382,7 @@ class DDPMAnomalyCorrection(DDPM):
         x_indices_sampled = proba.logits_to_values(sampled_logits.cpu().numpy())
             
         if plot_data:
-            plot_categories(x_indices_sampled, sampled_data_name, save_locally=plot_data)
+            plot_categories(x_indices_sampled, proba.structure, sampled_data_name, save_locally=plot_data)
         
         return x_indices_sampled
     
@@ -405,5 +405,7 @@ class DDPMAnomalyCorrection(DDPM):
                                                  mask=mask,
                                                  resampling_steps=resampling_steps)
             inpainted_indices.append(proba.logits_to_values(x_inpainted_logits.cpu().numpy()))
-        
-        return np.array(inpainted_indices)
+
+        inpainted_indices = np.array(inpainted_indices).squeeze(1)
+
+        return inpainted_indices
