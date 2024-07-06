@@ -1,14 +1,13 @@
 import os
-import sys
 import torch
 import pandas as pd
 import numpy as np
-from datasets import DatabaseInterface
+from src.datasets import DatabaseInterface
 from utils import cprint, bcolors, Probabilities
 from copy import deepcopy
 
-from denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
-from utils import plot_categories, plot_loss
+from src.denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
+from utils import plot_loss
 
 # set default type to avoid problems with gradient
 DEFAULT_TYPE = torch.float32
@@ -253,6 +252,8 @@ class AnomalyCorrection:
 
         new_indices = self.diffusion.inpaint(anomaly_indices=self.anomaly_indices, masks=masks, proba=self.proba)
 
+        print(new_indices.shape)
+
         print('\nindices after diffusion')
         new_values = self.interface.convert_indices_to_values(new_indices)
         print('\nvalues after diffusion')
@@ -394,6 +395,7 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     # self.ddpm_scheduler = None
     data_diff_x = anomaly_correction.get_diffusion_dataset()
     dataset_shape = [1, sum(anomaly_correction.structure)]
+    print(f'\ndataset_shape = {dataset_shape}')
     
     # in index space
     print(f'\ndata_diff_x {data_diff_x.shape}')
@@ -431,11 +433,12 @@ def main(data_path='../datasets/sum_limit_problem.csv',
         diffusion.save_model_pickle(filename=ddpm_model_name, 
                                     ema_model=True)
 
-    print(f'\ndiffusion.model')
-    print(diffusion.model)
-
     anomaly_correction.set_diffusion(diffusion)
 
+    diffusion.sample(num_samples=1000, plot_data=True,
+                     proba=anomaly_correction.proba,
+                     sampled_data_name='ddpm_sampled_data')
+    
     # ================================================================================
     # pick some anomalies
     anomaly = df_x[df_y == 1].sample(1)
@@ -446,8 +449,7 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     # run the anomaly-correction algorithm
     corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10)
     print('\nCorrected anomaly:')
-    for v_ in corrected_anomaly:
-        print(v_)
+    print(corrected_anomaly)
 
 
 if __name__ == "__main__":
