@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
-from utils import Probabilities
+from src.utils import Probabilities
 
 
 class DatabaseInterface:

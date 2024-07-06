@@ -229,6 +229,7 @@ class SumCategoricalDataset(BaseDataset):
 
         if mask_anomaly_points:
             tmp = self._mask_anomaly_points()
+            # todo nani dafaq did u get this from??
             masks.append(tmp)
             masks.append(tmp.numpy() if label_values_mask else None)
         elif mask_one_feature:
@@ -746,9 +747,11 @@ class Probabilities:
         """Cap at 0, then normalize the probabilities for each feature"""
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
+
         p = np.maximum(0, p)
         s = np.dot(p, self.mat)
         assert np.all(s > 0), f'Zero sum: p={p}, s={s}'
+
         return p / s
 
     def to_onehot(self, x: np.array):
@@ -791,9 +794,21 @@ class Probabilities:
     
     def add_noise(self, p: np.array, k=1.):
         """Add noise to the probabilities"""
+
+        print(f'add_noise {p.dtype}')
+
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
-        return self.normalize(p + np.random.random(p.shape) * k)
+
+        print(f'1) {p.dtype}')
+        p = p + np.random.random(p.shape) * k
+        print(f'*) {np.random.random(p.shape).dtype}')
+        print(f'2) {p.dtype}')
+        p = self.normalize(p)
+        print(f'3) {p.dtype}')
+        input()
+
+        return p
 
     def _logits_to_normalized_probs(self, logits):
         """Convert logits to normalized probabilities"""
@@ -803,6 +818,7 @@ class Probabilities:
     
     def prob_to_values(self, p):
         """Convert probabilities to values"""
+        # todo nani dafaq did u get this from??
         if isinstance(transformed_data, torch.Tensor):
             transformed_data = transformed_data.numpy()
         return self.onehot_to_values(self.prob_to_onehot(self.normalize(p)))
