@@ -108,12 +108,15 @@ class NoisePredictor(nn.Module):
                  unet=False):
         super().__init__()
         
+        assert dataset_shape is not None, 'The dataset shape must be provided'
+        assert len(dataset_shape) in [2, 3], 'The dataset shape is not supported'
+        
         if feed_forward_kernel:
             assert hidden_units is not None, 'The hidden units must be provided'
         else:
-            assert hidden_units is None, 'The hidden units must not be provided'
-        assert dataset_shape is not None, 'The dataset shape must be provided'
-        assert len(dataset_shape) in [2, 3], 'The dataset shape is not supported'
+            print('Using UNet1ChannelKernel')
+            if hidden_units is not None:
+                print('The hidden units are not used')
         
         self.time_dim_emb = time_dim_emb
         self.dataset_shape = dataset_shape
@@ -206,8 +209,5 @@ class NoisePredictor(nn.Module):
         x_t = x_t.float()
         x_t = torch.cat((x_t, emb), dim=1) if self.concat_x_and_t else x_t + emb
         x_t = x_t.float()
-
-        print(f'\nx_t {x_t.shape}')
-        # print(x_t)
 
         return self.architecture_kernel(x_t)

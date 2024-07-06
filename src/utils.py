@@ -429,11 +429,17 @@ class GaussianDataset(BaseDataset):
 
         return dataset
 
-    def plot_data(self):
+    def plot_data(self, filename, save_locally=False, save_wandb=False, path="../plots/"):
         """
         Plots the dataset with different colors for different labels.
         """
         assert self.dataset is not None, 'Dataset not generated'
+        
+        if not save_locally and not save_wandb:
+            return
+
+        if not os.path.exists(path) and save_locally:
+            os.makedirs(path)
 
         x = self.dataset['x'].numpy()
         y = self.dataset['y'].numpy().flatten()
@@ -450,8 +456,12 @@ class GaussianDataset(BaseDataset):
         plt.ylabel('Y')
         plt.legend()
         plt.grid(True)
-        plt.show()
 
+        if save_locally:
+            filename = path + filename + '.png'
+            plt.savefig(filename)
+        if save_wandb:
+            wandb.log({filename: wandb.Image(plt)})
 
 def plot_generated_samples(samples, filename, save_locally=False, save_wandb=False, path="../plots/"):
     """ Author: Luis
@@ -462,18 +472,18 @@ def plot_generated_samples(samples, filename, save_locally=False, save_wandb=Fal
 
     fig = plt.figure()
     if len(samples) == 1:
-        x = samples[0].cpu().numpy()
+        x = samples[0]
     else:
-        x = samples.cpu().numpy()  # plot inpainting samples
+        x = samples  # plot inpainting samples
     if len(samples) == 2:
-        y = samples[1].cpu().numpy()
+        y = samples[1]
         mask = y == 1
         plt.scatter(x[~mask, 0], x[~mask, 1], alpha=0.5, label='Normal')
         plt.scatter(x[mask, 0], x[mask, 1], alpha=0.5, label='Anomaly')
         plt.legend()
     else:
         plt.scatter(x[:, 0], x[:, 1], alpha=0.5)
-    plt.title('Generated Samples')
+    plt.title(filename)
     plt.xlabel('X')
     plt.ylabel('Y')
 
@@ -483,11 +493,15 @@ def plot_generated_samples(samples, filename, save_locally=False, save_wandb=Fal
         wandb.log({filename: wandb.Image(fig)})
 
 
-def plot_data_to_inpaint(x, mask, save_wandb=False):
+def plot_data_to_inpaint(x, mask, filename=None, save_locally=False, save_wandb=False, path="../plots/"):
     """ Author: Luis
     Plot the dataset to inpaint with the mask applied.
     It saves the plot in the wandb dashboard.
     """
+    assert filename is not None, 'Filename must be provided'
+    if not save_locally and not save_wandb:
+        return
+    
     # Convert tensors to numpy arrays for plotting
     x = x.numpy()
     mask = mask.numpy().squeeze()
@@ -501,8 +515,13 @@ def plot_data_to_inpaint(x, mask, save_wandb=False):
     plt.ylabel('Y')
     plt.legend()
 
+    if save_locally:
+        if not os.path.exists(path):
+            os.makedirs(path)
+        plt.savefig(path + filename + '.png')
+    
     if save_wandb:
-        wandb.log({'Dataset with Mask': wandb.Image(fig)})
+        wandb.log({filename: wandb.Image(fig)})
 
 
 class EMA:
