@@ -357,7 +357,7 @@ class DDPMAnomalyCorrection(DDPM):
         
         if plot_data:
             plot_categories(x_indices, proba.structure, original_data_name, save_locally=plot_data) 
-        x_logits_tensor = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float32)
+        x_logits_tensor = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float64)
         tensor_dataset =  TensorDataset(x_logits_tensor)
         dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=True)
         
@@ -395,7 +395,7 @@ class DDPMAnomalyCorrection(DDPM):
         assert proba is not None, 'The probabilities object must be provided'
 
         # Convert the indices data to logits
-        x_logits = torch.tensor(proba.values_to_logits(anomaly_indices), dtype=torch.float32)
+        x_logits = torch.tensor(proba.values_to_logits(anomaly_indices), dtype=torch.float64)
 
         inpainted_indices = []
         for mask in masks:

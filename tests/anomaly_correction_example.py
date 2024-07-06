@@ -2,16 +2,20 @@ import os
 import torch
 import pandas as pd
 import numpy as np
-from src.anomaly_correction import AnomalyCorrection
+from src.utils import cprint, bcolors, plot_loss
 from src.denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
-from src.utils import cprint, bcolors
-from src.utils import plot_loss
+from src.anomaly_correction import AnomalyCorrection
+
+# set default type to avoid problems with gradient
+DEFAULT_TYPE = torch.float32
+torch.set_default_dtype(DEFAULT_TYPE)
 
 
 class ClassificationModel:
     """
     Example classifier
     """
+
     def __init__(self):
         self.model = None
 

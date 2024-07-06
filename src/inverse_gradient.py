@@ -1,11 +1,11 @@
-import torch
+""" Author: Omar
+In this module, we use the inverse gradient algorithm to correct anomalies in a dataset.
+The algorithm is used to correct anomalies in a dataset by using the inverse gradient algorithm.
+"""
 import numpy as np
-from src.utils import cprint, bcolors, Probabilities
+import torch
 from copy import deepcopy
-
-# set default type to avoid problems with gradient
-DEFAULT_TYPE = torch.float32
-torch.set_default_dtype(DEFAULT_TYPE)
+from src.utils import cprint, bcolors, Probabilities
 
 
 class InverseGradient:
@@ -42,7 +42,7 @@ class InverseGradient:
         """
         assert self.model is not None
         assert p.shape[0] == 1
-        # assert len(p.shape) == 2
+
 
         assert 0 < eta < 1
         assert 0 < threshold_p < 1

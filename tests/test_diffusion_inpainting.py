@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath('..'))
 import numpy as np
+import torch
 import wandb
 from src.utils import GaussianDataset, plot_generated_samples, plot_loss
 from src.utils import plot_data_to_inpaint, SumCategoricalDataset, element_wise_label_values_comparison
@@ -9,6 +10,10 @@ from src.denoising_diffusion_pm import DDPM
 from src.utils import Probabilities, plot_categories
 from rich.console import Console
 from rich.table import Table
+
+# set default type to avoid problems with gradient
+DEFAULT_TYPE = torch.float64
+torch.set_default_dtype(DEFAULT_TYPE)
 
 def main_gaussian_data():
 
@@ -25,7 +30,7 @@ def main_gaussian_data():
     
     #  Hyperparameters that influence the model
     concat_x_and_t = True
-    feed_forward_kernel = False
+    feed_forward_kernel = True
     # The Unet with one channel kernel doesn't work well with the gaussian data
     hidden_units = [32, 128, 32]
     noise_time_steps = 128  

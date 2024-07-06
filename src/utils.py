@@ -129,7 +129,7 @@ class CustomDataset(BaseDataset):
         y = np.expand_dims(y, axis=1)
 
         # convert to torch tensors
-        x = torch.tensor(x, dtype=torch.float32)
+        x = torch.tensor(x, dtype=torch.float64)
         y = torch.tensor(y, dtype=torch.bool)
 
         # convert to logits if needed for DDPM 
@@ -212,7 +212,7 @@ class SumCategoricalDataset(BaseDataset):
         y = np.expand_dims(y, axis=1)
 
         # convert to torch tensors
-        x = torch.tensor(p, dtype=torch.float32)
+        x = torch.tensor(p, dtype=torch.float64)
         y = torch.tensor(y, dtype=torch.bool)
 
         if logits:
@@ -226,10 +226,10 @@ class SumCategoricalDataset(BaseDataset):
         """Generate the dataset with the mask to inpaint."""
 
         dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
+        masks = []
 
         if mask_anomaly_points:
             tmp = self._mask_anomaly_points()
-            # todo nani dafaq did u get this from??
             masks.append(tmp)
             masks.append(tmp.numpy() if label_values_mask else None)
         elif mask_one_feature:
@@ -357,10 +357,9 @@ class GaussianDataset(BaseDataset):
         """
         Generates samples using an alternative approach to handle non-positive definite covariance matrices.
 
-        # todo: method is static. In OO programming we usually assign values to the attributes of the class ;)
         """
-        mean_tensor = torch.tensor(mean, dtype=torch.float32)
-        cov_tensor = torch.tensor(cov, dtype=torch.float32)
+        mean_tensor = torch.tensor(mean, dtype=torch.float64)
+        cov_tensor = torch.tensor(cov, dtype=torch.float64)
 
         # Ensure the covariance matrix is symmetric
         cov_tensor = (cov_tensor + cov_tensor.T) / 2
@@ -369,7 +368,7 @@ class GaussianDataset(BaseDataset):
         U, S, V = torch.svd(cov_tensor)
         transform_matrix = U @ torch.diag(torch.sqrt(S))
 
-        normal_samples = torch.randn(num_samples, len(mean))
+        normal_samples = torch.randn(num_samples, len(mean), dtype=torch.float64)
         samples = normal_samples @ transform_matrix.T + mean_tensor
 
         return samples
@@ -691,7 +690,7 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
 
     def __init__(self, noise_time_steps: int, dataset_shape: tuple = None, s: float = 0.008):
         super().__init__(noise_time_steps, dataset_shape)
-        self.s = torch.tensor(s, dtype=torch.float32)
+        self.s = torch.tensor(s, dtype=torch.float64)
         self._initialize_schedule()
 
     def _cosine_schedule(self, t: torch.tensor) -> torch.tensor:
@@ -704,8 +703,8 @@ class CosineNoiseScheduler(BaseNoiseScheduler):
         """
         Initializes the schedule for alpha and beta values based on the cosine schedule.
         """
-        t = torch.linspace(0, self.noise_time_steps, self.noise_time_steps, dtype=torch.float32)
-        self.alpha_bar = self._cosine_schedule(t) / self._cosine_schedule(torch.tensor(0.0, dtype=torch.float32))
+        t = torch.linspace(0, self.noise_time_steps, self.noise_time_steps, dtype=torch.float64)
+        self.alpha_bar = self._cosine_schedule(t) / self._cosine_schedule(torch.tensor(0.0, dtype=torch.float64))
 
         self.alphas = torch.ones_like(self.alpha_bar)
         self.alphas[1:] = self.alpha_bar[1:] / self.alpha_bar[:-1]
@@ -727,7 +726,7 @@ class Probabilities:
     of features with different number of values
     """
 
-    def __init__(self, structure: list | tuple, dtype=np.float32):  # todo rename n_values -> structure
+    def __init__(self, structure: list | tuple, dtype=np.float64):  # todo rename n_values -> structure
         self.structure = structure
         self.n = len(structure)
         self.length = sum(structure)
@@ -747,11 +746,9 @@ class Probabilities:
         """Cap at 0, then normalize the probabilities for each feature"""
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
-
         p = np.maximum(0, p)
         s = np.dot(p, self.mat)
         assert np.all(s > 0), f'Zero sum: p={p}, s={s}'
-
         return p / s
 
     def to_onehot(self, x: np.array):
@@ -763,7 +760,7 @@ class Probabilities:
         # check that values are positive
         assert np.all(x >= 0), f'Negative values'
 
-        x1 = np.zeros((x.shape[0], self.length), dtype=np.float32)
+        x1 = np.zeros((x.shape[0], self.length), dtype=np.float64)
         start = 0
         for i in range(self.n):
             x1[np.arange(x.shape[0]), x[:, i] + start] = 1
@@ -794,21 +791,9 @@ class Probabilities:
     
     def add_noise(self, p: np.array, k=1.):
         """Add noise to the probabilities"""
-
-        print(f'add_noise {p.dtype}')
-
         assert len(p.shape) == 2, f'{len(p.shape)} != 2'
         assert p.shape[1] == self.length, f'{p.shape[1]} != {self.length}'
-
-        print(f'1) {p.dtype}')
-        p = p + np.random.random(p.shape) * k
-        print(f'*) {np.random.random(p.shape).dtype}')
-        print(f'2) {p.dtype}')
-        p = self.normalize(p)
-        print(f'3) {p.dtype}')
-        input()
-
-        return p
+        return self.normalize(p + np.random.random(p.shape) * k)
 
     def _logits_to_normalized_probs(self, logits):
         """Convert logits to normalized probabilities"""
@@ -818,9 +803,8 @@ class Probabilities:
     
     def prob_to_values(self, p):
         """Convert probabilities to values"""
-        # todo nani dafaq did u get this from??
-        if isinstance(transformed_data, torch.Tensor):
-            transformed_data = transformed_data.numpy()
+        if isinstance(p, torch.Tensor):
+            p = p.numpy()
         return self.onehot_to_values(self.prob_to_onehot(self.normalize(p)))
 
     def logits_to_values(self, logits):
