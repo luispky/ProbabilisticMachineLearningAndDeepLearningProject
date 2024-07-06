@@ -4,113 +4,13 @@ import pandas as pd
 import numpy as np
 from src.datasets import DatabaseInterface
 from utils import cprint, bcolors, Probabilities
-from copy import deepcopy
-
+from src.inverse_gradient import InverseGradient
 from src.denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
-from utils import plot_loss
+from src.utils import plot_loss
 
 # set default type to avoid problems with gradient
-DEFAULT_TYPE = torch.float32
+DEFAULT_TYPE = torch.float64
 torch.set_default_dtype(DEFAULT_TYPE)
-
-
-class NewInverseGradient:
-    """ Author: Omar
-    Bare-bones inverse gradient method
-    """
-    def __init__(self, model):
-        self.model = model
-        self._p_copy = None
-        self._module = None
-
-    def _compute_p_copy(self, p, proba, eta):
-        """ Update probabilities by maintaining normalization """
-        self._p_copy = p.detach().clone()
-        dp = -p.grad
-        self._module = np.linalg.norm(dp.numpy().flatten())
-        if self._module == 0:
-            raise ZeroDivisionError
-        dp = dp / self._module * eta
-        self._p_copy += dp
-        self._p_copy = proba.normalize(self._p_copy)
-
-    def run(self, p: torch.tensor, structure: tuple, eta=0.01, n_iter=100, threshold_p=0.1):
-        """
-        Given a classifier and a set of data points, modify the data points
-        so that the classification changes from 1 to 0.
-
-        params:
-        p: torch.tensor, the data point to modify
-        structure: tuple, the number of values for each feature
-        eta: float, the step size for the gradient descent
-        n_iter: int, the maximum number of iterations
-        threshold: float, the threshold probability for the loss function
-        """
-        assert self.model is not None
-        assert p.shape[0] == 1
-
-
-        assert 0 < eta < 1
-        assert 0 < threshold_p < 1
-
-        p_ = deepcopy(p)
-        proba = Probabilities(structure)
-        v_old = proba.onehot_to_values(p_)[0]
-        v_new = v_old.copy()
-        mask = v_new == v_new
-        success = True
-
-        # add gaussian noise to the input
-        p_.requires_grad = True
-
-        i = 0
-        while True:
-            i += 1
-
-            # Make the prediction
-            y = self.model(p_)
-            p_anomaly = y[0][0]
-
-            # Compute the loss
-            loss = torch.nn.BCELoss()(y, torch.zeros_like(y))
-
-            # Compute the gradient of the loss with respect to x
-            loss.backward()
-
-            # Create a copy of x and update the copy
-            try:
-                self._compute_p_copy(p_, proba, eta)
-            except ZeroDivisionError:
-                # check if the gradient is zero
-                cprint('Warning: Gradient is zero', bcolors.WARNING)
-                success = False
-                break
-
-            # Update the original x with the modified copy
-            p_.data = self._p_copy
-
-            # Clear the gradient for the next iteration
-            p_.grad.zero_()
-
-            # Check if v_new is different to v_old
-            v_new = proba.onehot_to_values(p_.detach().numpy())[0]
-            mask = v_old != v_new
-            changed = np.any(mask)
-
-            # check if the loss is below the threshold
-            print(f'\rIteration {i+1}, pred {p_anomaly:.1%}', end=' ')
-            if p_anomaly < threshold_p:
-                if changed:
-                    cprint(f'\rIteration {i}) loss is {p_anomaly:.1%} < {threshold_p:.1%}', bcolors.OKGREEN)
-                    break
-
-            # check if the maximum number of iterations is reached
-            if i == n_iter:
-                cprint(f'Warning: Maximum iterations reached ({p_anomaly:.1%})', bcolors.WARNING)
-                success = False
-                break
-
-        return {"values": v_new, "mask": mask, "proba": p_, "anomaly_p": p_anomaly, "success": success}
 
 
 class AnomalyCorrection:
@@ -123,8 +23,7 @@ class AnomalyCorrection:
     Steps at Initialization:
 
     values -> indices + structure
-    indices -> one-hot
-    one-hot -> noisy_probabilities
+    indices -> one-hot -> noisy_probabilities
 
     ================================================================
 
@@ -140,9 +39,7 @@ class AnomalyCorrection:
     x_anomaly -> p_anomaly (onehot)
     Inverse gradient: classifier + p_anomaly -> corrected p_anomaly*
     Diffusion: p_anomaly* -> p_anomaly**
-    p_anomaly** (probabilities) -> p_anomaly** (one-hot)
-    p_anomaly** (one-hot) -> v_anomaly** (indices)
-    v_anomaly** (indices) -> x_anomaly** (values)
+    p_anomaly** (probabilities) -> p_anomaly** (one-hot) -> v_anomaly** (indices) -> x_anomaly** (values)
 
     ================================================================
     """
@@ -151,11 +48,9 @@ class AnomalyCorrection:
         self.y = y
 
         self.noise = noise
-
         self.v_data = None          # indices
         self.p_data = None          # probabilities
         self.p_data_noisy = None    # noisy probabilities
-
         self.p_anomaly = None       # probabilities
 
         # objects
@@ -166,6 +61,7 @@ class AnomalyCorrection:
 
         # model
         self.classification_model = None
+        self.diffusion = None
 
         # steps at initialization
         self._values_to_indices()
@@ -174,15 +70,18 @@ class AnomalyCorrection:
 
     def set_classification_model(self, model):
         self.classification_model = model
-        self.inv_grad = NewInverseGradient(model)
+        self.inv_grad = InverseGradient(model)
 
     def set_diffusion(self, diffusion):
+        """set diffusion"""
         self.diffusion = diffusion
 
     def get_value_maps(self):
+        """ get value maps"""
         return self.interface.get_value_maps()
 
     def get_inverse_value_maps(self):
+        """ get inverse value maps """
         return self.interface.get_inverse_value_maps()
 
     def _values_to_indices(self):
@@ -196,7 +95,7 @@ class AnomalyCorrection:
     def _anomaly_to_proba(self, df, dtype=DEFAULT_TYPE):
         self.anomaly_indices = self.interface.convert_values_to_indices(df).to_numpy()
         self.anomaly_p = self.proba.to_onehot(self.anomaly_indices)
-        self.anomaly_p = torch.tensor(self.anomaly_p , dtype=dtype)
+        self.anomaly_p = torch.tensor(self.anomaly_p, dtype=dtype)
         return self.anomaly_p
 
     def _compute_noisy_proba(self):
@@ -407,7 +306,7 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     
     ddpm_model_name = 'ddpm_model'
     
-    diffusion.load_model_pickle(ddpm_model_name) #!name, NOT PATH
+    diffusion.load_model_pickle(ddpm_model_name)  # !name, NOT PATH
 
     if diffusion.model is None:
         diffusion.set_model(time_dim_emb=64,

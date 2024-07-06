@@ -226,6 +226,7 @@ class SumCategoricalDataset(BaseDataset):
         """Generate the dataset with the mask to inpaint."""
 
         dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
+        masks = []
 
         if mask_anomaly_points:
             tmp = self._mask_anomaly_points()
@@ -802,8 +803,8 @@ class Probabilities:
     
     def prob_to_values(self, p):
         """Convert probabilities to values"""
-        if isinstance(transformed_data, torch.Tensor):
-            transformed_data = transformed_data.numpy()
+        if isinstance(p, torch.Tensor):
+            p = p.numpy()
         return self.onehot_to_values(self.prob_to_onehot(self.normalize(p)))
 
     def logits_to_values(self, logits):
