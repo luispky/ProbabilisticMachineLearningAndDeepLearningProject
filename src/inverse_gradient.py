@@ -42,7 +42,7 @@ class InverseGradient:
         """
         assert self.model is not None
         assert p.shape[0] == 1
-
+        assert len(p.shape) == 2
 
         assert 0 < eta < 1
         assert 0 < threshold_p < 1
@@ -104,4 +104,8 @@ class InverseGradient:
                 success = False
                 break
 
-        return {"values": v_new, "mask": mask, "proba": p_, "anomaly_p": p_anomaly, "success": success}
+        return {"values": v_new,
+                "mask": mask,
+                "proba": p_,
+                "anomaly_p": p_anomaly,
+                "success": success}

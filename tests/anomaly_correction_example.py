@@ -15,7 +15,6 @@ class ClassificationModel:
     """
     Example classifier
     """
-
     def __init__(self):
         self.model = None
 
@@ -106,9 +105,13 @@ class ClassificationModel:
         cprint('Model saved', bcolors.OKGREEN)
 
 
-def main(data_path='../datasets/sum_limit_problem.csv',
-         model_path='../models/anomaly_correction_model.pkl',
-         hidden=10, loss_fn=torch.nn.MSELoss(), n_epochs=250):
+def main(data_path='../datasets/no_repeat_problem.csv',
+         # data_path='../datasets/sum_limit_problem.csv',
+         model_path='../models/no_repeat_problem_model.pkl',
+         ddpm_model_name = 'no_repeat_problem_ddpm_model',
+         hidden=20, loss_fn=torch.nn.MSELoss(),
+         n_epochs=500, lr=.1, initial_noise=.1,
+         correction_step=0.01, n_iter=200, threshold_p=0.1):
     np.random.seed(42)
 
     # ================================================================================
@@ -120,7 +123,7 @@ def main(data_path='../datasets/sum_limit_problem.csv',
 
     # ================================================================================
     # anomaly_correction
-    anomaly_correction = AnomalyCorrection(df_x, df_y, noise=1.)
+    anomaly_correction = AnomalyCorrection(df_x, df_y, noise=initial_noise)
     print('\nNoisy probabilities:')
     print(np.round(anomaly_correction.p_data_noisy, 2))
     print('\nValue maps:')
@@ -137,7 +140,8 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     if classification_model.model is None:
         classification_model.reset(input_size=data_x.shape[1], hidden=hidden)
         classification_model.train(data_x, data_y,
-                                   model_path, loss_fn, n_epochs=n_epochs)
+                                   model_path, loss_fn,
+                                   n_epochs=n_epochs, lr=lr)
 
     anomaly_correction.set_classification_model(classification_model)
 
@@ -155,8 +159,6 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     # This class takes as input the anomaly and the masks, and returns the modified anomalies
     diffusion = Diffusion(dataset_shape=dataset_shape,
                           noise_time_steps=128)
-
-    ddpm_model_name = 'ddpm_model'
 
     diffusion.load_model_pickle(ddpm_model_name)  # !name, NOT PATH
 
@@ -200,7 +202,8 @@ def main(data_path='../datasets/sum_limit_problem.csv',
 
     # ================================================================================
     # run the anomaly-correction algorithm
-    corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10)
+    corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10, eta=correction_step,
+                                                           n_iter=n_iter, threshold_p=threshold_p)
     print('\nCorrected anomaly:')
     print(corrected_anomaly)
 
