@@ -111,7 +111,7 @@ class AnomalyCorrection:
         """
         return self.v_data[~self.y]
 
-    def _inverse_gradient(self, p, n):
+    def _inverse_gradient(self, p, n, eta=0.01, n_iter=100, threshold_p=0.1):
         """
         Modify p_anomaly one-by-one using the inverse gradient method
         """
@@ -119,19 +119,19 @@ class AnomalyCorrection:
         new_values = []
         for _ in range(n):
             p_ = self.proba.add_noise(p, k=self.noise)
-            results = self.inv_grad.run(p_, self.structure)
+            results = self.inv_grad.run(p_, self.structure, eta=eta, n_iter=n_iter, threshold_p=threshold_p)
             masks.append(results["mask"])
             new_values.append(results["values"])
         return masks, new_values
 
-    def correct_anomaly(self, anomaly: pd.DataFrame | pd.Series, n):
+    def correct_anomaly(self, anomaly: pd.DataFrame, n, eta=0.01, n_iter=100, threshold_p=0.1):
         """Correct the anomalies in the dataset"""
         assert type(anomaly) is pd.DataFrame or type(anomaly) is pd.Series
         assert self.classification_model is not None, 'Please set the classification model'
         # assert self.diffusion is not None, 'Please set the diffusion model'
 
         p = self._anomaly_to_proba(anomaly)
-        masks, new_indices = self._inverse_gradient(p, n)
+        masks, new_indices = self._inverse_gradient(p, n, eta=eta, n_iter=n_iter, threshold_p=threshold_p)
 
         # print('\nanomaly_indices')
         # print(self.anomaly_indices)
