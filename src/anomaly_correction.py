@@ -136,9 +136,9 @@ class AnomalyCorrection:
         # print('\nanomaly_indices')
         # print(self.anomaly_indices)
 
-        # print('\nmasks')
-        # for mask in masks:
-        #     print(f'{mask}  ({len(mask)})')
+        print('\nmasks')
+        for mask in masks:
+            print(f'{mask}  ({len(mask)})')
         # print(len(masks))
 
         # print('\nstructure')

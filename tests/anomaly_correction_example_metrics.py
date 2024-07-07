@@ -232,7 +232,8 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     pbar = tqdm(range(anomalies.shape[0]))
     for i in pbar:
         anomaly = anomalies.iloc[i, :].to_frame().transpose()
-        corrected_anomaly = suppress_print(anomaly_correction.correct_anomaly)(anomaly, n=10)
+        # corrected_anomaly = suppress_print(anomaly_correction.correct_anomaly)(anomaly, n=10)
+        corrected_anomaly = anomaly_correction._anomaly_to_proba(anomaly, n=10)
         corrected_anomalies.append(corrected_anomaly)
         if i == 2:
             pbar.close()  # Close the display of the progress bar
@@ -258,7 +259,7 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     mean, std = anomaly_correction.assessment(corrected_anomalies_per_mask)
     
     # mean and std of the corrected anomalies
-    print(f'Percentage anomalies not corrected: {mean:.1%} \u2213 {std:1%}')
+    print(f'Percentage anomalies not corrected: {mean:.1%} ± {std:.1%}')
     
 
 if __name__ == "__main__":
