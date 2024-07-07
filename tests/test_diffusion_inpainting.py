@@ -298,6 +298,6 @@ def main_sum_categorical_data():
         wandb.finish()  
 
 if __name__ == '__main__':
-    main_gaussian_data()
-    # main_sum_categorical_data()
+    # main_gaussian_data()
+    main_sum_categorical_data()
     

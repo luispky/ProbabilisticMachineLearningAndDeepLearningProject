@@ -143,7 +143,6 @@ def main(data_path='../datasets/sum_limit_problem.csv',
 
     # ================================================================================
     # The diffusion model
-    # self.ddpm_scheduler = None
     data_diff_x = anomaly_correction.get_diffusion_dataset()
     dataset_shape = [1, sum(anomaly_correction.structure)]
     print(f'\ndataset_shape = {dataset_shape}')
