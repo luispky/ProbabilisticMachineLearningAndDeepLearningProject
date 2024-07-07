@@ -7,7 +7,7 @@ from src.denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
 from src.anomaly_correction import AnomalyCorrection
 
 # set default type to avoid problems with gradient
-DEFAULT_TYPE = torch.float32
+DEFAULT_TYPE = torch.float64
 torch.set_default_dtype(DEFAULT_TYPE)
 
 
@@ -186,7 +186,9 @@ def main(data_path='../datasets/sum_limit_problem.csv',
 
     anomaly_correction.set_diffusion(diffusion)
 
-    diffusion.sample(num_samples=1000, plot_data=True,
+    diffusion.sample(num_samples=1000,
+                     classifier=classification_model,
+                     plot_data=True,
                      proba=anomaly_correction.proba,
                      sampled_data_name='ddpm_sampled_data')
 

@@ -807,6 +807,12 @@ class Probabilities:
             p = p.numpy()
         return self.onehot_to_values(self.prob_to_onehot(self.normalize(p)))
 
+    def logits_to_proba(self, logits):
+        """Convert logits to probabilities"""
+        if isinstance(logits, torch.Tensor):
+            logits = logits.numpy()
+        return self._logits_to_normalized_probs(logits)
+
     def logits_to_values(self, logits):
         """Convert logits to values"""
         if isinstance(logits, torch.Tensor):

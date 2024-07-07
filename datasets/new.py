@@ -16,5 +16,5 @@ def create_data(size, n_cols, high, k):
 
 
 if __name__ == '__main__':
-    # create_data(size=10_000, n_cols=5, high=4, k=10.5)
-    create_data(size=10_000, n_cols=4, high=2, k=3.5)
+    create_data(size=10_000, n_cols=5, high=4, k=10.5)
+    # create_data(size=10_000, n_cols=4, high=2, k=3.5)
