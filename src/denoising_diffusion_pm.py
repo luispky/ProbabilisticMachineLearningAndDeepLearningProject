@@ -384,15 +384,18 @@ class DDPMAnomalyCorrection(DDPM):
             
         if plot_data:
             plot_categories(x_indices_sampled, proba.structure, sampled_data_name, save_locally=plot_data)
-
-        if classifier is not None:
+        
+        if classifier is None:
+            return {'x': x_indices_sampled}
+        else:
             p_sampled = proba.logits_to_proba(sampled_logits.cpu().numpy())
             p_sampled = torch.tensor(p_sampled)
             y = classifier(p_sampled).detach().numpy().flatten()
             y = np.round(y)
+            
             print(f'\nPercentage anomalies generated {np.mean(y):.1%}')
 
-        return x_indices_sampled
+            return {'x': x_indices_sampled, 'y': y}
     
     def inpaint(self, anomaly_indices,
                 masks,

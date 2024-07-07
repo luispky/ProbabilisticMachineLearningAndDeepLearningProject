@@ -1,5 +1,6 @@
 import torch
 import pandas as pd
+import numpy as np
 from src.datasets import DatabaseInterface
 from src.utils import Probabilities
 from src.inverse_gradient import InverseGradient
@@ -123,34 +124,54 @@ class AnomalyCorrection:
             new_values.append(results["values"])
         return masks, new_values
 
-    def correct_anomaly(self, anomaly: pd.DataFrame, n):
+    def correct_anomaly(self, anomaly: pd.DataFrame | pd.Series, n):
         """Correct the anomalies in the dataset"""
-        assert type(anomaly) is pd.DataFrame
+        assert type(anomaly) is pd.DataFrame or type(anomaly) is pd.Series
         assert self.classification_model is not None, 'Please set the classification model'
         # assert self.diffusion is not None, 'Please set the diffusion model'
 
         p = self._anomaly_to_proba(anomaly)
         masks, new_indices = self._inverse_gradient(p, n)
 
-        print('\nanomaly_indices')
-        print(self.anomaly_indices)
+        # print('\nanomaly_indices')
+        # print(self.anomaly_indices)
 
-        print('\nmasks')
-        for mask in masks:
-            print(f'{mask}  ({len(mask)})')
-        print(len(masks))
+        # print('\nmasks')
+        # for mask in masks:
+        #     print(f'{mask}  ({len(mask)})')
+        # print(len(masks))
 
-        print('\nstructure')
-        print(self.proba.structure)
+        # print('\nstructure')
+        # print(self.proba.structure)
 
-        print('\nindices before diffusion')
+        # print('\nindices before diffusion')
 
         new_indices = self.diffusion.inpaint(anomaly_indices=self.anomaly_indices, masks=masks, proba=self.proba)
 
-        print(new_indices.shape)
+        # print(new_indices.shape)
 
-        print('\nindices after diffusion')
+        # print('\nindices after diffusion')
         new_values = self.interface.convert_indices_to_values(new_indices)
-        print('\nvalues after diffusion')
+        # print('\nvalues after diffusion')
 
         return new_values
+    
+    def assessment(self, corrected_anomalies_per_mask: list):
+        """Assess the quality of the corrected anomalies"""
+        assert type(corrected_anomalies_per_mask) is list
+
+        means_anomalies_not_corrected = []
+        for corrected_anomalies in corrected_anomalies_per_mask:
+            assert type(corrected_anomalies) is pd.DataFrame
+            print(corrected_anomalies)
+            p = self._anomaly_to_proba(corrected_anomalies)
+            # print(p)
+            y = self.classification_model(p).detach().numpy().flatten()
+            y = np.round(y)
+            
+            means_anomalies_not_corrected.append(np.mean(y))
+        
+        mean = np.mean(means_anomalies_not_corrected)
+        std = np.std(means_anomalies_not_corrected)
+        
+        return mean, std
