@@ -1,0 +1,1 @@
+{"loss_gaussian_01": {"_type": "image-file", "sha256": "9adcc8ab90330957be09cba9919e6043085801bfea52090afa98ad1dfca0a5de", "size": 47538, "path": "media/images/loss_gaussian_01_0_9adcc8ab90330957be09.png", "format": "png", "width": 640, "height": 480}, "_timestamp": 1720370728.929048, "_runtime": 35.9957959651947, "_step": 0, "_wandb": {"runtime": 92}}

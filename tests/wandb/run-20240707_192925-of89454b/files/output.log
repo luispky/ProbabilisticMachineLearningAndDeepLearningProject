@@ -1,0 +1,54 @@
+Loading a model DDPM...
+Model not found
+Creating a new diffusion model...
+Training the DDPM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 128 | Loss: 0.0142: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 128/128 [00:34<00:00,  3.66it/s]
+128it [00:00, 516.22it/s]
+0it [00:00, ?it/s]
+Training Finished
+Sampling with the DDPM...
+Sampling Finished
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+128it [00:51,  2.46it/s]
+Inpainting Finished
