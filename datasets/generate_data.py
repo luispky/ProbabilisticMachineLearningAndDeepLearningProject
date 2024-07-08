@@ -22,11 +22,11 @@ def no_repeat_dataset(size, n_cols, high, name='no_repeat_problem.csv'):
     """
     Anomaly if there are repeated values in the row
     """
-    map = {i: chr(i + 65) for i in range(high)}
+    map_ = {i: chr(i + 65) for i in range(high)}
     mat = np.random.randint(0, high, (size, n_cols))
     columns = [f'x_{i}' for i in range(n_cols)]
     df = pd.DataFrame(mat, columns=columns)
-    df = df.replace(map)
+    df = df.replace(map_)
     df['anomaly'] = df.apply(lambda x: len(x) != len(set(x)), axis=1)
 
     print(df.head(10))
@@ -51,11 +51,12 @@ def compute_divergence(a, b, divergence=diff_divergence):
     return np.sum(divergence(p, q))
 
 
-def test_divergence(size=10_000, n_cols=5, high=4):
+def test_divergence(size=1_000, n_cols=3, high=3):
     np.random.seed(42)
     a = np.random.randint(0, high, (size, n_cols))
     b = np.random.randint(0, high, (size, n_cols))
-    print(f'\ndiv(a, b) = {compute_divergence(a, b):.3f}')
+    d = compute_divergence(a, b)
+    print(f'\ndiv(a, b) = {d:.3f}  (size={size})')
 
 
 if __name__ == '__main__':
