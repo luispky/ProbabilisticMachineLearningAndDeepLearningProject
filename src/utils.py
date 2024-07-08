@@ -199,7 +199,6 @@ class SumCategoricalDataset(BaseDataset):
     def __init__(self, size=None, structure=None, threshold=None):
         super().__init__()
         
-        self.size = size
         self.threshold = threshold
         
         self.probabilities = None
@@ -208,16 +207,16 @@ class SumCategoricalDataset(BaseDataset):
         self.proba = None
         
         if size and structure and threshold is not None:
-            self._generate_dataset(structure)
+            self._generate_dataset(size, structure)
         
-    def _generate_dataset(self, structure):
+    def _generate_dataset(self, size, structure):
         """Generate the dataset."""
         
         # Instantiate the probabilities object
         self.proba = Probabilities(structure)
         
         # Generate raw data
-        p = np.random.random(size=(self.size, sum(structure)))
+        p = np.random.random(size=(size, sum(structure)))
         self.probabilities = self.proba.normalize(p)
 
         # Convert probabilities to onehot encoding
@@ -254,14 +253,15 @@ class SumCategoricalDataset(BaseDataset):
         assert not (remove_anomalies and only_anomalies), 'Cannot remove and keep only anomalies at the same time'
         
         x_indices = torch.tensor(self.row_x_indices_np, dtype=torch.float64)
+        y = self.row_y_np
         if not (remove_anomalies or only_anomalies) and indices:
             x = x_indices
-            y = np.expand_dims(self.row_y_np, axis=1)
+            y = np.expand_dims(y, axis=1)
             y = torch.tensor(y, dtype=torch.float64) 
             return {'x': x, 'y': y}
         
         x = self.probabilities
-        y = self.row_y_np
+        
         if remove_anomalies:
             x = x[~y]
             x_indices = x_indices[~y]
@@ -271,6 +271,7 @@ class SumCategoricalDataset(BaseDataset):
             x_indices = x_indices[y]
             y = y[y]
         
+        y = np.expand_dims(y, axis=1)
         x = torch.tensor(x, dtype=torch.float64)
         y = torch.tensor(y, dtype=torch.float64)
         
