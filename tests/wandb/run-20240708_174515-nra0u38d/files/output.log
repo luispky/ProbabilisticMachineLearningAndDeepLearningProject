@@ -1,0 +1,50 @@
+Loading a classifier model...
+Model not found
+Creating a new classifier model...
+
+
+
+Epoch: 169 | Loss: 0.00105:  84%|██████████████████████▌    | 167/200 [00:07<00:01, 22.80it/s]
+Dummy accuracy = 81.7%
+Accuracy on test data = 98.5%
+Epoch: 200 | Loss: 0.00091: 100%|███████████████████████████| 200/200 [00:08<00:00, 22.61it/s]
+Epoch: 4 | Loss: 0.0128:   2%|▊                               | 3/128 [00:00<00:17,  6.97it/s]
+Loading a DDPM model...
+Model not found
+Creating a new diffusion model...
+
+
+
+
+
+Epoch: 115 | Loss: 0.0099:  90%|█████████████████████████▏  | 115/128 [00:10<00:01, 10.80it/s]
+Training Finished
+Epoch: 128 | Loss: 0.0097: 100%|████████████████████████████| 128/128 [00:11<00:00, 10.88it/s]
+128it [00:00, 465.34it/s]
+Sampling Finished
+Dissimilarity between the original and the sampled distribution: 73.84%
+Percentage of anomalies in the generated samples: 1.00%
+Inpainting...
+
+
+117it [00:05, 21.30it/s]
+
+128it [00:06, 21.22it/s]
+[1mSummary of the inpainting process...
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃[1m Metric                                             [22m┃[1m Value      [22m┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ Anomalies before inpainting / Total                │ 298 / 1500 │
+│ Remaining anomalies / Total                        │ 61 / 1500  │
+│ Correct changes                                    │ 237        │
+│ Wrong changes                                      │ 0          │
+│ Percentage of anomalies before inpainting          │ 19.87%     │
+│ Percentage of anomalies after inpainting           │ 4.07%      │
+│ Percentage change (-100% desired)                  │ -79.53%%   │
+│ Percentage of classified anomalies after           │ 3.73%      │
+│ inpainting                                         │            │
+│ Number of rows wrongly modified                    │ 0(1500)    │
+│ Number of known values wrongly modified            │ 0(7202)    │
+│ Dissimilarity between the original and the         │ 17.40%     │
+│ inpainted distribution                             │            │
+└────────────────────────────────────────────────────┴────────────┘

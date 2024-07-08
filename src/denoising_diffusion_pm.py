@@ -279,7 +279,7 @@ class DDPM:
         """
         Load model parameters from a file using safetensors.
         """
-        print(f'Loading a DDPM model...')
+        print(f'\nLoading a DDPM model...')
         try:
             self.model = NoisePredictor(
                                     dataset_shape=self.dataset_shape,
@@ -298,7 +298,7 @@ class DDPM:
     
     def load_model_pickle(self, filename, path="../models/"):
         """Load model parameters from a file using pickle."""
-        print(f'Loading a DDPM model...')
+        print(f'\nLoading a DDPM model...')
         try:
             filename = path + filename + '.pkl'
             model = torch.load(filename)

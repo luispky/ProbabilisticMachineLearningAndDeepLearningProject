@@ -54,7 +54,8 @@ def compute_divergence(a, b, divergence=diff_divergence):
 def test_divergence(size=10_000, n_cols=5, high=4):
     np.random.seed(42)
     a = np.random.randint(0, high, (size, n_cols))
-    b = np.random.randint(0, high, (size, n_cols))
+    # b = np.random.randint(0, high, (size, n_cols))
+    b = a
     print(f'\ndiv(a, b) = {compute_divergence(a, b):.3f}')
 
 

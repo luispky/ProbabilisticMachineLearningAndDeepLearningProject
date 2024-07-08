@@ -1,0 +1,60 @@
+Loading a classifier model...
+Model not found
+Creating a new classifier model...
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 198 | Loss: 0.00023:  99%|██████████████▊| 198/200 [00:27<00:00,  6.22it/s]
+Dummy accuracy = 81.6%
+Accuracy = 100.0%
+Usefulness = 100.0%
+Loading a DDPM model...
+Model not found
+Creating a new diffusion model...
+Epoch: 200 | Loss: 0.00022: 100%|███████████████| 200/200 [00:27<00:00,  7.20it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch: 128 | Loss: 0.0094: 100%|████████████████| 128/128 [00:37<00:00,  3.41it/s]
+38it [00:00, 376.32it/s]
+Training Finished
+Sampling with the DDPM...
+Sampling Finished
+Dissimilarity between the original and the sampled distribution: 72.61%
+Percentage of anomalies in the generated samples: 5.60%
+128it [00:00, 500.78it/s]
+
+
+126it [00:04, 24.35it/s]
+128it [00:04, 26.04it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/tests/test_diffusion_inpainting_only_anomalies.py", line 377, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/tests/test_diffusion_inpainting_only_anomalies.py", line 360, in main_sum_categorical_data
+    mean = agreements['mean']
+           ~~~~~~~~~~^^^^^^^^
+KeyError: 'mean'

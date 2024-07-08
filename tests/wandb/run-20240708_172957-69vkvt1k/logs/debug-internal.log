@@ -1,0 +1,874 @@
+2024-07-08 17:29:57,593 INFO    StreamThr :467627 [internal.py:wandb_internal():85] W&B internal server running at pid: 467627, started at: 2024-07-08 17:29:57.592292
+2024-07-08 17:29:57,599 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status
+2024-07-08 17:29:57,606 INFO    WriterThread:467627 [datastore.py:open_for_write():87] open: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/run-69vkvt1k.wandb
+2024-07-08 17:29:57,607 DEBUG   SenderThread:467627 [sender.py:send():379] send: header
+2024-07-08 17:29:57,611 DEBUG   SenderThread:467627 [sender.py:send():379] send: run
+2024-07-08 17:29:58,061 INFO    SenderThread:467627 [dir_watcher.py:__init__():211] watching files in: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files
+2024-07-08 17:29:58,061 INFO    SenderThread:467627 [sender.py:_start_run_threads():1188] run started: 69vkvt1k with start time 1720452597.59225
+2024-07-08 17:29:58,083 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: check_version
+2024-07-08 17:29:58,083 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: check_version
+2024-07-08 17:29:58,195 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: run_start
+2024-07-08 17:29:58,224 DEBUG   HandlerThread:467627 [system_info.py:__init__():26] System info init
+2024-07-08 17:29:58,224 DEBUG   HandlerThread:467627 [system_info.py:__init__():41] System info init done
+2024-07-08 17:29:58,225 INFO    HandlerThread:467627 [system_monitor.py:start():194] Starting system monitor
+2024-07-08 17:29:58,225 INFO    SystemMonitor:467627 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-07-08 17:29:58,225 INFO    HandlerThread:467627 [system_monitor.py:probe():214] Collecting system info
+2024-07-08 17:29:58,226 INFO    SystemMonitor:467627 [interfaces.py:start():188] Started cpu monitoring
+2024-07-08 17:29:58,228 INFO    SystemMonitor:467627 [interfaces.py:start():188] Started disk monitoring
+2024-07-08 17:29:58,229 INFO    SystemMonitor:467627 [interfaces.py:start():188] Started gpu monitoring
+2024-07-08 17:29:58,231 INFO    SystemMonitor:467627 [interfaces.py:start():188] Started memory monitoring
+2024-07-08 17:29:58,231 INFO    SystemMonitor:467627 [interfaces.py:start():188] Started network monitoring
+2024-07-08 17:29:58,237 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:29:58,237 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:29:58,243 DEBUG   HandlerThread:467627 [system_info.py:probe():152] Probing system
+2024-07-08 17:29:58,246 DEBUG   HandlerThread:467627 [system_info.py:_probe_git():137] Probing git
+2024-07-08 17:29:58,252 DEBUG   HandlerThread:467627 [system_info.py:_probe_git():145] Probing git done
+2024-07-08 17:29:58,253 DEBUG   HandlerThread:467627 [system_info.py:probe():200] Probing system done
+2024-07-08 17:29:58,253 DEBUG   HandlerThread:467627 [system_monitor.py:probe():223] {'os': 'Linux-6.5.0-41-generic-x86_64-with-glibc2.35', 'python': '3.12.4', 'heartbeatAt': '2024-07-08T15:29:58.243696', 'startedAt': '2024-07-08T15:29:57.581763', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/home/l11/Documents/ProbabilisticMachineLearningProject/tests/test_diffusion_inpainting.py', 'codePathLocal': 'test_diffusion_inpainting.py', 'codePath': 'tests/test_diffusion_inpainting.py', 'git': {'remote': 'git@github.com:luispky/ProbabilisticMachineLearningProject.git', 'commit': '165a26a91a3ae67be4cd973e0bcac135d28f4b7c'}, 'email': 'luispalaciosky@gmail.com', 'root': '/home/l11/Documents/ProbabilisticMachineLearningProject', 'host': 'l11', 'username': 'l11', 'executable': '/home/l11/miniconda3/envs/DL/bin/python', 'cpu_count': 6, 'cpu_count_logical': 12, 'cpu_freq': {'current': 1.74925, 'min': 800.0, 'max': 4100.0}, 'cpu_freq_per_core': [{'current': 2.499, 'min': 800.0, 'max': 4100.0}, {'current': 2.5, 'min': 800.0, 'max': 4100.0}, {'current': 2.499, 'min': 800.0, 'max': 4100.0}, {'current': 2.501, 'min': 800.0, 'max': 4100.0}, {'current': 1.926, 'min': 800.0, 'max': 4100.0}, {'current': 2.499, 'min': 800.0, 'max': 4100.0}, {'current': 2.501, 'min': 800.0, 'max': 4100.0}, {'current': 2.232, 'min': 800.0, 'max': 4100.0}, {'current': 2.499, 'min': 800.0, 'max': 4100.0}, {'current': 2.5, 'min': 800.0, 'max': 4100.0}, {'current': 2.502, 'min': 800.0, 'max': 4100.0}, {'current': 2.499, 'min': 800.0, 'max': 4100.0}], 'disk': {'/': {'total': 915.3232879638672, 'used': 49.137054443359375}}, 'gpu': 'NVIDIA GeForce GTX 1050 Ti', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce GTX 1050 Ti', 'memory_total': 4294967296}], 'memory': {'total': 15.301250457763672}}
+2024-07-08 17:29:58,253 INFO    HandlerThread:467627 [system_monitor.py:probe():224] Finished collecting system info
+2024-07-08 17:29:58,253 INFO    HandlerThread:467627 [system_monitor.py:probe():227] Publishing system info
+2024-07-08 17:29:58,253 DEBUG   HandlerThread:467627 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-07-08 17:29:59,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/conda-environment.yaml
+2024-07-08 17:29:59,971 DEBUG   HandlerThread:467627 [system_info.py:_save_conda():224] Saving conda packages done
+2024-07-08 17:29:59,971 INFO    HandlerThread:467627 [system_monitor.py:probe():229] Finished publishing system info
+2024-07-08 17:29:59,972 DEBUG   SenderThread:467627 [sender.py:send():379] send: files
+2024-07-08 17:29:59,973 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-07-08 17:30:00,038 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: python_packages
+2024-07-08 17:30:00,039 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: python_packages
+2024-07-08 17:30:00,039 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-08 17:30:00,039 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: stop_status
+2024-07-08 17:30:00,040 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:00,061 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/conda-environment.yaml
+2024-07-08 17:30:00,061 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/requirements.txt
+2024-07-08 17:30:00,061 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-metadata.json
+2024-07-08 17:30:00,238 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:00,238 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:00,302 DEBUG   SenderThread:467627 [sender.py:send():379] send: telemetry
+2024-07-08 17:30:00,302 DEBUG   SenderThread:467627 [sender.py:send():379] send: config
+2024-07-08 17:30:00,608 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/1njfsdgm-wandb-metadata.json
+2024-07-08 17:30:01,039 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:01,533 DEBUG   SenderThread:467627 [sender.py:send():379] send: files
+2024-07-08 17:30:01,533 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file media/images/original_data_categorical_04_0_db719593d182c80c5f64.png with policy now
+2024-07-08 17:30:01,575 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:01,577 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:01,577 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:01,578 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:02,042 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/jrjjn3ne-media/images/original_data_categorical_04_0_db719593d182c80c5f64.png
+2024-07-08 17:30:02,043 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:02,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:02,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/original_data_categorical_04_0_db719593d182c80c5f64.png
+2024-07-08 17:30:02,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:02,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images
+2024-07-08 17:30:02,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media
+2024-07-08 17:30:02,239 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:02,239 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:02,656 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/xbvnuetn-media/images/original_data_categorical_04_0_db719593d182c80c5f64.png
+2024-07-08 17:30:02,672 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:02,672 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:02,672 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:02,673 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:02,673 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:02,797 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:02,798 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:02,798 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:02,798 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:02,921 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:02,921 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:02,921 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:02,922 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:03,035 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:03,035 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:03,035 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:03,036 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:03,040 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:03,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:03,195 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:03,196 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:03,196 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:03,196 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:03,263 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:03,263 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:03,263 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:03,264 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:03,400 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:03,401 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:03,401 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:03,401 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:03,577 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:03,578 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:03,578 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:03,580 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:03,746 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:03,747 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:03,747 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:03,747 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:03,936 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:03,936 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:03,936 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:03,937 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:04,041 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:04,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:04,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:04,123 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:04,124 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:04,125 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:04,211 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:04,233 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:04,235 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:04,235 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:04,240 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:04,240 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:04,370 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:04,422 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:04,422 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:04,422 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:04,496 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:04,655 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:04,799 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:04,868 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:04,869 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:04,869 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:04,869 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:04,870 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:04,870 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:04,945 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,040 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:05,057 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,057 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,058 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,062 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:05,063 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:05,127 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,212 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,212 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,212 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,242 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,353 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,354 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,354 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,354 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,354 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,355 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,392 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,486 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,486 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,487 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,488 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,519 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,520 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,520 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,537 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,669 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,669 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,670 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,671 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,804 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,804 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,804 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,805 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:05,932 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:05,933 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:05,933 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:05,933 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,041 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:06,063 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:06,095 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,096 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,096 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,096 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,197 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,198 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,198 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,198 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,241 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:06,241 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:06,327 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,327 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,328 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,328 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,454 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,454 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,455 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,455 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,586 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,587 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,587 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,587 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,710 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,711 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,711 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,711 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,831 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,832 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,832 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,832 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:06,960 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:06,961 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:06,961 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:06,962 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:07,041 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:07,063 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:07,063 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:07,167 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:07,167 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:07,168 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:07,168 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:07,268 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:07,269 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:07,269 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:07,269 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:07,386 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:07,387 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:07,387 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:07,387 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:07,524 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:07,524 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:07,524 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:07,525 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:07,667 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:07,668 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:07,668 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:07,668 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:07,786 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:07,787 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:07,787 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:07,787 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:07,788 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:07,898 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:07,899 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:07,899 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:07,899 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:08,013 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:08,013 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:08,013 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:08,014 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:08,041 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:08,063 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:08,171 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:08,172 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:08,172 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:08,172 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:08,242 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:08,242 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:08,254 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:08,254 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:08,255 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:08,255 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:08,400 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:08,401 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:08,401 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:08,401 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:08,539 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:08,540 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:08,540 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:08,540 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:08,686 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:08,687 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:08,687 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:08,688 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:08,876 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:08,877 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:08,877 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:08,877 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:09,064 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:09,064 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:09,095 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,096 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,096 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,096 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,253 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,254 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,254 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,272 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,381 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,382 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,382 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,382 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,495 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,495 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,495 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,496 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,616 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,616 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,616 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,617 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,725 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,726 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,726 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,726 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,839 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,840 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,840 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,841 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:09,959 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:09,960 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:09,960 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:09,960 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,041 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:10,064 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:10,131 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,131 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,132 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,132 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,211 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,211 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,211 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,212 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,243 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:10,243 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:10,353 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,353 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,353 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,354 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,470 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,470 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,471 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,471 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,583 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,584 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,584 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,584 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,699 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,700 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,700 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,700 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,812 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,916 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:10,995 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,995 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,995 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:10,996 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:10,996 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:10,996 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,019 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,019 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,019 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,020 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,041 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:11,064 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:11,065 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:11,171 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,172 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,172 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,173 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,230 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,231 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,231 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,231 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,337 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,338 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,338 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,338 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,456 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,457 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,457 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,457 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,578 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,578 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,578 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,579 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,686 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,687 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,687 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,687 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,815 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,816 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,816 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,816 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:11,925 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:11,925 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:11,925 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:11,926 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,040 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,041 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,041 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,041 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,041 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:12,065 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:12,199 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,199 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,200 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,200 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,243 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:12,243 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:12,266 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,266 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,267 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,267 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,390 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,390 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,391 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,391 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,525 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,526 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,526 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,526 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,645 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,646 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,646 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,646 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,785 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,786 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,786 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,786 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:12,787 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:12,910 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:12,911 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:12,911 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:12,911 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:13,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:13,065 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:13,065 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:13,111 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:13,112 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:13,112 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:13,112 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:13,197 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:13,198 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:13,198 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:13,199 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:13,336 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:13,336 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:13,336 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:13,337 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:13,473 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:13,474 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:13,474 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:13,474 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:13,624 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:13,625 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:13,625 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:13,626 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:13,783 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:13,784 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:13,784 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:13,784 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:13,929 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:13,930 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:13,930 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:13,932 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:14,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:14,065 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:14,111 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:14,112 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:14,112 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:14,112 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:14,226 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:14,227 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:14,227 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:14,227 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:14,244 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:14,244 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:14,377 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:14,377 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:14,377 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:14,378 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:14,517 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:14,517 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:14,518 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:14,518 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:14,660 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:14,661 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:14,661 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:14,661 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:14,802 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:14,803 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:14,803 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:14,804 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:14,937 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:14,938 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:14,939 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:14,939 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:15,039 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-08 17:30:15,040 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: stop_status
+2024-07-08 17:30:15,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:15,066 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:15,066 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:15,119 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:15,196 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:15,281 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:15,281 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:15,281 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:15,281 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:15,282 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:15,291 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:15,362 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:15,362 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:15,362 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:15,363 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:15,484 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:15,485 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:15,485 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:15,485 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:15,666 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:15,666 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:15,667 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:15,667 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:15,861 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:15,862 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:15,862 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:15,862 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:15,981 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:15,982 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:15,982 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:15,983 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:16,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:16,066 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:16,139 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:16,139 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:16,140 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:16,140 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:16,210 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:16,211 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:16,211 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:16,211 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:16,245 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:16,245 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:16,349 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:16,350 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:16,350 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:16,350 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:16,487 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:16,488 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:16,488 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:16,489 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:16,614 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:16,615 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:16,615 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:16,615 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:16,737 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:16,738 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:16,738 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:16,739 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:16,861 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:16,862 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:16,862 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:16,862 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,013 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,013 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,013 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,013 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:17,066 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:17,066 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:17,175 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,176 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,176 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,176 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,261 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,261 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,261 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,262 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,429 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,429 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,429 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,430 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,549 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,550 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,550 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,550 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,698 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,699 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,699 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,699 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,839 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,840 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,840 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,840 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:17,840 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:17,951 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:17,951 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:17,952 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:17,952 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:18,066 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:18,099 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,099 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,100 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,100 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,167 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,168 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,168 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,168 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,245 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:18,245 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:18,278 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,278 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,278 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,278 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,385 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,386 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,386 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,386 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,497 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,498 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,498 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,499 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,608 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,609 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,609 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,609 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,734 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,734 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,735 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,735 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,844 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,845 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,845 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,845 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:18,951 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:18,952 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:18,952 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:18,952 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:19,042 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:19,067 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:19,067 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:19,107 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:19,107 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:19,108 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:19,108 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:19,174 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:19,174 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:19,175 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:19,175 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:19,280 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:19,281 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:19,281 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:19,281 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:19,388 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:19,389 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:19,389 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:19,390 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:19,549 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:19,549 DEBUG   SenderThread:467627 [sender.py:send():379] send: files
+2024-07-08 17:30:19,549 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file media/images/loss_categorical_04_129_417380d4290cc194cb98.png with policy now
+2024-07-08 17:30:19,549 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:19,549 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:19,550 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:20,032 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/ruc1bczx-media/images/loss_categorical_04_129_417380d4290cc194cb98.png
+2024-07-08 17:30:20,065 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:20,067 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:20,067 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/loss_categorical_04_129_417380d4290cc194cb98.png
+2024-07-08 17:30:20,067 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images
+2024-07-08 17:30:20,246 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:20,246 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:20,679 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/77vbc184-media/images/loss_categorical_04_129_417380d4290cc194cb98.png
+2024-07-08 17:30:20,910 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:20,911 DEBUG   SenderThread:467627 [sender.py:send():379] send: files
+2024-07-08 17:30:20,911 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file media/images/gen_samples_categorical_04_130_1b57ee6a46a09a40ba72.png with policy now
+2024-07-08 17:30:20,911 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:20,911 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:20,920 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:21,045 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:21,067 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:21,068 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:21,068 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/gen_samples_categorical_04_130_1b57ee6a46a09a40ba72.png
+2024-07-08 17:30:21,068 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images
+2024-07-08 17:30:21,498 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/3ihgb0m6-media/images/gen_samples_categorical_04_130_1b57ee6a46a09a40ba72.png
+2024-07-08 17:30:22,026 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/3z84tixx-media/images/gen_samples_categorical_04_130_1b57ee6a46a09a40ba72.png
+2024-07-08 17:30:22,045 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:22,068 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:22,246 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:22,246 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:22,927 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:23,045 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:23,069 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:24,045 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:24,247 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:24,247 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:25,045 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:25,069 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:26,045 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:26,247 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:26,247 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:27,046 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:27,070 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:27,993 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:28,046 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:28,291 ERROR   gpu       :467627 [interfaces.py:aggregate():159] Failed to serialize metric: division by zero
+2024-07-08 17:30:28,291 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:28,291 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:29,046 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:29,071 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/config.yaml
+2024-07-08 17:30:29,071 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:30,039 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-08 17:30:30,039 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: stop_status
+2024-07-08 17:30:30,046 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:30,292 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:30,292 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:31,046 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:31,072 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:32,046 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:32,198 DEBUG   SenderThread:467627 [sender.py:send():379] send: files
+2024-07-08 17:30:32,198 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file media/images/data_to_inpaint_categorical_04_131_aa42cabf701e6db36683.png with policy now
+2024-07-08 17:30:32,243 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:32,243 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:32,244 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:32,244 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:32,293 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:32,293 ERROR   gpu       :467627 [interfaces.py:monitor():142] Failed to sample metric: Not Supported
+2024-07-08 17:30:32,865 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/wakya7n3-media/images/data_to_inpaint_categorical_04_131_aa42cabf701e6db36683.png
+2024-07-08 17:30:32,967 DEBUG   SenderThread:467627 [sender.py:send():379] send: files
+2024-07-08 17:30:32,967 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file media/images/inpainted_data_categorical_04_132_0aa2879c9a9685338098.png with policy now
+2024-07-08 17:30:32,968 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-08 17:30:32,968 DEBUG   SenderThread:467627 [sender.py:send():379] send: history
+2024-07-08 17:30:32,968 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: summary_record
+2024-07-08 17:30:32,969 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:33,057 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:33,072 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:33,072 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:33,072 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/inpainted_data_categorical_04_132_0aa2879c9a9685338098.png
+2024-07-08 17:30:33,073 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/data_to_inpaint_categorical_04_131_aa42cabf701e6db36683.png
+2024-07-08 17:30:33,073 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images
+2024-07-08 17:30:33,139 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: server_info
+2024-07-08 17:30:33,140 DEBUG   SenderThread:467627 [sender.py:send():379] send: telemetry
+2024-07-08 17:30:33,140 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: server_info
+2024-07-08 17:30:33,283 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:33,285 DEBUG   SenderThread:467627 [sender.py:send():379] send: exit
+2024-07-08 17:30:33,285 INFO    SenderThread:467627 [sender.py:send_exit():586] handling exit code: 0
+2024-07-08 17:30:33,285 INFO    SenderThread:467627 [sender.py:send_exit():588] handling runtime: 35
+2024-07-08 17:30:33,286 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:33,286 INFO    SenderThread:467627 [sender.py:send_exit():594] send defer
+2024-07-08 17:30:33,287 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,287 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 0
+2024-07-08 17:30:33,288 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,288 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-07-08 17:30:33,288 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 1
+2024-07-08 17:30:33,288 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,288 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 1
+2024-07-08 17:30:33,289 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,289 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-07-08 17:30:33,289 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 2
+2024-07-08 17:30:33,289 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,290 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 2
+2024-07-08 17:30:33,290 INFO    HandlerThread:467627 [system_monitor.py:finish():203] Stopping system monitor
+2024-07-08 17:30:33,291 DEBUG   SystemMonitor:467627 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-07-08 17:30:33,291 DEBUG   SystemMonitor:467627 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-07-08 17:30:33,291 DEBUG   SystemMonitor:467627 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-07-08 17:30:33,293 INFO    HandlerThread:467627 [interfaces.py:finish():200] Joined cpu monitor
+2024-07-08 17:30:33,293 INFO    HandlerThread:467627 [interfaces.py:finish():200] Joined disk monitor
+2024-07-08 17:30:33,357 ERROR   gpu       :467627 [interfaces.py:aggregate():159] Failed to serialize metric: division by zero
+2024-07-08 17:30:33,357 INFO    HandlerThread:467627 [interfaces.py:finish():200] Joined gpu monitor
+2024-07-08 17:30:33,357 INFO    HandlerThread:467627 [interfaces.py:finish():200] Joined memory monitor
+2024-07-08 17:30:33,358 INFO    HandlerThread:467627 [interfaces.py:finish():200] Joined network monitor
+2024-07-08 17:30:33,358 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,358 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-07-08 17:30:33,358 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 3
+2024-07-08 17:30:33,358 DEBUG   SenderThread:467627 [sender.py:send():379] send: stats
+2024-07-08 17:30:33,358 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,358 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 3
+2024-07-08 17:30:33,358 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,358 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-07-08 17:30:33,358 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 4
+2024-07-08 17:30:33,358 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,359 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 4
+2024-07-08 17:30:33,359 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,359 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-07-08 17:30:33,359 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 5
+2024-07-08 17:30:33,359 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,359 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 5
+2024-07-08 17:30:33,359 DEBUG   SenderThread:467627 [sender.py:send():379] send: summary
+2024-07-08 17:30:33,359 INFO    SenderThread:467627 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-08 17:30:33,360 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,360 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-07-08 17:30:33,360 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 6
+2024-07-08 17:30:33,360 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,360 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 6
+2024-07-08 17:30:33,360 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,360 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-07-08 17:30:33,362 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: status_report
+2024-07-08 17:30:33,457 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/45stoyo5-media/images/inpainted_data_categorical_04_132_0aa2879c9a9685338098.png
+2024-07-08 17:30:33,543 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 7
+2024-07-08 17:30:33,543 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:33,543 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 7
+2024-07-08 17:30:33,544 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:33,544 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-07-08 17:30:33,688 INFO    wandb-upload_1:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/wyupl12w-media/images/data_to_inpaint_categorical_04_131_aa42cabf701e6db36683.png
+2024-07-08 17:30:34,046 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /tmp/tmprl9e1sw4wandb/prhvb8va-media/images/inpainted_data_categorical_04_132_0aa2879c9a9685338098.png
+2024-07-08 17:30:34,073 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:34,073 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/config.yaml
+2024-07-08 17:30:34,073 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:34,285 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-08 17:30:36,075 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:36,405 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 8
+2024-07-08 17:30:36,405 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: poll_exit
+2024-07-08 17:30:36,405 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:36,405 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 8
+2024-07-08 17:30:36,406 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:36,406 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-07-08 17:30:36,406 INFO    SenderThread:467627 [job_builder.py:build():440] Attempting to build job artifact
+2024-07-08 17:30:36,406 INFO    SenderThread:467627 [job_builder.py:_get_source_type():569] is repo sourced job
+2024-07-08 17:30:36,424 INFO    SenderThread:467627 [job_builder.py:build():545] adding wandb-job metadata file
+2024-07-08 17:30:36,766 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 9
+2024-07-08 17:30:36,767 DEBUG   SenderThread:467627 [sender.py:send():379] send: artifact
+2024-07-08 17:30:36,771 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:36,772 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 9
+2024-07-08 17:30:37,076 INFO    Thread-12 :467627 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:37,285 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-08 17:30:37,782 INFO    SenderThread:467627 [sender.py:send_artifact():1530] sent artifact job-git_github.com_luispky_ProbabilisticMachineLearningProject.git_tests_test_diffusion_inpainting.py - {'id': 'QXJ0aWZhY3Q6OTQ5Mzk1NjE5', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjI0Njc5NDk4OQ==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6OTQ5Mzk1NjE5', 'versionIndex': 7}}}
+2024-07-08 17:30:37,782 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:37,783 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-07-08 17:30:37,783 INFO    SenderThread:467627 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-07-08 17:30:38,078 INFO    SenderThread:467627 [dir_watcher.py:finish():388] scan: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files
+2024-07-08 17:30:38,079 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/conda-environment.yaml conda-environment.yaml
+2024-07-08 17:30:38,080 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/config.yaml config.yaml
+2024-07-08 17:30:38,085 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-metadata.json wandb-metadata.json
+2024-07-08 17:30:38,086 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json wandb-summary.json
+2024-07-08 17:30:38,091 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log output.log
+2024-07-08 17:30:38,092 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/requirements.txt requirements.txt
+2024-07-08 17:30:38,108 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/inpainted_data_categorical_04_132_0aa2879c9a9685338098.png media/images/inpainted_data_categorical_04_132_0aa2879c9a9685338098.png
+2024-07-08 17:30:38,108 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/data_to_inpaint_categorical_04_131_aa42cabf701e6db36683.png media/images/data_to_inpaint_categorical_04_131_aa42cabf701e6db36683.png
+2024-07-08 17:30:38,109 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/original_data_categorical_04_0_db719593d182c80c5f64.png media/images/original_data_categorical_04_0_db719593d182c80c5f64.png
+2024-07-08 17:30:38,109 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/gen_samples_categorical_04_130_1b57ee6a46a09a40ba72.png media/images/gen_samples_categorical_04_130_1b57ee6a46a09a40ba72.png
+2024-07-08 17:30:38,109 INFO    SenderThread:467627 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/media/images/loss_categorical_04_129_417380d4290cc194cb98.png media/images/loss_categorical_04_129_417380d4290cc194cb98.png
+2024-07-08 17:30:38,109 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 10
+2024-07-08 17:30:38,110 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: poll_exit
+2024-07-08 17:30:38,111 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:38,111 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 10
+2024-07-08 17:30:38,112 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:38,113 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-07-08 17:30:38,113 INFO    SenderThread:467627 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-08 17:30:38,290 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-08 17:30:38,293 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: poll_exit
+2024-07-08 17:30:38,601 INFO    wandb-upload_0:467627 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/config.yaml
+2024-07-08 17:30:38,602 INFO    wandb-upload_1:467627 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/conda-environment.yaml
+2024-07-08 17:30:38,604 INFO    wandb-upload_2:467627 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/wandb-summary.json
+2024-07-08 17:30:38,605 INFO    wandb-upload_4:467627 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/requirements.txt
+2024-07-08 17:30:38,620 INFO    wandb-upload_3:467627 [upload_job.py:push():130] Uploaded file /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/files/output.log
+2024-07-08 17:30:38,821 INFO    Thread-11 (_thread_body):467627 [sender.py:transition_state():614] send defer: 11
+2024-07-08 17:30:38,821 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:38,822 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 11
+2024-07-08 17:30:38,823 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:38,823 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-07-08 17:30:38,823 INFO    SenderThread:467627 [file_pusher.py:join():175] waiting for file pusher
+2024-07-08 17:30:38,827 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 12
+2024-07-08 17:30:38,828 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:38,828 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 12
+2024-07-08 17:30:38,828 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:38,828 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-07-08 17:30:38,829 INFO    SenderThread:467627 [file_stream.py:finish():601] file stream finish called
+2024-07-08 17:30:39,008 INFO    SenderThread:467627 [file_stream.py:finish():605] file stream finish is done
+2024-07-08 17:30:39,009 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 13
+2024-07-08 17:30:39,009 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:39,009 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 13
+2024-07-08 17:30:39,009 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:39,009 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-07-08 17:30:39,009 INFO    SenderThread:467627 [sender.py:transition_state():614] send defer: 14
+2024-07-08 17:30:39,009 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: defer
+2024-07-08 17:30:39,009 INFO    HandlerThread:467627 [handler.py:handle_request_defer():184] handle defer: 14
+2024-07-08 17:30:39,009 DEBUG   SenderThread:467627 [sender.py:send():379] send: final
+2024-07-08 17:30:39,009 DEBUG   SenderThread:467627 [sender.py:send():379] send: footer
+2024-07-08 17:30:39,009 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: defer
+2024-07-08 17:30:39,010 INFO    SenderThread:467627 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-07-08 17:30:39,010 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-08 17:30:39,010 DEBUG   SenderThread:467627 [sender.py:send_request():406] send_request: poll_exit
+2024-07-08 17:30:39,011 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-08 17:30:39,011 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: get_summary
+2024-07-08 17:30:39,012 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: sampled_history
+2024-07-08 17:30:39,013 DEBUG   HandlerThread:467627 [handler.py:handle_request():158] handle_request: shutdown
+2024-07-08 17:30:39,013 INFO    HandlerThread:467627 [handler.py:finish():882] shutting down handler
+2024-07-08 17:30:40,011 INFO    WriterThread:467627 [datastore.py:close():296] close: /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_172957-69vkvt1k/run-69vkvt1k.wandb
+2024-07-08 17:30:40,011 INFO    SenderThread:467627 [sender.py:finish():1608] shutting down sender
+2024-07-08 17:30:40,012 INFO    SenderThread:467627 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-08 17:30:40,012 INFO    SenderThread:467627 [file_pusher.py:join():175] waiting for file pusher

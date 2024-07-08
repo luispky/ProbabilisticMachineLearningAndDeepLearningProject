@@ -1,0 +1,40 @@
+Loading a classifier model...
+Model not found
+Creating a new classifier model...
+
+
+
+Epoch: 173 | Loss: 0.00091:  86%|██████████████████▉   | 172/200 [00:07<00:01, 24.57it/s]
+Dummy accuracy = 82.2%
+Accuracy = 99.7%
+Usefulness = 98.5%
+Loading a DDPM model...
+Model not found
+Creating a new diffusion model...
+Epoch: 200 | Loss: 0.00081: 100%|██████████████████████| 200/200 [00:08<00:00, 22.89it/s]
+
+
+
+
+
+Epoch: 119 | Loss: 0.0096:  93%|█████████████████████▍ | 119/128 [00:10<00:00, 12.35it/s]
+Training Finished
+Sampling with the DDPM...
+Sampling Finished
+Dissimilarity between the original and the sampled distribution: 72.93%
+Epoch: 128 | Loss: 0.0097: 100%|███████████████████████| 128/128 [00:11<00:00, 11.22it/s]
+128it [00:00, 495.85it/s]
+0it [00:00, ?it/s]
+
+90it [00:02, 42.60it/s]
+
+128it [00:02, 42.75it/s]
+Traceback (most recent call last):
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/tests/test_diffusion_inpainting_only_anomalies.py", line 360, in <module>
+    main_sum_categorical_data()
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/tests/test_diffusion_inpainting_only_anomalies.py", line 315, in main_sum_categorical_data
+    inpaint_detailed = element_wise_label_values_comparison(data_to_inpaint['indices'],
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/l11/Documents/ProbabilisticMachineLearningProject/src/utils.py", line 1033, in element_wise_label_values_comparison
+    raise ValueError("Array shapes and mask shape must match.")
+ValueError: Array shapes and mask shape must match.

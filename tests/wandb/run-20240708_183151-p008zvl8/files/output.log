@@ -1,0 +1,48 @@
+Loading a classifier model...
+Model not found
+Creating a new classifier model...
+
+
+
+Epoch: 200 | Loss: 0.00088: 100%|██████████████████████| 200/200 [00:08<00:00, 22.53it/s]
+Epoch: 4 | Loss: 0.0127:   2%|▋                          | 3/128 [00:00<00:18,  6.91it/s]
+Dummy accuracy = 81.9%
+Accuracy = 99.3%
+Usefulness = 95.9%
+Loading a DDPM model...
+Model not found
+Creating a new diffusion model...
+
+
+
+
+
+Epoch: 116 | Loss: 0.0096:  91%|████████████████████▊  | 116/128 [00:10<00:01, 11.13it/s]
+Training Finished
+Epoch: 128 | Loss: 0.0097: 100%|███████████████████████| 128/128 [00:11<00:00, 10.99it/s]
+128it [00:00, 463.09it/s]
+Sampling Finished
+Dissimilarity between the original and the sampled distribution: 71.99%
+Percentage of anomalies in the generated samples: 9.60%
+Inpainting...
+
+128it [00:03, 36.61it/s]
+Inpainting Finished
+[1mSummary of the inpainting process...
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃[1m Metric                                             [22m┃[1m Value     [22m┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━┩
+│ Anomalies before inpainting / Total                │ 259 / 259 │
+│ Remaining anomalies / Total                        │ 66 / 259  │
+│ Correct changes                                    │ 193       │
+│ Wrong changes                                      │ 0         │
+│ Percentage of anomalies before inpainting          │ 100.00%   │
+│ Percentage of anomalies after inpainting           │ 25.48%    │
+│ Percentage change (-100% desired)                  │ -74.52%%  │
+│ Percentage of classified anomalies after           │ 25.10%    │
+│ inpainting                                         │           │
+│ Number of rows wrongly modified                    │ 0(259)    │
+│ Number of known values wrongly modified            │ 0(1036)   │
+│ Dissimilarity between the original and the         │ 88.03%    │
+│ inpainted distribution                             │           │
+└────────────────────────────────────────────────────┴───────────┘

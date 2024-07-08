@@ -1,0 +1,26 @@
+Loading a classifier model...
+Loading a DDPM model...
+Inpainting...
+
+
+101it [00:05, 19.69it/s]
+
+128it [00:06, 19.16it/s]
+[1mSummary of the inpainting process...
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃[1m Metric                                             [22m┃[1m Value      [22m┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ Anomalies before inpainting / Total                │ 300 / 1500 │
+│ Remaining anomalies / Total                        │ 113 / 1500 │
+│ Correct changes                                    │ 187        │
+│ Wrong changes                                      │ 0          │
+│ Percentage of anomalies before inpainting          │ 20.00%     │
+│ Percentage of anomalies after inpainting           │ 7.53%      │
+│ Percentage change (-100% desired)                  │ -62.33%%   │
+│ Percentage of classified anomalies after           │ 6.73%      │
+│ inpainting                                         │            │
+│ Number of rows wrongly modified                    │ 0(1500)    │
+│ Number of known values wrongly modified            │ 0(7200)    │
+│ Dissimilarity between the original and the         │ 15.20%     │
+│ inpainted distribution                             │            │
+└────────────────────────────────────────────────────┴────────────┘

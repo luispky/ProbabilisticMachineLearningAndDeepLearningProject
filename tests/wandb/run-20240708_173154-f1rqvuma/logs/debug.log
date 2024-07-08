@@ -1,0 +1,36 @@
+2024-07-08 17:31:54,898 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Current SDK version is 0.17.3
+2024-07-08 17:31:54,899 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Configure stats pid to 468921
+2024-07-08 17:31:54,899 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Loading settings from /home/l11/.config/wandb/settings
+2024-07-08 17:31:54,899 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Loading settings from /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/settings
+2024-07-08 17:31:54,899 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-07-08 17:31:54,899 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-07-08 17:31:54,899 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'tests/test_diffusion_inpainting.py', 'program_abspath': '/home/l11/Documents/ProbabilisticMachineLearningProject/tests/test_diffusion_inpainting.py', 'program': '/home/l11/Documents/ProbabilisticMachineLearningProject/tests/test_diffusion_inpainting.py'}
+2024-07-08 17:31:54,899 INFO    MainThread:468921 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-07-08 17:31:54,900 INFO    MainThread:468921 [wandb_init.py:_log_setup():520] Logging user logs to /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_173154-f1rqvuma/logs/debug.log
+2024-07-08 17:31:54,900 INFO    MainThread:468921 [wandb_init.py:_log_setup():521] Logging internal logs to /home/l11/Documents/ProbabilisticMachineLearningProject/tests/wandb/run-20240708_173154-f1rqvuma/logs/debug-internal.log
+2024-07-08 17:31:54,900 INFO    MainThread:468921 [wandb_init.py:init():560] calling init triggers
+2024-07-08 17:31:54,900 INFO    MainThread:468921 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {}
+2024-07-08 17:31:54,900 INFO    MainThread:468921 [wandb_init.py:init():610] starting backend
+2024-07-08 17:31:54,900 INFO    MainThread:468921 [wandb_init.py:init():614] setting up manager
+2024-07-08 17:31:54,903 INFO    MainThread:468921 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-07-08 17:31:54,905 INFO    MainThread:468921 [wandb_init.py:init():622] backend started and connected
+2024-07-08 17:31:54,910 INFO    MainThread:468921 [wandb_init.py:init():711] updated telemetry
+2024-07-08 17:31:54,919 INFO    MainThread:468921 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-07-08 17:31:55,418 INFO    MainThread:468921 [wandb_run.py:_on_init():2402] communicating current version
+2024-07-08 17:31:55,476 INFO    MainThread:468921 [wandb_run.py:_on_init():2411] got version response upgrade_message: "wandb version 0.17.4 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2024-07-08 17:31:55,476 INFO    MainThread:468921 [wandb_init.py:init():795] starting run threads in backend
+2024-07-08 17:31:57,158 INFO    MainThread:468921 [wandb_run.py:_console_start():2380] atexit reg
+2024-07-08 17:31:57,158 INFO    MainThread:468921 [wandb_run.py:_redirect():2235] redirect: wrap_raw
+2024-07-08 17:31:57,158 INFO    MainThread:468921 [wandb_run.py:_redirect():2300] Wrapping output streams.
+2024-07-08 17:31:57,158 INFO    MainThread:468921 [wandb_run.py:_redirect():2325] Redirects installed.
+2024-07-08 17:31:57,159 INFO    MainThread:468921 [wandb_init.py:init():838] run started, returning control to user process
+2024-07-08 17:31:57,159 INFO    MainThread:468921 [wandb_run.py:_config_callback():1382] config_cb None None {'architecture': 'hidden_units: [256, 512, 256] | concat(x, t): False', 'feed_forward_kernel': True, 'unet': False, 'noise_time_steps': 128, 'time_dim_embedding': 64, 'epochs': 128, 'scheduler': 'linear', 'samples': 1000, 'learning_rate': 0.001, 'beta_ema': 0.95, 'inpaint_resampling': 20, 'dropout_rate': 0.05, 'only_anomalies)': False}
+2024-07-08 17:33:08,572 INFO    MainThread:468921 [wandb_run.py:_finish():2109] finishing run l11p11/DiffusionInpaintingCategorical/f1rqvuma
+2024-07-08 17:33:08,572 INFO    MainThread:468921 [wandb_run.py:_atexit_cleanup():2349] got exitcode: 0
+2024-07-08 17:33:08,572 INFO    MainThread:468921 [wandb_run.py:_restore():2332] restore
+2024-07-08 17:33:08,572 INFO    MainThread:468921 [wandb_run.py:_restore():2338] restore done
+2024-07-08 17:33:16,702 INFO    MainThread:468921 [wandb_run.py:_footer_history_summary_info():3991] rendering history
+2024-07-08 17:33:16,702 INFO    MainThread:468921 [wandb_run.py:_footer_history_summary_info():4023] rendering summary
+2024-07-08 17:33:16,707 INFO    MainThread:468921 [wandb_run.py:_footer_sync_info():3950] logging synced files

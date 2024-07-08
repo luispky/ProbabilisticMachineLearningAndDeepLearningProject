@@ -1,0 +1,40 @@
+Loading a classifier model...
+Loading a DDPM model...
+Model not found
+Creating a new diffusion model...
+Training the DDPM...
+
+
+
+
+Epoch: 128 | Loss: 0.0095: 100%|████████████████████████████| 128/128 [00:11<00:00, 11.21it/s]
+0it [00:00, ?it/s]
+Training Finished
+Sampling with the DDPM...
+Sampling Finished
+Dissimilarity between the original and the sampled distribution: 70.19%
+Percentage of anomalies in the generated samples: 8.60%
+128it [00:00, 493.89it/s]
+
+
+
+128it [00:06, 21.00it/s]
+Inpainting Finished
+[1mSummary of the inpainting process...
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃[1m Metric                                             [22m┃[1m Value      [22m┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ Anomalies before inpainting / Total                │ 258 / 1500 │
+│ Remaining anomalies / Total                        │ 49 / 1500  │
+│ Correct changes                                    │ 209        │
+│ Wrong changes                                      │ 0          │
+│ Percentage of anomalies before inpainting          │ 17.20%     │
+│ Percentage of anomalies after inpainting           │ 3.27%      │
+│ Percentage change (-100% desired)                  │ -81.01%%   │
+│ Percentage of classified anomalies after           │ 3.20%      │
+│ inpainting                                         │            │
+│ Number of rows wrongly modified                    │ 0(1500)    │
+│ Number of known values wrongly modified            │ 0(7242)    │
+│ Dissimilarity between the original and the         │ 15.20%     │
+│ inpainted distribution                             │            │
+└────────────────────────────────────────────────────┴────────────┘

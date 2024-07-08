@@ -11,6 +11,8 @@ import torch.optim as optim
 import seaborn as sns
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
+# from imblearn.over_sampling import SMOTE
 
 
 class BaseDataset(ABC):
@@ -105,7 +107,7 @@ class RealDataset(BaseDataset):
         encoder = LabelEncoder()
         encoder.fit(y)
         y = encoder.transform(y)
-        self.row_y_np = y
+        self.row_y_np = y.astype(np.bool)
         
         # Extract the structure of the data with a categorical encoder
         self.categorical_encoder = CategoricalEncoder(x)
@@ -115,11 +117,20 @@ class RealDataset(BaseDataset):
         self.proba = Probabilities(structure)
         self.row_x_indices_np = self.categorical_encoder.encoded_data()
     
+    def get_degrees_of_freedom_categories(self):
+        """Return the sum of number of values for each category."""
+        return sum(self.proba.structure)
+    
     def get_classifier_dataloader(self, training_prop=0.7, batch_size=64, shuffle=True):
         """Generate a dataloader for the dataset."""
         dataset = self.generate_dataset(indices=True)
         
         x, y = dataset['x'], dataset['y']
+        
+        # # # Preprocess data
+        # scaler = StandardScaler()
+        # x = scaler.fit_transform(x.numpy())
+        # x = torch.tensor(x, dtype=torch.float64)
         
         # Create a TensorDataset from x and y
         tensor_dataset = TensorDataset(x, y)
@@ -139,22 +150,28 @@ class RealDataset(BaseDataset):
         """
         assert not (remove_anomalies and only_anomalies), 'Cannot remove and keep only anomalies at the same time'
         
+        x_indices = torch.tensor(self.row_x_indices_np, dtype=torch.float64)
+        y = self.row_y_np
+        
         if not (remove_anomalies or only_anomalies) and indices:
-            x = torch.tensor(self.row_x_indices_np, dtype=torch.float64)
-            y = np.expand_dims(self.row_y_np, axis=1)
+            x = x_indices
+            y = np.expand_dims(y, axis=1)
             y = torch.tensor(y, dtype=torch.float64) 
             return {'x': x, 'y': y}
         
         x = self.proba.to_onehot(self.row_x_indices_np)
-        y = self.row_y_np
         
         # Remove anomalies if needed for DDPM training
         if remove_anomalies:
+            print('Removing anomalies')
             x = x[~y]
+            x_indices = x_indices[~y]
             y = y[~y]
+            
         # Get only anomalies if needed for anomaly detection
         elif only_anomalies:
             x = x[y]
+            x_indices = x_indices[y]
             y = y[y]
 
         y = np.expand_dims(y, axis=1)
@@ -165,10 +182,16 @@ class RealDataset(BaseDataset):
 
         x = torch.log((x + eps) / (1 - x + eps))
 
-        self.dataset = {'x': x, 'y': y}
+        self.dataset = {'x': x, 'y': y, 'indices': x_indices}
 
         return self.dataset
 
+    def logits_to_values(self, logits):
+        """Convert the logits to values."""
+        if isinstance(logits, torch.Tensor):
+            logits = logits.cpu().numpy()
+        return self.proba.logits_to_values(logits)
+    
     def get_features_with_mask(self):
         """Generate the dataset with the mask to inpaint."""
 
@@ -179,12 +202,6 @@ class RealDataset(BaseDataset):
         del dataset['y']
         dataset['mask'] = tmp
         return dataset
-    
-    def logit_to_values(self, logits):
-        """Convert the logits to values."""
-        if isinstance(logits, torch.Tensor):
-            logits = logits.cpu().numpy()
-        return self.proba.logits_to_values(logits)
 
     def modified_dataset(self, transformed_data):
         """Returns the transformed data in the original format."""
@@ -287,10 +304,10 @@ class SumCategoricalDataset(BaseDataset):
             logits = logits.cpu().numpy()
         return self.proba.logits_to_values(logits)
 
-    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False):
+    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False, eps=1e-6):
         """Generate the dataset with the mask to inpaint."""
         
-        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset(eps=eps)
         masks = []
 
         if mask_anomaly_points:
@@ -1031,6 +1048,13 @@ def element_wise_label_values_comparison(input, output, mask):
     # Check if the mask is compatible with the arrays
     if input.shape != output.shape or input.shape != mask.shape:
         raise ValueError("Array shapes and mask shape must match.")
+    
+    if isinstance(input, torch.Tensor):
+        input = input.numpy().astype(int)
+    if isinstance(output, torch.Tensor):
+        output = output.numpy().astype(int)
+    if isinstance(mask, torch.Tensor):
+        mask = mask.numpy().astype(bool)
 
     num_rows_differ = 0
     total_wrongly_changed_values = 0
@@ -1090,10 +1114,23 @@ class ClassificationModel:
             nn.Linear(hidden, 1),
             nn.Sigmoid()
         )
+        # self.model = nn.Sequential(
+        #     nn.Linear(input_size, hidden),
+        #     nn.ReLU(),
+        #     nn.Dropout(0.5),
+        #     nn.Linear(hidden, 2*hidden),
+        #     nn.ReLU(),
+        #     nn.Dropout(0.5),
+        #     nn.Linear(2*hidden, hidden),
+        #     nn.ReLU(),
+        #     nn.Dropout(0.5),
+        #     nn.Linear(hidden, 1),
+        #     nn.Sigmoid()
+        # )
 
-    def _training_loop(self, dataloader, n_epochs, learning_rate):
+    def _training_loop(self, dataloader, n_epochs, learning_rate, weight_decay):
         # use the AdamW optimizer
-        optimizer = optim.AdamW(self.model.parameters(), lr=learning_rate)
+        optimizer = optim.AdamW(self.model.parameters(), lr=learning_rate, weight_decay=weight_decay)
         # use the Binary Cross Entropy loss
         criterion = nn.BCELoss()
         
@@ -1117,9 +1154,9 @@ class ClassificationModel:
             epoch_loss = running_loss / num_elements
             pbar.set_description(f'Epoch: {epoch+1} | Loss: {epoch_loss:.5f}')
         
-    def train(self, dataloader, n_epochs=200, learning_rate=0.1, 
+    def train(self, dataloader, n_epochs=200, learning_rate=0.1, weight_decay=1e-3,
               model_name="classifier_ddpm", path="../models/"):
-        self._training_loop(dataloader, n_epochs, learning_rate)
+        self._training_loop(dataloader, n_epochs, learning_rate, weight_decay)
 
         x = dataloader.dataset.dataset.tensors[0]
         y = dataloader.dataset.dataset.tensors[1]
@@ -1133,10 +1170,33 @@ class ClassificationModel:
         acc = accuracy.item()
         usefulness = max([0, (acc - dummy_acc) / (1 - dummy_acc)])
         print(f'Dummy accuracy = {dummy_acc:.1%}')
-        print(f'Accuracy on test data = {acc:.1%}')
+        print(f'Accuracy = {acc:.1%}')
         print(f'Usefulness = {usefulness:.1%}')
 
         if not os.path.exists(path):
             os.makedirs(path)
             # save the model
         torch.save(self.model, path + model_name + '.pkl')
+        
+
+def compute_arrays_agreements(array1, array2):
+    if isinstance(array1, torch.Tensor):
+        array1 = array1.numpy().astype(int)
+    if isinstance(array2, torch.Tensor):
+        array2 = array2.numpy().astype(int)
+    
+    # Compute the number of columns they agree on per row
+    agreements_per_row = np.sum(array1 == array2, axis=1)
+
+    # Calculate the mean, median, and standard deviation of these values
+    mean_agreements = np.mean(agreements_per_row)
+    median_agreements = np.median(agreements_per_row)
+    std_agreements = np.std(agreements_per_row)
+
+    results = {
+        "mean": mean_agreements,
+        "median": median_agreements,
+        "std": std_agreements
+    }
+    
+    return results
