@@ -106,13 +106,12 @@ class ClassificationModel:
 
 
 def main(data_path='../datasets/no_repeat_problem.csv',
-         # data_path='../datasets/sum_limit_problem.csv',
          model_path='../models/no_repeat_problem_model.pkl',
          ddpm_model_name = 'no_repeat_problem_ddpm_model',
          hidden=20, loss_fn=torch.nn.MSELoss(),
          n_epochs=500, lr=.1, initial_noise=.1,
          correction_step=0.01, n_iter=200, threshold_p=0.1):
-    np.random.seed(42)
+    np.random.seed(0)
 
     # ================================================================================
     # get data
@@ -201,10 +200,13 @@ def main(data_path='../datasets/no_repeat_problem.csv',
 
     # ================================================================================
     # run the anomaly-correction algorithm
-    corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10, eta=correction_step,
-                                                           n_iter=n_iter, threshold_p=threshold_p)
+    results = anomaly_correction.correct_anomaly(anomaly, n=10, eta=correction_step,
+                                                 n_iter=n_iter, threshold_p=threshold_p)
+    corrected_anomaly = results['corrected_anomaly']
+    p_ = results['anomaly_proba_after_correction']
     print('\nCorrected anomaly:')
     print(corrected_anomaly)
+    print(p_)
 
 
 if __name__ == "__main__":

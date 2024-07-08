@@ -124,37 +124,36 @@ class AnomalyCorrection:
             new_values.append(results["values"])
         return masks, new_values
 
-    def correct_anomaly(self, anomaly: pd.DataFrame, n, eta=0.01, n_iter=100, threshold_p=0.1):
+    def correct_anomaly(self, anomaly: pd.DataFrame, n, eta=0.01, n_iter=100, threshold_p=0.1) -> dict:
         """Correct the anomalies in the dataset"""
         assert type(anomaly) is pd.DataFrame or type(anomaly) is pd.Series
         assert self.classification_model is not None, 'Please set the classification model'
-        # assert self.diffusion is not None, 'Please set the diffusion model'
+        assert self.diffusion is not None, 'Please set the diffusion model'
 
         p = self._anomaly_to_proba(anomaly)
-        masks, new_indices = self._inverse_gradient(p, n, eta=eta, n_iter=n_iter, threshold_p=threshold_p)
-
-        # print('\nanomaly_indices')
-        # print(self.anomaly_indices)
+        masks, new_indices = self._inverse_gradient(p, n, eta=eta, n_iter=n_iter,
+                                                    threshold_p=threshold_p)
 
         print('\nmasks')
         for mask in masks:
             print(f'{mask}  ({len(mask)})')
         print(len(masks))
 
-        # print('\nstructure')
-        # print(self.proba.structure)
-
-        # print('\nindices before diffusion')
-
-        new_indices = self.diffusion.inpaint(anomaly_indices=self.anomaly_indices, masks=masks, proba=self.proba)
-
-        # print(new_indices.shape)
-
-        # print('\nindices after diffusion')
+        new_indices = self.diffusion.inpaint(anomaly_indices=self.anomaly_indices,
+                                             masks=masks, proba=self.proba)
         new_values = self.interface.convert_indices_to_values(new_indices)
-        # print('\nvalues after diffusion')
 
-        return new_values
+        mat = self.proba.to_onehot(new_indices)
+        mat = torch.tensor(mat, dtype=DEFAULT_TYPE)
+        p_after = self.classification_model(mat)
+        p_after = p_after.detach().numpy().flatten()
+
+        return {"corrected_anomaly": new_values,
+                "new_indices": new_indices,
+                "masks": masks,
+                "structure": self.proba.structure,
+                "anomaly_proba": p,
+                "anomaly_proba_after_correction": p_after}
     
     def assessment(self, corrected_anomalies_per_mask: list):
         """Assess the quality of the corrected anomalies"""

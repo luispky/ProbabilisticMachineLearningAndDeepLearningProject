@@ -237,7 +237,8 @@ def main(data_path='../datasets/sum_limit_problem.csv',
         print(f'\nAnomaly {i}:')
         print(anomaly)
 
-        corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10)
+        results = anomaly_correction.correct_anomaly(anomaly, n=10)
+        corrected_anomaly = results['corrected_anomaly']
         corrected_anomalies.append(corrected_anomaly)
         if i == 2:
             pbar.close()  # Close the display of the progress bar

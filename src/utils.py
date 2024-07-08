@@ -753,6 +753,7 @@ class Probabilities:
 
     def to_onehot(self, x: np.array):
         """Convert the original values to one-hot encoding"""
+        assert type(x) == np.ndarray, f'{type(x)} != np.ndarray'
         assert len(x.shape) == 2, f'{len(x.shape)} != 2'
         assert x.shape[1] == self.n, f'{x.shape[1]} != {self.n}'
         # check that each value of x is less than the number of values for that feature

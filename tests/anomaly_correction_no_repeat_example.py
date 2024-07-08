@@ -111,7 +111,7 @@ def main(data_path='../datasets/no_repeat_problem.csv',
          hidden=20, loss_fn=torch.nn.MSELoss(),
          n_epochs=500, lr=.1,
          correction_step=0.01, correction_n_iter=1000,
-         initial_noise=.01, threshold_p=0.1):
+         initial_noise=.1, threshold_p=0.2):
     np.random.seed(44)
 
     # ================================================================================
@@ -193,6 +193,8 @@ def main(data_path='../datasets/no_repeat_problem.csv',
                      proba=anomaly_correction.proba,
                      sampled_data_name='ddpm_sampled_data')
 
+
+
     # ================================================================================
     # pick some anomalies
     anomaly = df_x[df_y == 1].sample(1)
@@ -201,10 +203,19 @@ def main(data_path='../datasets/no_repeat_problem.csv',
 
     # ================================================================================
     # run the anomaly-correction algorithm
-    corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10, eta=correction_step,
-                                                           n_iter=correction_n_iter, threshold_p=threshold_p)
+    results = anomaly_correction.correct_anomaly(anomaly, n=10, eta=correction_step,
+                                                 n_iter=correction_n_iter,
+                                                 threshold_p=threshold_p)
+    corrected_anomaly = results['corrected_anomaly']
+    p_ = results['anomaly_proba_after_correction']
     print('\nCorrected anomaly:')
-    print(corrected_anomaly)
+    s = str(corrected_anomaly)
+    v = s.split('\n')
+    print(f'{v[0]}  \tp_anomaly')
+    for i in range(len(p_)):
+        print(f'{v[i+1]}  \t{p_[i]:.1%}')
+
+
 
 
 if __name__ == "__main__":
