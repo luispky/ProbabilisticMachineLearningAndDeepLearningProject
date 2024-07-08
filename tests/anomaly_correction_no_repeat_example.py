@@ -1,13 +1,7 @@
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import torch
 import pandas as pd
 import numpy as np
-from tqdm import tqdm
-import io
-import contextlib
-from functools import wraps
 from src.utils import cprint, bcolors, plot_loss
 from src.denoising_diffusion_pm import DDPMAnomalyCorrection as Diffusion
 from src.anomaly_correction import AnomalyCorrection
@@ -21,7 +15,6 @@ class ClassificationModel:
     """
     Example classifier
     """
-
     def __init__(self):
         self.model = None
 
@@ -111,25 +104,15 @@ class ClassificationModel:
         torch.save(self.model, model_path)
         cprint('Model saved', bcolors.OKGREEN)
 
-def suppress_print(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        # Capture stdout
-        with io.StringIO() as buf, contextlib.redirect_stdout(buf):
-            # Capture stderr (used by tqdm)
-            with io.StringIO() as buf_err, contextlib.redirect_stderr(buf_err):
-                result = func(*args, **kwargs)
-                output = buf.getvalue()
-                error_output = buf_err.getvalue()
-        return result #, output, error_output
-    return wrapper
 
-
-def main(data_path='../datasets/sum_limit_problem.csv',
-         model_path='../models/sum_limit_classifier.pkl',
-         diffusion_model_name='sum_limit_diffusion_model.pkl',
-         hidden=30, loss_fn=torch.nn.MSELoss(), n_epochs=250):
-    np.random.seed(42)
+def main(data_path='../datasets/no_repeat_problem.csv',
+         model_path='../models/no_repeat_problem_model.pkl',
+         ddpm_model_name = 'no_repeat_problem_ddpm_model',
+         hidden=20, loss_fn=torch.nn.MSELoss(),
+         n_epochs=500, lr=.1,
+         correction_step=0.01, correction_n_iter=1000,
+         initial_noise=.01, threshold_p=0.1):
+    np.random.seed(44)
 
     # ================================================================================
     # get data
@@ -140,12 +123,12 @@ def main(data_path='../datasets/sum_limit_problem.csv',
 
     # ================================================================================
     # anomaly_correction
-    anomaly_correction = AnomalyCorrection(df_x, df_y, noise=1.)
-    # print('\nNoisy probabilities:')
-    # print(np.round(anomaly_correction.p_data_noisy, 2))
-    # print('\nValue maps:')
-    # for key in anomaly_correction.get_value_maps():
-    #     print(f'{key}: {anomaly_correction.get_value_maps()[key]}')
+    anomaly_correction = AnomalyCorrection(df_x, df_y, noise=initial_noise)
+    print('\nNoisy probabilities:')
+    print(np.round(anomaly_correction.p_data_noisy, 2))
+    print('\nValue maps:')
+    for key in anomaly_correction.get_value_maps():
+        print(f'{key}: {anomaly_correction.get_value_maps()[key]}')
 
     # ================================================================================
     # The classification model
@@ -157,7 +140,8 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     if classification_model.model is None:
         classification_model.reset(input_size=data_x.shape[1], hidden=hidden)
         classification_model.train(data_x, data_y,
-                                   model_path, loss_fn, n_epochs=n_epochs)
+                                   model_path, loss_fn,
+                                   n_epochs=n_epochs, lr=lr)
 
     anomaly_correction.set_classification_model(classification_model)
 
@@ -165,17 +149,17 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     # The diffusion model
     data_diff_x = anomaly_correction.get_diffusion_dataset()
     dataset_shape = [1, sum(anomaly_correction.structure)]
-    # print(f'\ndataset_shape = {dataset_shape}')
+    print(f'\ndataset_shape = {dataset_shape}')
 
-    # # in index space
-    # print(f'\ndata_diff_x {data_diff_x.shape}')
-    # print(data_diff_x)
+    # in index space
+    print(f'\ndata_diff_x {data_diff_x.shape}')
+    print(data_diff_x)
 
     # This class takes as input the anomaly and the masks, and returns the modified anomalies
     diffusion = Diffusion(dataset_shape=dataset_shape,
                           noise_time_steps=128)
 
-    diffusion.load_model_pickle(diffusion_model_name)  # !name, NOT PATH
+    diffusion.load_model_pickle(ddpm_model_name)  # !name, NOT PATH
 
     if diffusion.model is None:
         diffusion.set_model(time_dim_emb=64,
@@ -183,8 +167,6 @@ def main(data_path='../datasets/sum_limit_problem.csv',
                             feed_forward_kernel=True,
                             hidden_units=[2 * dataset_shape[1],
                                           3 * dataset_shape[1],
-                                          3 * dataset_shape[1],
-                                          2 * dataset_shape[1],
                                           2 * dataset_shape[1]
                                           ],
                             unet=False)
@@ -200,7 +182,7 @@ def main(data_path='../datasets/sum_limit_problem.csv',
         loss_name = 'ddpm_loss'
 
         plot_loss(train_losses, loss_name, save_locally=True)
-        diffusion.save_model_pickle(filename=diffusion_model_name,
+        diffusion.save_model_pickle(filename=ddpm_model_name,
                                     ema_model=True)
 
     anomaly_correction.set_diffusion(diffusion)
@@ -211,59 +193,18 @@ def main(data_path='../datasets/sum_limit_problem.csv',
                      proba=anomaly_correction.proba,
                      sampled_data_name='ddpm_sampled_data')
 
-    # # ================================================================================
-    # # pick some anomalies
-    # anomaly = df_x[df_y == 1].sample(1)
-    # print('\nAnomaly:')
-    # print(anomaly)
-    # print(type(anomaly))
+    # ================================================================================
+    # pick some anomalies
+    anomaly = df_x[df_y == 1].sample(1)
+    print('\nAnomaly:')
+    print(anomaly)
 
-    # # ================================================================================
-    # # run the anomaly-correction algorithm
-    # corrected_anomaly = suppress_print(anomaly_correction.correct_anomaly)(anomaly, n=10)
-    # print('\nCorrected anomaly:')
-    # print(corrected_anomaly)
-    
-    # stop the code execution here
-    # return
-    
-    anomalies = df_x[df_y == 1]
-    
-    corrected_anomalies = []
-    pbar = tqdm(range(anomalies.shape[0]))
-    for i in pbar:
-        anomaly = anomalies.iloc[i, :].to_frame().transpose()
-
-        print(f'\nAnomaly {i}:')
-        print(anomaly)
-
-        corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10)
-        corrected_anomalies.append(corrected_anomaly)
-        if i == 2:
-            pbar.close()  # Close the display of the progress bar
-            break
-
-    print('\nCoorrected anomalies Inverse Gradient:')
-    
-    # print the first elements in each entry of the list
-    print(len(corrected_anomalies))
-    print(corrected_anomalies[0].iloc[0, :].to_frame().transpose())
-    print(corrected_anomalies[1].iloc[0, :].to_frame().transpose().values)
-    print(corrected_anomalies[2].iloc[0, :].to_frame().transpose().values)
-    
-    # Extract the rows
-    corrected_anomalies_per_mask = [[df.iloc[i].tolist() for df in corrected_anomalies] for i in range(len(corrected_anomalies[0]))] 
-
-    # Convert the list of lists to a list of dataframes
-    corrected_anomalies_per_mask = [pd.DataFrame(data, columns=corrected_anomalies[0].columns) for data in corrected_anomalies_per_mask]
-    
-    print('\nCoorrected anomalies Diffusion Inpainting:')
-    print(corrected_anomalies_per_mask[0])
-    
-    mean, std = anomaly_correction.assessment(corrected_anomalies_per_mask)
-    
-    # mean and std of the corrected anomalies
-    print(f'Percentage anomalies not corrected: {mean:.1%} ± {std:.1%}')
+    # ================================================================================
+    # run the anomaly-correction algorithm
+    corrected_anomaly = anomaly_correction.correct_anomaly(anomaly, n=10, eta=correction_step,
+                                                           n_iter=correction_n_iter, threshold_p=threshold_p)
+    print('\nCorrected anomaly:')
+    print(corrected_anomaly)
 
 
 if __name__ == "__main__":
