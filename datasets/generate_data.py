@@ -35,6 +35,6 @@ def no_repeat_dataset(size, n_cols, high, name='no_repeat_problem.csv'):
 
 
 if __name__ == '__main__':
-    # sum_cap_dataset(size=10_000, n_cols=5, high=4, k=10.5)
-    # sum_cap_dataset(size=10_000, n_cols=4, high=2, k=3.5)
+    # sum_cap_dataset(size=30_000, n_cols=5, high=4, k=10.5)
+    # sum_cap_dataset(size=30_000, n_cols=4, high=2, k=3.5)
     no_repeat_dataset(size=30_000, n_cols=3, high=4)
