@@ -8,21 +8,20 @@ from src.utils import GaussianDataset, plot_generated_samples, plot_loss
 from src.utils import plot_data_to_inpaint, SumCategoricalDataset, element_wise_label_values_comparison
 from src.denoising_diffusion_pm import DDPM
 from src.utils import plot_categories, ClassificationModel
+from datasets.generate_data import compute_divergence
 from rich.console import Console
 from rich.table import Table
 
 # set default type to avoid problems with gradient
 DEFAULT_TYPE = torch.float64
 torch.set_default_dtype(DEFAULT_TYPE)
+torch.set_default_device('cpu')
 
 def main_gaussian_data():
 
     # Are we going to use Weights and Biases?
     wandb_track = True
     save_plots_locally = False
-    
-    # Inpainting?
-    inpaint = True
     
     #!ARGUMENTS AND HYPERPARAMETERS-----------------------------------------------------
     # Hyperparameters that don't influence the model too much
@@ -107,35 +106,34 @@ def main_gaussian_data():
         # Plot the sampled distribution
         plot_generated_samples(sampled_data, filename=sample_image_name, save_locally=save_plots_locally, save_wandb=wandb_track)
 
-    if inpaint:
-        #!DATA TO INPAINT-------------------------------------------------------------------
-        # generate inpainting samples
-        noise_means = np.random.normal(0, 0.25, 2)
-        noise_covariances = np.random.normal(0, 0.1, (2, 2))
-        means = [[-4, -4], [8, 8], [-4, 7], [6, -4]]
-        covariances = [[[2, 0], [0, 2]],
-                    [[2, 0], [0, 2]],
-                    [[2, 0], [0, 2]],
-                    [[2, 0], [0, 2]]]
-        means = [mean + noise_means for mean in means]
-        covariances = [cov + noise_covariances for cov in covariances]
-        num_samples_per_distribution = [1000, 2000, 1500, 2500]
-        boolean_labels = [False, False, False, True]
-        data_to_inpaint = dataset_generator.get_features_with_mask(means,
-                                                                covariances,
-                                                                num_samples_per_distribution,
-                                                                boolean_labels)
+    #!DATA TO INPAINT-------------------------------------------------------------------
+    # generate inpainting samples
+    noise_means = np.random.normal(0, 0.25, 2)
+    noise_covariances = np.random.normal(0, 0.1, (2, 2))
+    means = [[-4, -4], [8, 8], [-4, 7], [6, -4]]
+    covariances = [[[2, 0], [0, 2]],
+                [[2, 0], [0, 2]],
+                [[2, 0], [0, 2]],
+                [[2, 0], [0, 2]]]
+    means = [mean + noise_means for mean in means]
+    covariances = [cov + noise_covariances for cov in covariances]
+    num_samples_per_distribution = [1000, 2000, 1500, 2500]
+    boolean_labels = [False, False, False, True]
+    data_to_inpaint = dataset_generator.get_features_with_mask(means,
+                                                            covariances,
+                                                            num_samples_per_distribution,
+                                                            boolean_labels)
 
-        x, mask = data_to_inpaint['x'], data_to_inpaint['mask']
+    x, mask = data_to_inpaint['x'], data_to_inpaint['mask']
 
-        #!INPAINTING------------------------------------------------------------------
+    #!INPAINTING------------------------------------------------------------------
 
-        # inpaint the masked data
-        inpainted_data = diffusion.inpaint(x, mask, resampling_steps=inpaint_resampling).cpu().numpy()
-        
-        # Plots of the data to inpaint and the inpainted data
-        plot_data_to_inpaint(x, mask, data_to_inpaint_name, save_locally=save_plots_locally, save_wandb=wandb_track)
-        plot_generated_samples(inpainted_data, inpainted_data_name, save_locally=save_plots_locally, save_wandb=wandb_track)
+    # inpaint the masked data
+    inpainted_data = diffusion.inpaint(x, mask, resampling_steps=inpaint_resampling).cpu().numpy()
+    
+    # Plots of the data to inpaint and the inpainted data
+    plot_data_to_inpaint(x, mask, data_to_inpaint_name, save_locally=save_plots_locally, save_wandb=wandb_track)
+    plot_generated_samples(inpainted_data, inpainted_data_name, save_locally=save_plots_locally, save_wandb=wandb_track)
 
     if wandb_track:
         wandb.finish()
@@ -216,8 +214,8 @@ def main_sum_categorical_data():
     
     if classifier.model is None:
         classifier.reset(dataloader_classifier.dataset.dataset.tensors[0].shape[1], 10)
-        classifier.train(dataloader_classifier, n_epochs=200, learning_rate=1e-3, model_name="classifier_ddpm_sum_categorical")
-    # return
+        classifier.train(dataloader_classifier, n_epochs=200, learning_rate=1e-3, 
+                         model_name="classifier_ddpm_sum_categorical")
 
     #!DDPM-------------------------------------------------------------------------------
     # Create a new instance
@@ -245,6 +243,14 @@ def main_sum_categorical_data():
         sampled_logits = diffusion.sample(samples=samples)[0]
         sampled_data = dataset_generator.logits_to_values(sampled_logits)
         
+        classifier.model.eval()
+        with torch.no_grad():
+            prediction = classifier.model(torch.tensor(sampled_data, dtype=torch.float64))
+            y = np.round(prediction.numpy().flatten())
+            percentage_anomalies = y.mean()
+        
+        print(f"Percentage of anomalies in the generated samples: {percentage_anomalies:.2%}\n")
+        
         # Plot the sampled distribution
         plot_categories(sampled_data, structure, sample_image_name, save_wandb=wandb_track, 
                         save_locally=save_plots_locally)
@@ -255,8 +261,10 @@ def main_sum_categorical_data():
     # generate inpainting samples
     size = 1500
     dataset_generator = SumCategoricalDataset(size, structure, threshold)
-    data_to_inpaint = dataset_generator.get_features_with_mask()
-    dataset_shape = dataset_generator.get_dataset_shape()
+    print('Get features with mask')
+    data_to_inpaint = dataset_generator.get_features_with_mask(mask_anomaly_points=False,
+                                                               mask_one_feature=True, 
+                                                               label_values_mask=True)
     x, mask = data_to_inpaint['x'], data_to_inpaint['mask']
 
     #!INPAINTING------------------------------------------------------------------
@@ -264,20 +272,29 @@ def main_sum_categorical_data():
     inpainted_data = diffusion.inpaint(original=x,
                                         mask=mask, 
                                         resampling_steps=inpaint_resampling)
-    inpainted_data = prob_instance.logits_to_values(inpainted_data.cpu().numpy())
+    inpainted_data = dataset_generator.logits_to_values(inpainted_data)
     
     # Distribution of the data to inpaint and the inpainted data
-    plot_categories(dataset_generator.label_values, structure, data_to_inpaint_name, 
+    plot_categories(data_to_inpaint['indices'], structure, data_to_inpaint_name, 
                     save_locally=save_plots_locally)
     plot_categories(inpainted_data, structure, inpainted_data_name, 
                         save_locally=save_plots_locally)
         
     #!METRICS--------------------------------------------------------------------------
-    # Count the number of original anomalies
-    y = data_to_inpaint['y'].numpy().squeeze()
-    number_anomalies = np.sum(y)
+    # Percentage of anomalies in the inpainted data
+    classifier.model.eval()
+    percentage_anomalies_inpainted_classifier = None
+    with torch.no_grad():
+        prediction = classifier.model(torch.tensor(inpainted_data, dtype=torch.float64))
+        y = np.round(prediction.numpy().flatten())
+        percentage_anomalies_inpainted_classifier = y.mean()
     
-    inpaint_detailed = element_wise_label_values_comparison(data_to_inpaint['label_values'], 
+    # Count the number of original anomalies
+    y = data_to_inpaint['y'].numpy().squeeze().astype(bool)
+    number_anomalies = np.sum(y)
+    percentage_anomalies_before = np.mean(y)
+    
+    inpaint_detailed = element_wise_label_values_comparison(data_to_inpaint['indices'], 
                                                     inpainted_data, 
                                                     data_to_inpaint['values_mask'])
     num_rows_differ, known_values, total_wrongly_changed_values = inpaint_detailed
@@ -294,14 +311,16 @@ def main_sum_categorical_data():
     #!SUMMARY--------------------------------------------------------------------------
     console = Console()
     table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Metric", style="dim", width=40)
+    table.add_column("Metric", style="dim", width=50)
     table.add_column("Value")
     
     table.add_row("Anomalies before inpainting / Total", f"{number_anomalies} / {size}")
     table.add_row("Remaining anomalies / Total", f"{number_remaining_anomalies} / {size}")
+    table.add_row("Correct changes", f"{right_changes}")
+    table.add_row("Wrong changes", f"{wrong_changes}")
+    table.add_row("Percentage of anomalies before inpainting", f"{percentage_anomalies_before:.2%}")
     table.add_row("Percentage change (-100% desired)", f"{percentage_change:.2f}%")
-    table.add_row("Correct changes (balance)", f"{right_changes} ({number_anomalies - right_changes})")
-    table.add_row("Wrong changes (balance)", f"{wrong_changes} ({number_anomalies - wrong_changes})")
+    table.add_row("Percentage of classified anomalies after inpainting", f"{percentage_anomalies_inpainted_classifier:.2%}")
     table.add_row("Number of rows wrongly modified", f"{num_rows_differ}({size})")
     table.add_row("Number of known values wrongly modified", f"{total_wrongly_changed_values}({known_values})")
 

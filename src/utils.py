@@ -280,7 +280,7 @@ class SumCategoricalDataset(BaseDataset):
         
         return self.dataset
     
-    def logit_to_values(self, logits):
+    def logits_to_values(self, logits):
         """Convert the logits to values."""
         if isinstance(logits, torch.Tensor):
             logits = logits.cpu().numpy()
@@ -289,7 +289,7 @@ class SumCategoricalDataset(BaseDataset):
     def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False):
         """Generate the dataset with the mask to inpaint."""
         
-        dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
         masks = []
 
         if mask_anomaly_points:
@@ -337,7 +337,7 @@ class SumCategoricalDataset(BaseDataset):
         """
 
         # Fetch the label values
-        array = self.label_values
+        array = self.dataset['indices'].numpy()
 
         # Calculate the sum of each row
         row_sums = np.sum(array, axis=1)
@@ -354,7 +354,7 @@ class SumCategoricalDataset(BaseDataset):
             result[exceeding_rows_indices, max_value_indices] = True
 
         # Repeat each column according to the specified repetition counts
-        repeated_result = np.repeat(result, self.structure, axis=1)
+        repeated_result = np.repeat(result, self.proba.structure, axis=1)
         repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
 
         if label_values_mask:
@@ -377,7 +377,7 @@ class SumCategoricalDataset(BaseDataset):
         """
 
         # Fetch the label values 
-        array = self.label_values
+        array = self.dataset['indices'].numpy()
 
         # Calculate the sum of each row
         row_sums = np.sum(array, axis=1)
@@ -394,7 +394,7 @@ class SumCategoricalDataset(BaseDataset):
         # Combine the conditions: the sum exceeds the threshold and the element is the maximum
         result = np.logical_and(exceed_threshold[:, None], is_max)
 
-        repeated_result = np.repeat(result, self.structure, axis=1)
+        repeated_result = np.repeat(result, self.proba.structure, axis=1)
 
         repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
 
@@ -1138,4 +1138,4 @@ class ClassificationModel:
         if not os.path.exists(path):
             os.makedirs(path)
             # save the model
-            torch.save(self.model, model_name + '.pkl')
+        torch.save(self.model, path + model_name + '.pkl')
