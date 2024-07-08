@@ -139,7 +139,7 @@ class AnomalyCorrection:
         print('\nmasks')
         for mask in masks:
             print(f'{mask}  ({len(mask)})')
-        # print(len(masks))
+        print(len(masks))
 
         # print('\nstructure')
         # print(self.proba.structure)
