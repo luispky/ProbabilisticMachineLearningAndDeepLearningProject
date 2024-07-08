@@ -46,17 +46,19 @@ class DDPM:
                  feed_forward_kernel=True,
                  hidden_units: list | None=None, 
                  concat_x_and_t=False,
-                 unet=False 
-                 ):
+                 unet=False,
+                 dropout_rate=0.01):
         """Create a new noise predictor model with the provided parameters."""
-        print('Creating a new model...')
+        print('Creating a new diffusion model...')
         self.model = NoisePredictor(dataset_shape=self.dataset_shape,
                             time_dim_emb=time_dim_emb,
                             num_classes=num_classes,
                             feed_forward_kernel=feed_forward_kernel,
                             hidden_units=hidden_units,
                             concat_x_and_t=concat_x_and_t,
-                            unet=unet)
+                            dropout_rate=dropout_rate,
+                            unet=unet 
+                            )
         
     def train(self, dataloader, learning_rate=1e-3, epochs=64, beta_ema=0.999, wandb_track=False):
         # Instantiate the Exponential Moving Average (EMA) class
@@ -82,7 +84,7 @@ class DDPM:
         # set the model to training mode
         self.model.train()
         
-        print('Training...')
+        print('Training the DDPM...')
         
         # Initialize list to store losses during training
         train_losses = []        
@@ -97,7 +99,7 @@ class DDPM:
             running_loss = 0.0
             num_elements = 0
             
-            for i, batch_data in enumerate(dataloader):  # x_{0} ~ q(x_{0})
+            for batch_data in dataloader:  # x_{0} ~ q(x_{0})
                 optimizer.zero_grad()
                 
                 # extract data from the batch verifying if it has labels
@@ -184,7 +186,7 @@ class DDPM:
                 print('Model was not trained with labels. Labels not sampled.')
             labels = None
             
-        print('Sampling...')
+        print('Sampling with the DDPM...')
         
         # x_{T} ~ N(0, I)
         x = torch.randn((samples, *self.dataset_shape[1:])).to(self.device)
@@ -219,7 +221,7 @@ class DDPM:
     @torch.no_grad()
     def inpaint(self, original, mask, resampling_steps=10):
         """Inpainting method according to the RePaint paper."""
-        # ?: implement
+        # ?: implement time jumps for inpainting
         
         assert self.model is not None, 'Model not provided'
         assert isinstance(self.model, NoisePredictor), 'Model must be an instance of NoisePredictor'
@@ -277,7 +279,7 @@ class DDPM:
         """
         Load model parameters from a file using safetensors.
         """
-        print(f'Loading model...')
+        print(f'Loading a DDPM model...')
         try:
             self.model = NoisePredictor(
                                     dataset_shape=self.dataset_shape,
@@ -296,7 +298,7 @@ class DDPM:
     
     def load_model_pickle(self, filename, path="../models/"):
         """Load model parameters from a file using pickle."""
-        print(f'Loading model...')
+        print(f'Loading a DDPM model...')
         try:
             filename = path + filename + '.pkl'
             model = torch.load(filename)
