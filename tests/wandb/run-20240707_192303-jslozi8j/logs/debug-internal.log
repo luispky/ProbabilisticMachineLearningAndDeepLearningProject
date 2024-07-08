@@ -1,0 +1,396 @@
+2024-07-07 19:23:03,967 INFO    StreamThr :21293 [internal.py:wandb_internal():85] W&B internal server running at pid: 21293, started at: 2024-07-07 19:23:03.966879
+2024-07-07 19:23:03,969 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status
+2024-07-07 19:23:03,971 INFO    WriterThread:21293 [datastore.py:open_for_write():87] open: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/run-jslozi8j.wandb
+2024-07-07 19:23:03,971 DEBUG   SenderThread:21293 [sender.py:send():379] send: header
+2024-07-07 19:23:03,973 DEBUG   SenderThread:21293 [sender.py:send():379] send: run
+2024-07-07 19:23:05,088 INFO    SenderThread:21293 [dir_watcher.py:__init__():211] watching files in: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files
+2024-07-07 19:23:05,088 INFO    SenderThread:21293 [sender.py:_start_run_threads():1188] run started: jslozi8j with start time 1720372983.966736
+2024-07-07 19:23:05,093 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: check_version
+2024-07-07 19:23:05,093 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: check_version
+2024-07-07 19:23:05,173 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: run_start
+2024-07-07 19:23:05,174 DEBUG   HandlerThread:21293 [system_info.py:__init__():26] System info init
+2024-07-07 19:23:05,174 DEBUG   HandlerThread:21293 [system_info.py:__init__():41] System info init done
+2024-07-07 19:23:05,174 INFO    HandlerThread:21293 [system_monitor.py:start():194] Starting system monitor
+2024-07-07 19:23:05,174 INFO    SystemMonitor:21293 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-07-07 19:23:05,174 INFO    HandlerThread:21293 [system_monitor.py:probe():214] Collecting system info
+2024-07-07 19:23:05,175 INFO    SystemMonitor:21293 [interfaces.py:start():188] Started cpu monitoring
+2024-07-07 19:23:05,175 INFO    SystemMonitor:21293 [interfaces.py:start():188] Started disk monitoring
+2024-07-07 19:23:05,176 INFO    SystemMonitor:21293 [interfaces.py:start():188] Started memory monitoring
+2024-07-07 19:23:05,176 INFO    SystemMonitor:21293 [interfaces.py:start():188] Started network monitoring
+2024-07-07 19:23:05,184 DEBUG   HandlerThread:21293 [system_info.py:probe():152] Probing system
+2024-07-07 19:23:05,186 DEBUG   HandlerThread:21293 [system_info.py:_probe_git():137] Probing git
+2024-07-07 19:23:05,192 DEBUG   HandlerThread:21293 [system_info.py:_probe_git():145] Probing git done
+2024-07-07 19:23:05,192 DEBUG   HandlerThread:21293 [system_info.py:probe():200] Probing system done
+2024-07-07 19:23:05,192 DEBUG   HandlerThread:21293 [system_monitor.py:probe():223] {'os': 'Linux-6.5.0-41-generic-x86_64-with-glibc2.35', 'python': '3.12.2', 'heartbeatAt': '2024-07-07T17:23:05.184263', 'startedAt': '2024-07-07T17:23:03.961918', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/home/l11/Documents/probabilistic_machine_learning/project/tests/test_diffusion_inpainting.py', 'codePathLocal': 'test_diffusion_inpainting.py', 'codePath': 'tests/test_diffusion_inpainting.py', 'git': {'remote': 'git@github.com:luispky/ProbabilisticMachineLearningProject.git', 'commit': 'f40e7db090a10828ffade50287285425280c7297'}, 'email': 'luispalaciosky@gmail.com', 'root': '/home/l11/Documents/probabilistic_machine_learning/project', 'host': 'l11', 'username': 'l11', 'executable': '/home/l11/miniconda3/envs/DL/bin/python', 'cpu_count': 8, 'cpu_count_logical': 16, 'cpu_freq': {'current': 3500.938062499999, 'min': 400.0, 'max': 4372.0}, 'cpu_freq_per_core': [{'current': 1981.09, 'min': 400.0, 'max': 4372.0}, {'current': 2004.636, 'min': 400.0, 'max': 4372.0}, {'current': 4342.021, 'min': 400.0, 'max': 4372.0}, {'current': 4330.89, 'min': 400.0, 'max': 4372.0}, {'current': 4341.678, 'min': 400.0, 'max': 4372.0}, {'current': 4333.87, 'min': 400.0, 'max': 4372.0}, {'current': 4326.035, 'min': 400.0, 'max': 4372.0}, {'current': 4302.345, 'min': 400.0, 'max': 4372.0}, {'current': 3791.89, 'min': 400.0, 'max': 4372.0}, {'current': 4261.997, 'min': 400.0, 'max': 4372.0}, {'current': 4336.122, 'min': 400.0, 'max': 4372.0}, {'current': 4334.702, 'min': 400.0, 'max': 4372.0}, {'current': 4322.133, 'min': 400.0, 'max': 4372.0}, {'current': 4281.77, 'min': 400.0, 'max': 4372.0}, {'current': 4339.129, 'min': 400.0, 'max': 4372.0}, {'current': 4220.695, 'min': 400.0, 'max': 4372.0}], 'disk': {'/': {'total': 467.8895797729492, 'used': 65.85551834106445}}, 'memory': {'total': 5.6394805908203125}}
+2024-07-07 19:23:05,192 INFO    HandlerThread:21293 [system_monitor.py:probe():224] Finished collecting system info
+2024-07-07 19:23:05,192 INFO    HandlerThread:21293 [system_monitor.py:probe():227] Publishing system info
+2024-07-07 19:23:05,192 DEBUG   HandlerThread:21293 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-07-07 19:23:06,089 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/conda-environment.yaml
+2024-07-07 19:23:07,089 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/conda-environment.yaml
+2024-07-07 19:23:07,111 DEBUG   HandlerThread:21293 [system_info.py:_save_conda():224] Saving conda packages done
+2024-07-07 19:23:07,112 INFO    HandlerThread:21293 [system_monitor.py:probe():229] Finished publishing system info
+2024-07-07 19:23:07,116 DEBUG   SenderThread:21293 [sender.py:send():379] send: files
+2024-07-07 19:23:07,116 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-07-07 19:23:07,165 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: python_packages
+2024-07-07 19:23:07,166 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: python_packages
+2024-07-07 19:23:07,166 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-07 19:23:07,167 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: stop_status
+2024-07-07 19:23:07,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:07,420 DEBUG   SenderThread:21293 [sender.py:send():379] send: telemetry
+2024-07-07 19:23:07,420 DEBUG   SenderThread:21293 [sender.py:send():379] send: config
+2024-07-07 19:23:07,850 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/bgwr19vn-wandb-metadata.json
+2024-07-07 19:23:07,851 DEBUG   SenderThread:21293 [sender.py:send():379] send: files
+2024-07-07 19:23:07,852 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file media/images/original_data_gaussian_03_0_3b7afc91dc186d0dfd5b.png with policy now
+2024-07-07 19:23:07,892 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-07 19:23:07,892 DEBUG   SenderThread:21293 [sender.py:send():379] send: history
+2024-07-07 19:23:07,892 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: summary_record
+2024-07-07 19:23:07,894 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-07 19:23:08,089 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/original_data_gaussian_03_0_3b7afc91dc186d0dfd5b.png
+2024-07-07 19:23:08,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/requirements.txt
+2024-07-07 19:23:08,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:08,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/wandb-metadata.json
+2024-07-07 19:23:08,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/wandb-summary.json
+2024-07-07 19:23:08,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media
+2024-07-07 19:23:08,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images
+2024-07-07 19:23:08,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:08,668 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/vmz24qde-media/images/original_data_gaussian_03_0_3b7afc91dc186d0dfd5b.png
+2024-07-07 19:23:09,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:09,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:09,500 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/dubao08l-media/images/original_data_gaussian_03_0_3b7afc91dc186d0dfd5b.png
+2024-07-07 19:23:10,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:10,167 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:11,090 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:11,167 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:12,167 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:13,091 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:13,167 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:14,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:14,255 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:15,092 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:15,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:16,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:17,093 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:17,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:18,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:19,094 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:19,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:19,264 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:20,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:21,095 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:21,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:22,166 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-07 19:23:22,167 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: stop_status
+2024-07-07 19:23:22,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:23,095 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:23,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:24,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:24,271 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:25,096 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:25,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:26,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:27,097 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:27,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:28,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:29,098 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:29,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:29,403 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:30,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:31,099 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:31,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:32,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:33,100 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:33,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:34,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:34,430 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:35,101 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/config.yaml
+2024-07-07 19:23:35,101 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:35,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:36,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:37,101 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:37,166 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-07 19:23:37,167 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: stop_status
+2024-07-07 19:23:37,170 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:38,171 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:39,102 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:39,171 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:40,000 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:40,171 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:41,103 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:41,171 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:42,171 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:43,104 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:43,171 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:43,206 DEBUG   SenderThread:21293 [sender.py:send():379] send: files
+2024-07-07 19:23:43,206 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file media/images/loss_gaussian_03_1_7020f50f7ed8b77d8768.png with policy now
+2024-07-07 19:23:43,247 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-07 19:23:43,248 DEBUG   SenderThread:21293 [sender.py:send():379] send: history
+2024-07-07 19:23:43,249 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: summary_record
+2024-07-07 19:23:43,249 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-07 19:23:43,536 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-07 19:23:43,536 DEBUG   SenderThread:21293 [sender.py:send():379] send: files
+2024-07-07 19:23:43,536 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file media/images/gen_samples_gaussian_03_2_a19de0dd6e0ea491a083.png with policy now
+2024-07-07 19:23:43,537 DEBUG   SenderThread:21293 [sender.py:send():379] send: history
+2024-07-07 19:23:43,537 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: summary_record
+2024-07-07 19:23:43,537 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-07 19:23:43,996 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/n877u1vo-media/images/loss_gaussian_03_1_7020f50f7ed8b77d8768.png
+2024-07-07 19:23:44,105 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/wandb-summary.json
+2024-07-07 19:23:44,106 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:44,106 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/gen_samples_gaussian_03_2_a19de0dd6e0ea491a083.png
+2024-07-07 19:23:44,108 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/loss_gaussian_03_1_7020f50f7ed8b77d8768.png
+2024-07-07 19:23:44,109 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images
+2024-07-07 19:23:44,173 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:44,508 INFO    wandb-upload_1:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/qbe5zwjl-media/images/gen_samples_gaussian_03_2_a19de0dd6e0ea491a083.png
+2024-07-07 19:23:44,744 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/8zf8let1-media/images/loss_gaussian_03_1_7020f50f7ed8b77d8768.png
+2024-07-07 19:23:45,106 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:45,174 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:45,209 INFO    wandb-upload_1:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/zpuncyjx-media/images/gen_samples_gaussian_03_2_a19de0dd6e0ea491a083.png
+2024-07-07 19:23:45,289 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:46,108 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:46,173 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:47,108 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:47,173 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:48,173 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:49,110 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:49,175 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:50,173 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:50,615 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:51,112 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:51,175 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:52,169 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-07 19:23:52,169 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: stop_status
+2024-07-07 19:23:52,174 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:53,114 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:53,174 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:54,174 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:55,115 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:55,175 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:55,961 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:23:56,175 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:57,117 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:57,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:58,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:23:59,118 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:23:59,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:00,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:01,120 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:01,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:01,291 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:24:02,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:03,122 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:03,176 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:04,177 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:05,124 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:05,176 DEBUG   SystemMonitor:21293 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-07-07 19:24:05,178 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:05,181 DEBUG   SenderThread:21293 [sender.py:send():379] send: stats
+2024-07-07 19:24:06,177 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:06,581 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:24:07,125 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:07,167 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-07 19:24:07,168 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: stop_status
+2024-07-07 19:24:07,177 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:08,177 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:09,127 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:09,178 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:10,177 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:11,130 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:11,178 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:11,649 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:24:12,178 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:13,131 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:13,179 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:14,178 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:15,134 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:15,178 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:16,179 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:16,756 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:24:17,136 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:17,179 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:18,179 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:19,138 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:19,187 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:20,184 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:21,140 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:21,185 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:22,003 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:24:22,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-07 19:24:22,168 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: stop_status
+2024-07-07 19:24:22,185 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:23,143 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:23,185 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:24,185 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:25,144 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:25,186 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:26,186 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:27,017 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:24:27,146 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:27,185 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:28,186 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:29,148 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:29,186 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:30,186 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:30,729 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-07 19:24:30,729 DEBUG   SenderThread:21293 [sender.py:send():379] send: files
+2024-07-07 19:24:30,730 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file media/images/data_to_inpaint_gaussian_03_3_2167578fee3c85db2fcb.png with policy now
+2024-07-07 19:24:30,730 DEBUG   SenderThread:21293 [sender.py:send():379] send: history
+2024-07-07 19:24:30,730 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: summary_record
+2024-07-07 19:24:30,730 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-07 19:24:30,823 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-07 19:24:30,824 DEBUG   SenderThread:21293 [sender.py:send():379] send: files
+2024-07-07 19:24:30,824 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file media/images/inpainted_data_gaussian_03_4_a9652a97e5f0eeae4821.png with policy now
+2024-07-07 19:24:30,824 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: server_info
+2024-07-07 19:24:30,825 DEBUG   SenderThread:21293 [sender.py:send():379] send: history
+2024-07-07 19:24:30,825 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: summary_record
+2024-07-07 19:24:30,825 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-07 19:24:30,826 DEBUG   SenderThread:21293 [sender.py:send():379] send: telemetry
+2024-07-07 19:24:30,826 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: server_info
+2024-07-07 19:24:30,982 DEBUG   SenderThread:21293 [sender.py:send():379] send: exit
+2024-07-07 19:24:30,982 INFO    SenderThread:21293 [sender.py:send_exit():586] handling exit code: 0
+2024-07-07 19:24:30,982 INFO    SenderThread:21293 [sender.py:send_exit():588] handling runtime: 85
+2024-07-07 19:24:30,983 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-07 19:24:30,983 INFO    SenderThread:21293 [sender.py:send_exit():594] send defer
+2024-07-07 19:24:30,983 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:30,983 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 0
+2024-07-07 19:24:30,984 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:30,984 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-07-07 19:24:30,984 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 1
+2024-07-07 19:24:30,984 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:30,984 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 1
+2024-07-07 19:24:30,985 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:30,985 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-07-07 19:24:30,985 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 2
+2024-07-07 19:24:30,985 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:30,985 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 2
+2024-07-07 19:24:30,985 INFO    HandlerThread:21293 [system_monitor.py:finish():203] Stopping system monitor
+2024-07-07 19:24:30,986 INFO    HandlerThread:21293 [interfaces.py:finish():200] Joined cpu monitor
+2024-07-07 19:24:30,986 DEBUG   SystemMonitor:21293 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-07-07 19:24:30,986 DEBUG   SystemMonitor:21293 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-07-07 19:24:30,987 INFO    HandlerThread:21293 [interfaces.py:finish():200] Joined disk monitor
+2024-07-07 19:24:30,987 INFO    HandlerThread:21293 [interfaces.py:finish():200] Joined memory monitor
+2024-07-07 19:24:30,988 INFO    HandlerThread:21293 [interfaces.py:finish():200] Joined network monitor
+2024-07-07 19:24:30,988 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:30,988 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-07-07 19:24:30,988 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 3
+2024-07-07 19:24:30,988 DEBUG   SenderThread:21293 [sender.py:send():379] send: stats
+2024-07-07 19:24:30,989 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:30,989 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 3
+2024-07-07 19:24:30,989 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:30,989 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-07-07 19:24:30,990 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 4
+2024-07-07 19:24:30,990 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:30,990 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 4
+2024-07-07 19:24:30,990 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:30,990 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-07-07 19:24:30,990 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 5
+2024-07-07 19:24:30,991 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:30,991 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 5
+2024-07-07 19:24:30,991 DEBUG   SenderThread:21293 [sender.py:send():379] send: summary
+2024-07-07 19:24:30,992 INFO    SenderThread:21293 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-07 19:24:30,993 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:30,993 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-07-07 19:24:30,993 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 6
+2024-07-07 19:24:30,993 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:30,993 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 6
+2024-07-07 19:24:30,993 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:30,994 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-07-07 19:24:30,998 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: status_report
+2024-07-07 19:24:31,149 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/wandb-summary.json
+2024-07-07 19:24:31,150 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:31,150 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/inpainted_data_gaussian_03_4_a9652a97e5f0eeae4821.png
+2024-07-07 19:24:31,150 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_created():271] file/dir created: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/data_to_inpaint_gaussian_03_3_2167578fee3c85db2fcb.png
+2024-07-07 19:24:31,151 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images
+2024-07-07 19:24:31,200 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 7
+2024-07-07 19:24:31,200 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:31,200 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 7
+2024-07-07 19:24:31,200 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:31,200 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-07-07 19:24:31,456 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/b6tty7ls-media/images/data_to_inpaint_gaussian_03_3_2167578fee3c85db2fcb.png
+2024-07-07 19:24:31,617 INFO    wandb-upload_1:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/9tgo32i6-media/images/inpainted_data_gaussian_03_4_a9652a97e5f0eeae4821.png
+2024-07-07 19:24:31,982 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-07 19:24:32,150 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/config.yaml
+2024-07-07 19:24:32,150 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:32,517 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 8
+2024-07-07 19:24:32,518 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: poll_exit
+2024-07-07 19:24:32,518 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:32,518 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 8
+2024-07-07 19:24:32,519 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:32,519 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-07-07 19:24:32,519 INFO    SenderThread:21293 [job_builder.py:build():440] Attempting to build job artifact
+2024-07-07 19:24:32,520 INFO    SenderThread:21293 [job_builder.py:_get_source_type():569] is repo sourced job
+2024-07-07 19:24:32,538 INFO    SenderThread:21293 [job_builder.py:build():545] adding wandb-job metadata file
+2024-07-07 19:24:32,546 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 9
+2024-07-07 19:24:32,547 DEBUG   SenderThread:21293 [sender.py:send():379] send: artifact
+2024-07-07 19:24:32,548 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:32,548 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 9
+2024-07-07 19:24:32,576 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/mejh7shd-media/images/data_to_inpaint_gaussian_03_3_2167578fee3c85db2fcb.png
+2024-07-07 19:24:32,983 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-07 19:24:33,151 INFO    Thread-12 :21293 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:33,245 INFO    wandb-upload_1:21293 [upload_job.py:push():130] Uploaded file /tmp/tmpvstr1ewowandb/df4fmj28-media/images/inpainted_data_gaussian_03_4_a9652a97e5f0eeae4821.png
+2024-07-07 19:24:33,629 INFO    wandb-upload_2:21293 [upload_job.py:push():85] Skipped uploading /home/l11/.local/share/wandb/artifacts/staging/tmpozx1urae
+2024-07-07 19:24:33,840 INFO    wandb-upload_0:21293 [upload_job.py:push():88] Uploaded file /tmp/tmp7v0p0m7k/wandb-job.json
+2024-07-07 19:24:34,907 INFO    SenderThread:21293 [sender.py:send_artifact():1530] sent artifact job-git_github.com_luispky_ProbabilisticMachineLearningProject.git_tests_test_diffusion_inpainting.py - {'id': 'QXJ0aWZhY3Q6OTQ4MjcyMjc5', 'state': 'PENDING', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjI0NjU0MDU0OA==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6OTQ4MjY2OTQw', 'versionIndex': 3}}}
+2024-07-07 19:24:34,907 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:34,907 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-07-07 19:24:34,907 INFO    SenderThread:21293 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-07-07 19:24:35,153 INFO    SenderThread:21293 [dir_watcher.py:finish():388] scan: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files
+2024-07-07 19:24:35,154 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/wandb-summary.json wandb-summary.json
+2024-07-07 19:24:35,154 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/conda-environment.yaml conda-environment.yaml
+2024-07-07 19:24:35,157 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log output.log
+2024-07-07 19:24:35,157 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/wandb-metadata.json wandb-metadata.json
+2024-07-07 19:24:35,158 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/config.yaml config.yaml
+2024-07-07 19:24:35,164 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/requirements.txt requirements.txt
+2024-07-07 19:24:35,167 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/original_data_gaussian_03_0_3b7afc91dc186d0dfd5b.png media/images/original_data_gaussian_03_0_3b7afc91dc186d0dfd5b.png
+2024-07-07 19:24:35,167 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/gen_samples_gaussian_03_2_a19de0dd6e0ea491a083.png media/images/gen_samples_gaussian_03_2_a19de0dd6e0ea491a083.png
+2024-07-07 19:24:35,168 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/data_to_inpaint_gaussian_03_3_2167578fee3c85db2fcb.png media/images/data_to_inpaint_gaussian_03_3_2167578fee3c85db2fcb.png
+2024-07-07 19:24:35,168 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/loss_gaussian_03_1_7020f50f7ed8b77d8768.png media/images/loss_gaussian_03_1_7020f50f7ed8b77d8768.png
+2024-07-07 19:24:35,168 INFO    SenderThread:21293 [dir_watcher.py:finish():402] scan save: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/media/images/inpainted_data_gaussian_03_4_a9652a97e5f0eeae4821.png media/images/inpainted_data_gaussian_03_4_a9652a97e5f0eeae4821.png
+2024-07-07 19:24:35,168 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 10
+2024-07-07 19:24:35,168 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: poll_exit
+2024-07-07 19:24:35,168 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:35,168 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 10
+2024-07-07 19:24:35,168 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:35,168 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-07-07 19:24:35,168 INFO    SenderThread:21293 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-07 19:24:35,549 INFO    wandb-upload_1:21293 [upload_job.py:push():130] Uploaded file /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/wandb-summary.json
+2024-07-07 19:24:35,561 INFO    wandb-upload_0:21293 [upload_job.py:push():130] Uploaded file /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/conda-environment.yaml
+2024-07-07 19:24:35,632 INFO    wandb-upload_3:21293 [upload_job.py:push():130] Uploaded file /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/config.yaml
+2024-07-07 19:24:35,639 INFO    wandb-upload_2:21293 [upload_job.py:push():130] Uploaded file /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/output.log
+2024-07-07 19:24:35,984 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-07 19:24:35,985 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: poll_exit
+2024-07-07 19:24:36,063 INFO    wandb-upload_4:21293 [upload_job.py:push():130] Uploaded file /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/files/requirements.txt
+2024-07-07 19:24:36,264 INFO    Thread-11 (_thread_body):21293 [sender.py:transition_state():614] send defer: 11
+2024-07-07 19:24:36,265 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:36,265 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 11
+2024-07-07 19:24:36,265 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:36,266 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-07-07 19:24:36,266 INFO    SenderThread:21293 [file_pusher.py:join():175] waiting for file pusher
+2024-07-07 19:24:36,268 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 12
+2024-07-07 19:24:36,268 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:36,269 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 12
+2024-07-07 19:24:36,269 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:36,269 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-07-07 19:24:36,269 INFO    SenderThread:21293 [file_stream.py:finish():601] file stream finish called
+2024-07-07 19:24:36,418 INFO    SenderThread:21293 [file_stream.py:finish():605] file stream finish is done
+2024-07-07 19:24:36,419 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 13
+2024-07-07 19:24:36,419 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:36,419 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 13
+2024-07-07 19:24:36,419 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:36,419 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-07-07 19:24:36,420 INFO    SenderThread:21293 [sender.py:transition_state():614] send defer: 14
+2024-07-07 19:24:36,420 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: defer
+2024-07-07 19:24:36,420 INFO    HandlerThread:21293 [handler.py:handle_request_defer():184] handle defer: 14
+2024-07-07 19:24:36,420 DEBUG   SenderThread:21293 [sender.py:send():379] send: final
+2024-07-07 19:24:36,421 DEBUG   SenderThread:21293 [sender.py:send():379] send: footer
+2024-07-07 19:24:36,421 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: defer
+2024-07-07 19:24:36,421 INFO    SenderThread:21293 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-07-07 19:24:36,422 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-07 19:24:36,423 DEBUG   SenderThread:21293 [sender.py:send_request():406] send_request: poll_exit
+2024-07-07 19:24:36,424 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-07 19:24:36,425 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: get_summary
+2024-07-07 19:24:36,426 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: sampled_history
+2024-07-07 19:24:36,427 DEBUG   HandlerThread:21293 [handler.py:handle_request():158] handle_request: shutdown
+2024-07-07 19:24:36,427 INFO    HandlerThread:21293 [handler.py:finish():882] shutting down handler
+2024-07-07 19:24:37,423 INFO    WriterThread:21293 [datastore.py:close():296] close: /home/l11/Documents/probabilistic_machine_learning/project/tests/wandb/run-20240707_192303-jslozi8j/run-jslozi8j.wandb
+2024-07-07 19:24:37,423 INFO    SenderThread:21293 [sender.py:finish():1608] shutting down sender
+2024-07-07 19:24:37,423 INFO    SenderThread:21293 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-07 19:24:37,424 INFO    SenderThread:21293 [file_pusher.py:join():175] waiting for file pusher

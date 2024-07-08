@@ -1,0 +1,120 @@
+{
+    "os": "Linux-6.5.0-41-generic-x86_64-with-glibc2.35",
+    "python": "3.12.2",
+    "heartbeatAt": "2024-07-08T11:05:35.061667",
+    "startedAt": "2024-07-08T11:05:34.347237",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/l11/Documents/probabilistic_machine_learning/project/tests/test_diffusion_inpainting.py",
+    "codePathLocal": "test_diffusion_inpainting.py",
+    "codePath": "tests/test_diffusion_inpainting.py",
+    "git": {
+        "remote": "git@github.com:luispky/ProbabilisticMachineLearningProject.git",
+        "commit": "f40e7db090a10828ffade50287285425280c7297"
+    },
+    "email": "luispalaciosky@gmail.com",
+    "root": "/home/l11/Documents/probabilistic_machine_learning/project",
+    "host": "l11",
+    "username": "l11",
+    "executable": "/home/l11/miniconda3/envs/DL/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 3044.4539375,
+        "min": 400.0,
+        "max": 4372.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 4323.284,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 4342.273,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 4173.52,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 3710.516,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 4324.052,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 4333.542,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 2880.14,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 4257.118,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 3174.406,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 2195.46,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 2657.404,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 2303.51,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 3266.743,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 3078.981,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 3477.278,
+            "min": 400.0,
+            "max": 4372.0
+        },
+        {
+            "current": 2692.957,
+            "min": 400.0,
+            "max": 4372.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 467.8895797729492,
+            "used": 65.94246292114258
+        }
+    },
+    "memory": {
+        "total": 5.639484405517578
+    }
+}

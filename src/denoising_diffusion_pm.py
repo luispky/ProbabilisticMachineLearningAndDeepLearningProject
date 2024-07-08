@@ -46,17 +46,19 @@ class DDPM:
                  feed_forward_kernel=True,
                  hidden_units: list | None=None, 
                  concat_x_and_t=False,
-                 unet=False 
-                 ):
+                 unet=False,
+                 dropout_rate=0.01):
         """Create a new noise predictor model with the provided parameters."""
-        print('Creating a new model...')
+        print('Creating a new diffusion model...')
         self.model = NoisePredictor(dataset_shape=self.dataset_shape,
                             time_dim_emb=time_dim_emb,
                             num_classes=num_classes,
                             feed_forward_kernel=feed_forward_kernel,
                             hidden_units=hidden_units,
                             concat_x_and_t=concat_x_and_t,
-                            unet=unet)
+                            dropout_rate=dropout_rate,
+                            unet=unet 
+                            )
         
     def train(self, dataloader, learning_rate=1e-3, epochs=64, beta_ema=0.999, wandb_track=False):
         # Instantiate the Exponential Moving Average (EMA) class
@@ -82,7 +84,7 @@ class DDPM:
         # set the model to training mode
         self.model.train()
         
-        print('Training...')
+        print('Training the DDPM...')
         
         # Initialize list to store losses during training
         train_losses = []        
@@ -97,7 +99,7 @@ class DDPM:
             running_loss = 0.0
             num_elements = 0
             
-            for i, batch_data in enumerate(dataloader):  # x_{0} ~ q(x_{0})
+            for batch_data in dataloader:  # x_{0} ~ q(x_{0})
                 optimizer.zero_grad()
                 
                 # extract data from the batch verifying if it has labels
@@ -184,7 +186,7 @@ class DDPM:
                 print('Model was not trained with labels. Labels not sampled.')
             labels = None
             
-        print('Sampling...')
+        print('Sampling with the DDPM...')
         
         # x_{T} ~ N(0, I)
         x = torch.randn((samples, *self.dataset_shape[1:])).to(self.device)
@@ -219,7 +221,7 @@ class DDPM:
     @torch.no_grad()
     def inpaint(self, original, mask, resampling_steps=10):
         """Inpainting method according to the RePaint paper."""
-        # ?: implement
+        # ?: implement time jumps for inpainting
         
         assert self.model is not None, 'Model not provided'
         assert isinstance(self.model, NoisePredictor), 'Model must be an instance of NoisePredictor'
@@ -277,7 +279,7 @@ class DDPM:
         """
         Load model parameters from a file using safetensors.
         """
-        print(f'Loading model...')
+        print(f'Loading a DDPM model...')
         try:
             self.model = NoisePredictor(
                                     dataset_shape=self.dataset_shape,
@@ -296,7 +298,7 @@ class DDPM:
     
     def load_model_pickle(self, filename, path="../models/"):
         """Load model parameters from a file using pickle."""
-        print(f'Loading model...')
+        print(f'Loading a DDPM model...')
         try:
             filename = path + filename + '.pkl'
             model = torch.load(filename)
@@ -357,7 +359,7 @@ class DDPMAnomalyCorrection(DDPM):
         
         if plot_data:
             plot_categories(x_indices, proba.structure, original_data_name, save_locally=plot_data) 
-        x_logits_tensor = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float32)
+        x_logits_tensor = torch.tensor(proba.values_to_logits(x_indices), dtype=torch.float64)
         tensor_dataset =  TensorDataset(x_logits_tensor)
         dataloader = DataLoader(tensor_dataset, batch_size=batch_size, shuffle=True)
         
@@ -369,7 +371,8 @@ class DDPMAnomalyCorrection(DDPM):
         
         return loss
         
-    def sample(self, num_samples=1000, 
+    def sample(self, num_samples=1000,
+               classifier=None,
                plot_data=False,
                proba=None,
                sampled_data_name='ddpm_sampled_data',
@@ -378,13 +381,23 @@ class DDPMAnomalyCorrection(DDPM):
         assert proba is not None, 'The probabilities object must be provided'
         
         sampled_logits = super().sample(samples=num_samples)[0]
-        
+
         x_indices_sampled = proba.logits_to_values(sampled_logits.cpu().numpy())
             
         if plot_data:
-            plot_categories(x_indices_sampled, sampled_data_name, save_locally=plot_data)
+            plot_categories(x_indices_sampled, proba.structure, sampled_data_name, save_locally=plot_data)
         
-        return x_indices_sampled
+        if classifier is None:
+            return {'x': x_indices_sampled}
+        else:
+            p_sampled = proba.logits_to_proba(sampled_logits.cpu().numpy())
+            p_sampled = torch.tensor(p_sampled)
+            y = classifier(p_sampled).detach().numpy().flatten()
+            y = np.round(y)
+            
+            print(f'\nPercentage anomalies generated {np.mean(y):.1%}')
+
+            return {'x': x_indices_sampled, 'y': y}
     
     def inpaint(self, anomaly_indices,
                 masks,
@@ -395,7 +408,7 @@ class DDPMAnomalyCorrection(DDPM):
         assert proba is not None, 'The probabilities object must be provided'
 
         # Convert the indices data to logits
-        x_logits = torch.tensor(proba.values_to_logits(anomaly_indices), dtype=torch.float32)
+        x_logits = torch.tensor(proba.values_to_logits(anomaly_indices), dtype=torch.float64)
 
         inpainted_indices = []
         for mask in masks:
@@ -405,5 +418,7 @@ class DDPMAnomalyCorrection(DDPM):
                                                  mask=mask,
                                                  resampling_steps=resampling_steps)
             inpainted_indices.append(proba.logits_to_values(x_inpainted_logits.cpu().numpy()))
-        
-        return np.array(inpainted_indices)
+
+        inpainted_indices = np.array(inpainted_indices).squeeze(1)
+
+        return inpainted_indices
