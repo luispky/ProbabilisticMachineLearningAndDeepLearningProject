@@ -98,8 +98,6 @@ def main():
         classifier.train(dataloader_classifier, n_epochs=200, learning_rate=1e-3, 
                          model_name=classifier_name, weight_decay=1e-5)
 
-    # return
-    
     #!DDPM-------------------------------------------------------------------------------
     # Create a new instance
     diffusion = DDPM(dataset_shape=dataset_shape,
@@ -175,7 +173,7 @@ def main():
 
     # Dissimilarity between the original and the inpainted distribution
     dissimilarity = compute_divergence(data_to_inpaint['indices'].numpy().astype(int),
-                                       inpainted_data)
+                                       inpainted_data.astype(int))
 
     # Count the number of times the threshold is exceeded
     number_remaining_anomalies = np.sum(y_after_classifier)
