@@ -15,82 +15,23 @@ class BaseArchitectureKernel(nn.Module, ABC):
 
 
 class FeedForwardKernel(BaseArchitectureKernel):
-    def __init__(self, input_dim, output_dim, hidden_units: list):
+    def __init__(self, input_dim, output_dim, hidden_units: list, dropout_rate=0.01):
         super().__init__(input_dim, output_dim)
         
         layers = [] 
         layers.append(nn.Linear(input_dim, hidden_units[0]))
+        layers.append(nn.ReLU())
+        layers.append(nn.Dropout(dropout_rate))
         for i in range(len(hidden_units)-1):
             layers.append(nn.Linear(hidden_units[i], hidden_units[i+1]))
             layers.append(nn.ReLU())
+            layers.append(nn.Dropout(dropout_rate))
         layers.append(nn.Linear(hidden_units[-1], output_dim))
         
         self.net = nn.Sequential(*layers)
         
     def forward(self, x):
         return self.net(x)
-    
-    
-class UNet1ChannelKernel(nn.Module):
-    def __init__(self, input_dim, output_dim, concat_x_and_t):
-        super().__init__()
-        self.input_dim = input_dim
-        self.output_dim = output_dim
-        self.concat_x_and_t = concat_x_and_t
-        
-        input_channels = 1 
-        output_channels = 1
-        
-        self.encoder1 = nn.Sequential(
-            nn.Conv1d(input_channels, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv1d(64, 64, kernel_size=3, padding=1),
-            nn.ReLU()
-        )
-        self.pool1 = nn.MaxPool1d(2)
-        self.encoder2 = nn.Sequential(
-            nn.Conv1d(64, 128, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv1d(128, 128, kernel_size=3, padding=1),
-            nn.ReLU()
-        )
-        self.pool2 = nn.MaxPool1d(2)
-        self.bottleneck = nn.Sequential(
-            nn.Conv1d(128, 256, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv1d(256, 256, kernel_size=3, padding=1),
-            nn.ReLU()
-        )
-        self.upconv2 = nn.ConvTranspose1d(256, 128, kernel_size=2, stride=2)
-        self.decoder2 = nn.Sequential(
-            nn.Conv1d(256, 128, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv1d(128, 128, kernel_size=3, padding=1),
-            nn.ReLU()
-        )
-        self.upconv1 = nn.ConvTranspose1d(128, 64, kernel_size=2, stride=2)
-        self.decoder1 = nn.Sequential(
-            nn.Conv1d(128, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv1d(64, 64, kernel_size=3, padding=1),
-            nn.ReLU()
-        )
-        self.final_conv = nn.Conv1d(64, output_channels, kernel_size=1)
-        
-        self.projection_layer = nn.Linear(input_dim, output_dim) if concat_x_and_t else nn.Identity()
-            
-    def forward(self, x):
-        enc1 = self.encoder1(x.unsqueeze(1))
-        enc2 = self.encoder2(self.pool1(enc1))
-        bottleneck = self.bottleneck(self.pool2(enc2))
-        dec2 = self.upconv2(bottleneck)
-        dec2 = torch.cat((dec2, enc2), dim=1)
-        dec2 = self.decoder2(dec2)
-        dec1 = self.upconv1(dec2)
-        dec1 = torch.cat((dec1, enc1), dim=1)
-        dec1 = self.decoder1(dec1)
-        x = self.final_conv(dec1).squeeze(1)
-        return self.projection_layer(x)
     
     
 class NoisePredictor(nn.Module):
@@ -104,6 +45,7 @@ class NoisePredictor(nn.Module):
                  feed_forward_kernel=True,
                  hidden_units: list | None=None, 
                  concat_x_and_t=False,
+                 dropout_rate=0.01,
                  unet=False):
         super().__init__()
         
@@ -129,12 +71,12 @@ class NoisePredictor(nn.Module):
         # It ensures the time encoding is compatible with the noised samples
         self.time_emb_layer = nn.Sequential(
             nn.Linear(time_dim_emb, time_dim_emb),
-            nn.SiLU(),
+            nn.ReLU(),
             nn.Linear(time_dim_emb, dataset_shape[1]),
         ) if not concat_x_and_t else nn.Identity()
         
         if feed_forward_kernel:
-            self.architecture_kernel = FeedForwardKernel(input_dim, dataset_shape[1], hidden_units)
+            self.architecture_kernel = FeedForwardKernel(input_dim, dataset_shape[1], hidden_units, dropout_rate=dropout_rate)
         elif unet:
             self.architecture_kernel = UNet1ChannelKernel(input_dim, dataset_shape[1], concat_x_and_t)
         else:
@@ -208,3 +150,66 @@ class NoisePredictor(nn.Module):
         x_t = torch.cat((x_t, emb), dim=1) if self.concat_x_and_t else x_t + emb
 
         return self.architecture_kernel(x_t)
+
+
+class UNet1ChannelKernel(nn.Module):
+    """Simple one Channel U-Net architecture for the noise predictor in DDPM."""
+    def __init__(self, input_dim, output_dim, concat_x_and_t):
+        super().__init__()
+        self.input_dim = input_dim
+        self.output_dim = output_dim
+        self.concat_x_and_t = concat_x_and_t
+        
+        input_channels = 1 
+        output_channels = 1
+        
+        self.encoder1 = nn.Sequential(
+            nn.Conv1d(input_channels, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv1d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU()
+        )
+        self.pool1 = nn.MaxPool1d(2)
+        self.encoder2 = nn.Sequential(
+            nn.Conv1d(64, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv1d(128, 128, kernel_size=3, padding=1),
+            nn.ReLU()
+        )
+        self.pool2 = nn.MaxPool1d(2)
+        self.bottleneck = nn.Sequential(
+            nn.Conv1d(128, 256, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv1d(256, 256, kernel_size=3, padding=1),
+            nn.ReLU()
+        )
+        self.upconv2 = nn.ConvTranspose1d(256, 128, kernel_size=2, stride=2)
+        self.decoder2 = nn.Sequential(
+            nn.Conv1d(256, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv1d(128, 128, kernel_size=3, padding=1),
+            nn.ReLU()
+        )
+        self.upconv1 = nn.ConvTranspose1d(128, 64, kernel_size=2, stride=2)
+        self.decoder1 = nn.Sequential(
+            nn.Conv1d(128, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv1d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU()
+        )
+        self.final_conv = nn.Conv1d(64, output_channels, kernel_size=1)
+        
+        self.projection_layer = nn.Linear(input_dim, output_dim) if concat_x_and_t else nn.Identity()
+            
+    def forward(self, x):
+        enc1 = self.encoder1(x.unsqueeze(1))
+        enc2 = self.encoder2(self.pool1(enc1))
+        bottleneck = self.bottleneck(self.pool2(enc2))
+        dec2 = self.upconv2(bottleneck)
+        dec2 = torch.cat((dec2, enc2), dim=1)
+        dec2 = self.decoder2(dec2)
+        dec1 = self.upconv1(dec2)
+        dec1 = torch.cat((dec1, enc1), dim=1)
+        dec1 = self.decoder1(dec1)
+        x = self.final_conv(dec1).squeeze(1)
+        return self.projection_layer(x)

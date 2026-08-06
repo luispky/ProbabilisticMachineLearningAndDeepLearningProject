@@ -5,3 +5,5 @@ __pycache__/  # Ignores __pycache__ directories anywhere in the project
 scripts/wandb/  # Specifically ignores the wandb directory within scripts
 backup2.rar
 plots/
+tests/__pycache__/
+models/

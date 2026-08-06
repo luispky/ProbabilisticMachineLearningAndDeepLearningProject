@@ -2,11 +2,17 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import wandb
+from tqdm import tqdm
 from abc import ABC, abstractmethod
 import torch
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import DataLoader, TensorDataset, random_split
+import torch.nn as nn
+import torch.optim as optim
 import seaborn as sns
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
+# from imblearn.over_sampling import SMOTE
 
 
 class BaseDataset(ABC):
@@ -17,7 +23,7 @@ class BaseDataset(ABC):
     def generate_dataset(self):
         pass
 
-    def get_dataloader(self, batch_size=14, shuffle=True, with_labels=False):
+    def get_dataloader(self, batch_size=64, shuffle=True, with_labels=False):
         """Generate a dataloader for the dataset."""
         if self.dataset is None:
             self.generate_dataset()
@@ -62,15 +68,7 @@ class CategoricalEncoder:
 
     def _decode_index(self, i, index):
         """Decode an individual index back to its value."""
-        return self.map_indices_to_categories[i][index]
-  
-    def decode_indices(self, indices):
-        """Decode a 2D array of numerical labels to their original values for each category."""
-        vectorized_decode = np.vectorize(self._decode_index, excluded=['i'])
-        decoded_values = np.empty_like(indices, dtype=object)
-        for i in range(indices.shape[1]):
-            decoded_values[:, i] = vectorized_decode(i=i, index=indices[:, i])
-        return decoded_values       
+        return self.map_indices_to_categories[i][index]    
 
     def indices_to_dataframe(self, indices):
         """Decode a 2D array of numerical labels to a DataFrame with the original values."""
@@ -86,26 +84,30 @@ class CategoricalEncoder:
         return encoded_data.to_numpy()
 
 
-class CustomDataset(BaseDataset):
+class RealDataset(BaseDataset):
     """Class for generating a dataset to perform anomaly correction."""
-    def __init__(self, dataframe_path = None):
+    def __init__(self, csv_filename_in_datasets = None):
         super().__init__()
-        self.dataframe_path = dataframe_path
+        
+        self.row_x_indices_np = None
+        self.row_y_np = None
         self.categorical_encoder = None
         self.proba = None
-        self.label_values = None
-    
-    def generate_dataset(self, remove_anomalies=False, logits=False, only_anomalies=False):
-        """
-        Generate the dataset for the model starting from a dataframe.
-        """
         
+        self._get_dataset(csv_filename_in_datasets)
+        
+    def _get_dataset(self, csv_filename_in_datasets, path='../datasets/'):
         # Read the dataframe
-        dataframe = pd.read_csv(self.dataframe_path)
+        dataframe = pd.read_csv(path + csv_filename_in_datasets + '.csv')
         
         # Split the data into features and target
-        x = dataframe.drop(columns=['target'])
-        y = dataframe['target'].to_numpy().astype(bool)
+        x = dataframe.drop(columns=['y'])
+        y = dataframe['y'].to_numpy()
+        
+        encoder = LabelEncoder()
+        encoder.fit(y)
+        y = encoder.transform(y)
+        self.row_y_np = y.astype(np.bool)
         
         # Extract the structure of the data with a categorical encoder
         self.categorical_encoder = CategoricalEncoder(x)
@@ -113,17 +115,63 @@ class CustomDataset(BaseDataset):
         
         # Transform the data to probabilities representation
         self.proba = Probabilities(structure)
-        x = self.categorical_encoder.encoded_data()
-        x = self.proba.to_onehot(x)
-        self.label_values = self.categorical_encoder.encoded_data()
+        self.row_x_indices_np = self.categorical_encoder.encoded_data()
+    
+    def get_degrees_of_freedom_categories(self):
+        """Return the sum of number of values for each category."""
+        return sum(self.proba.structure)
+    
+    def get_classifier_dataloader(self, training_prop=0.7, batch_size=64, shuffle=True):
+        """Generate a dataloader for the dataset."""
+        dataset = self.generate_dataset(indices=True)
+        
+        x, y = dataset['x'], dataset['y']
+        
+        # # # Preprocess data
+        # scaler = StandardScaler()
+        # x = scaler.fit_transform(x.numpy())
+        # x = torch.tensor(x, dtype=torch.float64)
+        
+        # Create a TensorDataset from x and y
+        tensor_dataset = TensorDataset(x, y)
+        
+        # Calculate train and validation sizes
+        train_size = int(training_prop * len(tensor_dataset))
+        val_size = len(tensor_dataset) - train_size
+        
+        # Split the dataset into training and validation sets
+        train_dataset, _ = random_split(tensor_dataset, [train_size, val_size])
+        
+        return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
+    
+    def generate_dataset(self, remove_anomalies=False, only_anomalies=False, indices=False, eps=1e-6):
+        """
+        Generate the dataset for the model starting from a dataframe.
+        """
+        assert not (remove_anomalies and only_anomalies), 'Cannot remove and keep only anomalies at the same time'
+        
+        x_indices = torch.tensor(self.row_x_indices_np, dtype=torch.float64)
+        y = self.row_y_np
+        
+        if not (remove_anomalies or only_anomalies) and indices:
+            x = x_indices
+            y = np.expand_dims(y, axis=1)
+            y = torch.tensor(y, dtype=torch.float64) 
+            return {'x': x, 'y': y}
+        
+        x = self.proba.to_onehot(self.row_x_indices_np)
         
         # Remove anomalies if needed for DDPM training
         if remove_anomalies:
+            print('Removing anomalies')
             x = x[~y]
+            x_indices = x_indices[~y]
             y = y[~y]
+            
         # Get only anomalies if needed for anomaly detection
-        if only_anomalies:
+        elif only_anomalies:
             x = x[y]
+            x_indices = x_indices[y]
             y = y[y]
 
         y = np.expand_dims(y, axis=1)
@@ -132,100 +180,134 @@ class CustomDataset(BaseDataset):
         x = torch.tensor(x, dtype=torch.float64)
         y = torch.tensor(y, dtype=torch.bool)
 
-        # convert to logits if needed for DDPM 
-        if logits:
-            x = torch.log(x / (1 - x))
+        x = torch.log((x + eps) / (1 - x + eps))
 
-        self.dataset = {'x': x, 'y': y}
+        self.dataset = {'x': x, 'y': y, 'indices': x_indices}
 
         return self.dataset
 
-    def get_features_with_mask(self, label_values_mask=False):
+    def logits_to_values(self, logits):
+        """Convert the logits to values."""
+        if isinstance(logits, torch.Tensor):
+            logits = logits.cpu().numpy()
+        return self.proba.logits_to_values(logits)
+    
+    def get_features_with_mask(self):
         """Generate the dataset with the mask to inpaint."""
 
-        dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
 
         # add the mask to the dataset
-        tmp = self._mask_anomaly_points() 
+        tmp = dataset['y'].to(torch.bool) 
+        del dataset['y']
         dataset['mask'] = tmp
-        dataset['label_values'] = tmp.numpy() if label_values_mask else None
-
         return dataset
 
-    def _mask_anomaly_points(self):
-        """
-        Identify the anomaly points in the dataset.
-        """
-
-        dataset = self.dataset if self.dataset is not None else self.generate_dataset()
-        mask = dataset['y']
-
-        return mask.to(torch.bool)
-
-    def modified_dataset(self, transformed_data, in_probs=True):
+    def modified_dataset(self, transformed_data):
         """Returns the transformed data in the original format."""
-        assert self.proba is not None, 'Dataset not generated'
-        
-        # check if transformed data is a numpy array or a torch tensor
-        # else transform it to a numpy array
-        if isinstance(transformed_data, torch.Tensor):
-            transformed_data = transformed_data.numpy()
-        
-        if in_probs:
-            transformed_data = self.proba.prob_to_values(transformed_data)
-        else:
-            transformed_data = self.proba.logits_to_values(transformed_data)
+        transformed_data = self.logit_to_values(transformed_data)
         
         return self.categorical_encoder.indices_to_dataframe(transformed_data)
     
     
 class SumCategoricalDataset(BaseDataset):
     """Class to generate a toy dataset for anomaly correction."""
-    def __init__(self, size, structure, threshold):
+    
+    def __init__(self, size=None, structure=None, threshold=None):
         super().__init__()
-        self.size = size
-        self.structure = structure
+        
         self.threshold = threshold
-        self.label_values = None
+        
+        self.probabilities = None
+        self.row_x_indices_np = None
+        self.row_y_np = None
+        self.proba = None
+        
+        if size and structure and threshold is not None:
+            self._generate_dataset(size, structure)
+        
+    def _generate_dataset(self, size, structure):
+        """Generate the dataset."""
+        
+        # Instantiate the probabilities object
+        self.proba = Probabilities(structure)
+        
+        # Generate raw data
+        p = np.random.random(size=(size, sum(structure)))
+        self.probabilities = self.proba.normalize(p)
 
-    def generate_dataset(self, remove_anomalies=False, logits=False):
+        # Convert probabilities to onehot encoding
+        x = self.proba.prob_to_onehot(p)
+        
+        self.row_x_indices_np = self.proba.onehot_to_values(x)
+        # Generate labels based on the threshold
+        self.row_y_np = np.sum(self.row_x_indices_np, axis=1) > self.threshold
+    
+    def get_classifier_dataloader(self, training_prop=0.7, batch_size=64, shuffle=True):
+        """Generate a dataloader for the dataset."""
+        dataset = self.generate_dataset(indices=True)
+        
+        x, y = dataset['x'], dataset['y']
+        
+        # Create a TensorDataset from x and y
+        tensor_dataset = TensorDataset(x, y)
+        
+        # Calculate train and validation sizes
+        train_size = int(training_prop * len(tensor_dataset))
+        val_size = len(tensor_dataset) - train_size
+        
+        # Split the dataset into training and validation sets
+        train_dataset, _ = random_split(tensor_dataset, [train_size, val_size])
+        
+        return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
+
+    def generate_dataset(self, remove_anomalies=False, only_anomalies=False, indices=False, eps=1e-6):
         """
         Generate a dataset in probability space that represents arrays of label encoded categories.
         The y labels are binary, True/Anomaly if the sum of the values in the array exceeds the threshold.
         """
-
-        proba = Probabilities(self.structure)
-
-        # raw data
-        p = np.random.random(size=(self.size, sum(self.structure)))
-        p = proba.normalize(p)
-
-        x = proba.prob_to_onehot(p)
-        self.label_values = proba.onehot_to_values(x)
-        y = np.sum(self.label_values, axis=1) > self.threshold
-
+        
+        assert not (remove_anomalies and only_anomalies), 'Cannot remove and keep only anomalies at the same time'
+        
+        x_indices = torch.tensor(self.row_x_indices_np, dtype=torch.float64)
+        y = self.row_y_np
+        if not (remove_anomalies or only_anomalies) and indices:
+            x = x_indices
+            y = np.expand_dims(y, axis=1)
+            y = torch.tensor(y, dtype=torch.float64) 
+            return {'x': x, 'y': y}
+        
+        x = self.probabilities
+        
         if remove_anomalies:
-            p = p[~y]
-            self.label_values = self.label_values[~y]
-            y = y[~y]  # todo does bool define __getitem__?
-
+            x = x[~y]
+            x_indices = x_indices[~y]
+            y = y[~y]
+        elif only_anomalies:
+            x = x[y]
+            x_indices = x_indices[y]
+            y = y[y]
+        
         y = np.expand_dims(y, axis=1)
-
-        # convert to torch tensors
-        x = torch.tensor(p, dtype=torch.float64)
-        y = torch.tensor(y, dtype=torch.bool)
-
-        if logits:
-            x = torch.log(x / (1 - x))
-
-        self.dataset = {'x': x, 'y': y}
-
+        x = torch.tensor(x, dtype=torch.float64)
+        y = torch.tensor(y, dtype=torch.float64)
+        
+        x = torch.log((x + eps) / (1 - x + eps))
+        
+        self.dataset = {'x': x, 'y': y, 'indices': x_indices}
+        
         return self.dataset
+    
+    def logits_to_values(self, logits):
+        """Convert the logits to values."""
+        if isinstance(logits, torch.Tensor):
+            logits = logits.cpu().numpy()
+        return self.proba.logits_to_values(logits)
 
-    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False):
+    def get_features_with_mask(self, mask_anomaly_points=False, mask_one_feature=True, label_values_mask=False, eps=1e-6):
         """Generate the dataset with the mask to inpaint."""
-
-        dataset = self.dataset if self.dataset is not None else self.generate_dataset(logits=True)
+        
+        dataset = self.dataset if self.dataset is not None else self.generate_dataset(eps=eps)
         masks = []
 
         if mask_anomaly_points:
@@ -239,22 +321,17 @@ class SumCategoricalDataset(BaseDataset):
         mask = masks[0]   
         values_mask = masks[1] if label_values_mask else None
 
-        # add the mask to the dataset
         dataset['mask'] = mask
         dataset['values_mask'] = values_mask
-
-        dataset['label_values'] = self.label_values
-
+        
         return dataset
 
     def _mask_anomaly_points(self):
-        """
-        Identify the anomaly points in the dataset.
-        """
-
+        """Identify the anomaly points in the dataset."""
+        
         dataset = self.dataset if self.dataset is not None else self.generate_dataset()
         mask = dataset['y']
-
+        
         return mask.to(torch.bool)
 
     def _mask_one_feature_values(self, label_values_mask=False):
@@ -278,7 +355,7 @@ class SumCategoricalDataset(BaseDataset):
         """
 
         # Fetch the label values
-        array = self.label_values
+        array = self.dataset['indices'].numpy()
 
         # Calculate the sum of each row
         row_sums = np.sum(array, axis=1)
@@ -295,7 +372,7 @@ class SumCategoricalDataset(BaseDataset):
             result[exceeding_rows_indices, max_value_indices] = True
 
         # Repeat each column according to the specified repetition counts
-        repeated_result = np.repeat(result, self.structure, axis=1)
+        repeated_result = np.repeat(result, self.proba.structure, axis=1)
         repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
 
         if label_values_mask:
@@ -318,7 +395,7 @@ class SumCategoricalDataset(BaseDataset):
         """
 
         # Fetch the label values 
-        array = self.label_values
+        array = self.dataset['indices'].numpy()
 
         # Calculate the sum of each row
         row_sums = np.sum(array, axis=1)
@@ -335,7 +412,7 @@ class SumCategoricalDataset(BaseDataset):
         # Combine the conditions: the sum exceeds the threshold and the element is the maximum
         result = np.logical_and(exceed_threshold[:, None], is_max)
 
-        repeated_result = np.repeat(result, self.structure, axis=1)
+        repeated_result = np.repeat(result, self.proba.structure, axis=1)
 
         repeated_result = torch.tensor(repeated_result, dtype=torch.bool)
 
@@ -356,7 +433,6 @@ class GaussianDataset(BaseDataset):
     def _generate_samples(self, mean, cov, num_samples):
         """
         Generates samples using an alternative approach to handle non-positive definite covariance matrices.
-
         """
         mean_tensor = torch.tensor(mean, dtype=torch.float64)
         cov_tensor = torch.tensor(cov, dtype=torch.float64)
@@ -424,7 +500,6 @@ class GaussianDataset(BaseDataset):
 
         dataset = self.generate_dataset(means, covariances, num_samples_per_distribution, boolean_labels).copy()
         dataset['mask'] = dataset.pop('y')
-        # dataset['mask'] = ~dataset['mask']
         dataset['mask'] = dataset['mask'].to(torch.bool)
 
         return dataset
@@ -457,11 +532,10 @@ class GaussianDataset(BaseDataset):
         plt.legend()
         plt.grid(True)
 
-        if save_locally:
-            filename = path + filename + '.png'
-            plt.savefig(filename)
         if save_wandb:
             wandb.log({filename: wandb.Image(plt)})
+        if save_locally:
+            plt.savefig(path + filename + '.png')
 
 def plot_generated_samples(samples, filename, save_locally=False, save_wandb=False, path="../plots/"):
     """ Author: Luis
@@ -921,7 +995,8 @@ def plot_agreement_disagreement_transformation(array1, array2, filename, save_lo
 
 
 def plot_categories(label_values, n_values, filename, save_locally=False, save_wandb=False, path="../plots/"):
-    assert isinstance(label_values, np.ndarray), 'label_values must be a numpy array'
+    if isinstance(label_values, torch.Tensor):
+        label_values = label_values.numpy()
 
     data = pd.DataFrame(label_values, columns=[f'Category {i}' for i in range(len(n_values))])
 
@@ -929,7 +1004,7 @@ def plot_categories(label_values, n_values, filename, save_locally=False, save_w
     melted_data = data.melt(var_name='Category', value_name='Value')
 
     # Create a figure with subplots for each category
-    fig, axs = plt.subplots(1, 5, figsize=(30, 6), sharey=True)
+    fig, axs = plt.subplots(1, len(n_values), figsize=(30, 6), sharey=True)
 
     # Get the maximum number of unique values in all categories
     max_unique_values = max(data.nunique())
@@ -974,6 +1049,13 @@ def element_wise_label_values_comparison(input, output, mask):
     # Check if the mask is compatible with the arrays
     if input.shape != output.shape or input.shape != mask.shape:
         raise ValueError("Array shapes and mask shape must match.")
+    
+    if isinstance(input, torch.Tensor):
+        input = input.numpy().astype(int)
+    if isinstance(output, torch.Tensor):
+        output = output.numpy().astype(int)
+    if isinstance(mask, torch.Tensor):
+        mask = mask.numpy().astype(bool)
 
     num_rows_differ = 0
     total_wrongly_changed_values = 0
@@ -1002,3 +1084,120 @@ def element_wise_label_values_comparison(input, output, mask):
             num_rows_differ += 1
 
     return num_rows_differ, known_values, total_wrongly_changed_values
+
+
+class ClassificationModel:
+    """
+    Example classifier
+    """
+
+    def __init__(self):
+        self.model = None
+        
+    def load_model_pickle(self, filename, path="../models/"):
+        """Load model parameters from a file using pickle."""
+        print(f'Loading a classifier model...')
+        try:
+            model = torch.load(path + filename + '.pkl')
+            self.model = model
+        except FileNotFoundError:
+            print('Model not found')
+            self.model = None
+
+    def __call__(self, *args, **kwargs):
+        return self.model(*args, **kwargs)
+
+    def reset(self, input_size, hidden):
+        print(f'Creating a new classifier model...')
+        self.model = nn.Sequential(
+            nn.Linear(input_size, hidden),
+            nn.Softplus(),
+            nn.Linear(hidden, 1),
+            nn.Sigmoid()
+        )
+        # self.model = nn.Sequential(
+        #     nn.Linear(input_size, hidden),
+        #     nn.ReLU(),
+        #     nn.Dropout(0.5),
+        #     nn.Linear(hidden, 2*hidden),
+        #     nn.ReLU(),
+        #     nn.Dropout(0.5),
+        #     nn.Linear(2*hidden, hidden),
+        #     nn.ReLU(),
+        #     nn.Dropout(0.5),
+        #     nn.Linear(hidden, 1),
+        #     nn.Sigmoid()
+        # )
+
+    def _training_loop(self, dataloader, n_epochs, learning_rate, weight_decay):
+        # use the AdamW optimizer
+        optimizer = optim.AdamW(self.model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+        # use the Binary Cross Entropy loss
+        criterion = nn.BCELoss()
+        
+        pbar = tqdm(range(n_epochs))
+        for epoch in pbar:
+            self.model.train()
+            running_loss = 0.0
+            num_elements = 0
+            
+            for X_batch, y_batch in dataloader:
+                optimizer.zero_grad()
+
+                y_pred = self.model(X_batch)
+                loss = criterion(y_pred, y_batch)
+
+                loss.backward()
+                optimizer.step()
+
+                running_loss += loss.item()
+                num_elements += X_batch.shape[0]
+            epoch_loss = running_loss / num_elements
+            pbar.set_description(f'Epoch: {epoch+1} | Loss: {epoch_loss:.5f}')
+        
+    def train(self, dataloader, n_epochs=200, learning_rate=0.1, weight_decay=1e-3,
+              model_name="classifier_ddpm", path="../models/"):
+        self._training_loop(dataloader, n_epochs, learning_rate, weight_decay)
+
+        x = dataloader.dataset.dataset.tensors[0]
+        y = dataloader.dataset.dataset.tensors[1]
+        # test the model
+        y_pred = self.model(x)
+
+        # performance metrics
+        y_class = (y_pred > 0.5).float()
+        accuracy = np.array(y_class == y).astype(float).mean()
+        dummy_acc = max(y.mean().item(), 1 - y.mean().item())
+        acc = accuracy.item()
+        usefulness = max([0, (acc - dummy_acc) / (1 - dummy_acc)])
+        print(f'Dummy accuracy = {dummy_acc:.1%}')
+        print(f'Accuracy = {acc:.1%}')
+        print(f'Usefulness = {usefulness:.1%}')
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+            # save the model
+        torch.save(self.model, path + model_name + '.pkl')
+        
+
+def compute_arrays_agreements(array1, array2):
+    if isinstance(array1, torch.Tensor):
+        array1 = array1.numpy().astype(int)
+    if isinstance(array2, torch.Tensor):
+        array2 = array2.numpy().astype(int)
+    
+    # Compute the number of columns they agree on per row
+    agreements_per_row = np.sum(array1 == array2, axis=1)
+
+    # Calculate the mean, median, and standard deviation of these values
+    mean_agreements = np.mean(agreements_per_row)
+    median_agreements = np.median(agreements_per_row)
+    std_agreements = np.std(agreements_per_row)
+
+    results = {
+        "mean": mean_agreements,
+        "median": median_agreements,
+        "std": std_agreements
+    }
+    
+    return results

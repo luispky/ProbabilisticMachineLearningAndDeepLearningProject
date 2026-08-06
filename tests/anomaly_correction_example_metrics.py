@@ -266,6 +266,5 @@ def main(data_path='../datasets/sum_limit_problem.csv',
     # mean and std of the corrected anomalies
     print(f'Percentage anomalies not corrected: {mean:.1%} ± {std:.1%}')
 
-
 if __name__ == "__main__":
     main()
